@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "alwaysStrict": true,
+    "baseUrl": "src",
+    "esModuleInterop": true,
+    "jsx": "react-jsx",
+    "module": "CommonJS",
+    "noEmit": true,
+    "strict": true,
+    "target": "ES2016",
+    "typeRoots": ["node_modules/@types", "web-ext-types"],
+    "paths": {
+      "component/*": ["react/component/*"],
+      "hook/*": ["react/hook/*"],
+      "lib/*": ["react/lib/*"],
+      "type/*": ["react/type/*"],
+    },
+  },
+  "exclude": ["node_modules", "dist"],
+}

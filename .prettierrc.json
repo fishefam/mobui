@@ -1,0 +1,12 @@
+{
+  "endOfLine": "lf",
+  "htmlWhitespaceSensitivity": "ignore",
+  "jsxSingleQuote": false,
+  "printWidth": 100,
+  "quoteProps": "consistent",
+  "semi": false,
+  "singleAttributePerLine": true,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "useTabs": false
+}
