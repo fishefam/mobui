@@ -1,13 +1,18 @@
-import { Flowbite } from 'flowbite-react'
+import MainArea from 'component/MainArea'
+import Navbar from 'component/Navbar'
+import Sidebar from 'component/Sidebar'
 
 import Context from './Context'
+import Layout from './Layout'
 
 export default function App() {
   return (
     <Context>
-      <Flowbite>
-        <div>Hello</div>
-      </Flowbite>
+      <Layout
+        left={<Sidebar />}
+        main={<MainArea />}
+        top={<Navbar />}
+      />
     </Context>
   )
 }

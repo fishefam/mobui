@@ -28,19 +28,23 @@
   ],
   "settings": { "react": { "version": "detect" } },
   "rules": {
-    "react/react-in-jsx-scope": "off",
     "@typescript-eslint/no-unused-vars": "off",
     "linebreak-style": ["warn", "unix"],
     "quotes": ["warn", "single"],
+    "react/react-in-jsx-scope": "off",
     "semi": ["warn", "never"],
-    "simple-import-sort/imports": "warn",
     "simple-import-sort/exports": "warn",
+    "simple-import-sort/imports": "warn",
     "sort-destructure-keys/sort-destructure-keys": "warn",
     "sort-keys-fix/sort-keys-fix": "warn",
     "unused-imports/no-unused-imports": "warn",
     "unused-imports/no-unused-vars": [
       "warn",
       { "vars": "all", "varsIgnorePattern": "^_", "args": "after-used", "argsIgnorePattern": "^_" }
+    ],
+    "react/jsx-sort-props": [
+      "warn",
+      { "callbacksLast": true, "shorthandFirst": true, "multiline": "last", "reservedFirst": true }
     ]
   }
 }

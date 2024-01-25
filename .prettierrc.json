@@ -2,11 +2,13 @@
   "endOfLine": "lf",
   "htmlWhitespaceSensitivity": "ignore",
   "jsxSingleQuote": false,
+  "plugins": ["prettier-plugin-tailwindcss"],
   "printWidth": 100,
   "quoteProps": "consistent",
   "semi": false,
   "singleAttributePerLine": true,
   "singleQuote": true,
+  "tailwindFunctions": ["cn", "clsx", "twMerge"],
   "trailingComma": "all",
   "useTabs": false
 }
