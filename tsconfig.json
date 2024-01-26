@@ -10,6 +10,7 @@
     "target": "ES2016",
     "typeRoots": ["node_modules/@types", "web-ext-types"],
     "paths": {
+      "shadcn/*": ["react/component/shadcn/ui/*"],
       "component/*": ["react/component/*"],
       "hook/*": ["react/hook/*"],
       "lib/*": ["react/lib/*"],

@@ -1,5 +1,8 @@
-import { Dispatch, ReactElement, SetStateAction } from 'react'
+import { Dispatch, ReactNode, SetStateAction } from 'react'
 
-export type TObject<T = unknown> = Record<string, T>
+/* Generic */
+export type TObject<T extends string | number = string, U = unknown> = Record<T, U>
+
+/* React */
 export type TSetState<T> = Dispatch<SetStateAction<T>>
-export type TProps<T = TObject> = T & { children: ReactElement }
+export type TProps<T = TObject> = T & { children: ReactNode }

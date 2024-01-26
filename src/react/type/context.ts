@@ -1,1 +1,1 @@
-export type TContextProps = { a?: number }
+export type TContextProps = { placeholder?: undefined }

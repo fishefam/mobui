@@ -3,12 +3,12 @@ import { useContext as useCtx } from 'react'
 import { TProps } from 'type/common'
 import { TContextProps } from 'type/context'
 
-const CONTEXT = createContext<TContextProps>({})
+const Context = createContext<TContextProps>({})
 
-export default function Context({ children }: TProps) {
-  return <CONTEXT.Provider value={{}}>{children}</CONTEXT.Provider>
+export default function ContextProvider({ children }: TProps) {
+  return <Context.Provider value={{}}>{children}</Context.Provider>
 }
 
 export function useContext() {
-  return useCtx(CONTEXT)
+  return useCtx(Context)
 }

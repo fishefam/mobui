@@ -1,18 +1,19 @@
-import MainArea from 'component/MainArea'
 import Navbar from 'component/Navbar'
-import Sidebar from 'component/Sidebar'
+import ThemeProvider from 'shadcn/ThemeProvider'
 
-import Context from './Context'
-import Layout from './Layout'
+import ContextProvider from './Context'
 
 export default function App() {
   return (
-    <Context>
-      <Layout
+    <ContextProvider>
+      <ThemeProvider>
+        <Navbar />
+        {/* <Layout
         left={<Sidebar />}
         main={<MainArea />}
         top={<Navbar />}
-      />
-    </Context>
+      /> */}
+      </ThemeProvider>
+    </ContextProvider>
   )
 }

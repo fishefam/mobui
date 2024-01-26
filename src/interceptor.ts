@@ -10,9 +10,11 @@ import hash from 'shorthash2'
 const DATA_KEY = 'data'
 const EXT_URL_KEY = 'extURL'
 const UID_HASH_KEY = 'uidHash' // This is to eleminate the repeating hashing of uid later in React
+const CLASS_ID_KEY = 'classId'
 const USERNAME_KEY = 'username'
+const REPO_NAME_KEY = 'reponame'
 
-main(DATA_KEY, UID_HASH_KEY, USERNAME_KEY, EXT_URL_KEY)
+main(DATA_KEY, UID_HASH_KEY, USERNAME_KEY, CLASS_ID_KEY, REPO_NAME_KEY, EXT_URL_KEY)
 
 /**
  * Main function that acts as an entry point for the module.
@@ -21,13 +23,21 @@ main(DATA_KEY, UID_HASH_KEY, USERNAME_KEY, EXT_URL_KEY)
  * @param {string} dataKey - The key for storing data in local storage
  * @param {string} uidHashKey - The key for storing UID hash in local storage
  * @param {string} usernameKey - The key for storing username in local storage
+ * @param {string} repoNameKey - The key for storing the repository name in local storage
  * @param {string} urlKey - The key for storing the resolved URL in local storage
  */
-async function main(dataKey: string, uidHashKey: string, usernameKey: string, urlKey: string) {
+async function main(
+  dataKey: string,
+  uidHashKey: string,
+  usernameKey: string,
+  classIdKey: string,
+  repoNameKey: string,
+  urlKey: string,
+) {
   /** Intercept page load and inject a new HTML template for React */
   window.stop()
   preparePage()
-  await prepareData(dataKey, uidHashKey, usernameKey, urlKey)
+  await prepareData(dataKey, uidHashKey, usernameKey, classIdKey, urlKey, repoNameKey)
   finalize()
 }
 
@@ -98,7 +108,9 @@ async function prepareData(
   dataKey: string,
   uidHashKey: string,
   usernameKey: string,
+  classIdKey: string,
   urlKey: string,
+  repoNameKey: string,
 ) {
   const response = await fetch(location.href)
   const html = await response.text()
@@ -114,8 +126,11 @@ async function prepareData(
     [urlKey, resolveUrl('')],
     [usernameKey, username],
     [uidHashKey, hash(data.uid ?? '')],
+    [classIdKey, data.classId ?? ''],
     [dataKey, JSON.stringify(data)],
+    [repoNameKey, document.querySelector('#pageName')?.textContent ?? 'Site'],
   ]
+  localStorage.clear()
   for (const [key, value] of storageItems) localStorage.setItem(key, value)
 }
 
