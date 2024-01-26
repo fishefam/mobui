@@ -2,14 +2,15 @@ import { cn } from 'lib/util'
 import { useState } from 'react'
 import Avatar, { AvatarFallback } from 'shadcn/Avatar'
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+  Dropdown,
+  DropdownContent,
+  DropdownItem,
+  DropdownLabel,
+  DropdownSeparator,
+  DropdownTrigger,
 } from 'shadcn/Dropdown'
 import Nav, { NavContent, NavItem, NavLink, NavList, NavTrigger, NavViewport } from 'shadcn/Nav'
+import { useTheme } from 'shadcn/ThemeProvider'
 import { TSetState } from 'type/common'
 
 type TItems = {
@@ -69,7 +70,7 @@ const ITEMS: TItems = [
   { href: 'content', subitems: [], trigger: 'Content Repository' },
 ].map((item) => ({
   ...item,
-  href: item.href ? createHref(CLASS_ID, item.href) : '',
+  href: item.href ? createHref(CLASS_ID !== '' ? CLASS_ID : '#', item.href) : '',
   subitems: item.subitems.map(({ href, title }) => ({
     href: createHref(CLASS_ID !== '' ? CLASS_ID : '#', href),
     title,
@@ -104,27 +105,37 @@ export default function Navbar() {
 }
 
 function Profile() {
+  const { setTheme, theme } = useTheme()
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger>
+    <Dropdown>
+      <DropdownTrigger className="rounded-full focus:ring-2">
         <Avatar className="h-8 w-8">
-          <AvatarFallback>{USER_INITIALS !== '' ? USER_INITIALS : 'MN'}</AvatarFallback>
+          <AvatarFallback>{USER_INITIALS !== '' ? USER_INITIALS : 'TN'}</AvatarFallback>
         </Avatar>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuLabel>{USER_NAME !== '' ? USER_NAME : 'Truong Nguyen'}</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
+      </DropdownTrigger>
+      <DropdownContent className="min-w-52">
+        <DropdownLabel>{USER_NAME !== '' ? USER_NAME : 'Truong Nguyen'}</DropdownLabel>
+        <DropdownSeparator />
+        <DropdownItem
+          asChild
+          onClick={(event) => {
+            event.preventDefault()
+            setTheme((state) => (state === 'dark' ? 'light' : 'dark'))
+          }}
+        >
+          <span>{`${theme.charAt(0).toUpperCase().concat(theme.slice(1))} Mode`}</span>
+        </DropdownItem>
+        <DropdownItem asChild>
           <a href="https://www.digitaled.com/products/courseware/support.aspx">Help</a>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
+        </DropdownItem>
+        <DropdownItem asChild>
           <a href="/users/privacypolicy">Terms of service</a>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <a href="#">Close</a>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        </DropdownItem>
+        <DropdownItem asChild>
+          <a href="#">Exit</a>
+        </DropdownItem>
+      </DropdownContent>
+    </Dropdown>
   )
 }
 
@@ -183,9 +194,11 @@ function Link({ href, title }: TListItemProps) {
 }
 
 function Logo() {
+  const { theme } = useTheme()
   return (
     <svg
-      className="h-10"
+      className={cn('h-10', theme === 'dark' ? 'text-yellow-500' : 'text-violet-500')}
+      fill="currentColor"
       viewBox="0 0 153 67"
     >
       <g transform="translate(0 67) scale(.05 -.05)">

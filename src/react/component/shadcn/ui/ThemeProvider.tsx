@@ -20,8 +20,7 @@ export default function ThemeProvider({ children }: TProps) {
 }
 
 export function useTheme() {
-  const context = useContext(Context)
-  return context
+  return useContext(Context)
 }
 
 function useThemeChange() {
