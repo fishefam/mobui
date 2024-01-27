@@ -44,7 +44,7 @@ const ITEMS: TItems = [
       { href: 'users/add', title: 'Enroll Users' },
       { href: 'users/remove', title: 'Remove Users' },
     ],
-    trigger: 'User Manager',
+    trigger: 'User Management',
   },
   {
     href: '',
@@ -123,7 +123,7 @@ function Profile() {
             setTheme((state) => (state === 'dark' ? 'light' : 'dark'))
           }}
         >
-          <span>{`${theme.charAt(0).toUpperCase().concat(theme.slice(1))} Mode`}</span>
+          <span>{`${theme.charAt(0).toUpperCase().concat(theme.slice(1))} Mode`} </span>
         </DropdownItem>
         <DropdownItem asChild>
           <a href="https://www.digitaled.com/products/courseware/support.aspx">Help</a>

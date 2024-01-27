@@ -1,4 +1,5 @@
 import Navbar from 'component/Navbar'
+import Sidebar from 'component/Sidebar'
 import ThemeProvider from 'shadcn/ThemeProvider'
 
 import Layout from './Layout'
@@ -9,7 +10,7 @@ export default function App() {
     <StoreProvider>
       <ThemeProvider>
         <Layout
-          left={<></>}
+          left={<Sidebar />}
           main={<></>}
           top={<Navbar />}
         />

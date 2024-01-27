@@ -1,19 +1,22 @@
-import { createContext } from 'react'
-import { useContext as useCtx } from 'react'
+import { createContext, useContext, useState } from 'react'
 import { TProps } from 'type/common'
-import { TContextProps } from 'type/context'
+import { TStore } from 'type/store'
 
-const Store = createContext<TContextProps>({})
+const INITIAL_STORE: TStore = { section: ['question', () => {}] }
+
+const Store = createContext<TStore>(INITIAL_STORE)
 
 export default function StoreProvider(props: TProps) {
+  const section = useState<TStore['section'][0]>('question')
+
   return (
     <Store.Provider
       {...props}
-      value={{}}
+      value={{ section }}
     />
   )
 }
 
-export function useContext() {
-  return useCtx(Store)
+export function useStore() {
+  return useContext(Store)
 }
