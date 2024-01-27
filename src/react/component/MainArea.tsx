@@ -1,19 +1,18 @@
-import { useElementHeight } from 'hook/util'
-import { Fragment, useRef } from 'react'
+import { Fragment } from 'react'
 import Breadcrumb from 'shadcn/Breadcrumb'
 import CodeEditor from 'shadcn/CodeEditor'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from 'shadcn/Resizable'
 
-export default function MainArea() {
-  const breadcrumbRef = useRef<HTMLOListElement>(null)
-  const breadcrumbHeight = useElementHeight(breadcrumbRef)
+import TextEditor from './TextEditor'
 
+export default function MainArea() {
+  console.log('render MainArea')
   return (
     <div className="h-full">
-      <Breadcrumb ref={breadcrumbRef} />
+      <Breadcrumb />
       <div
         className="pb-1 pt-3"
-        style={{ height: `calc(100% - ${breadcrumbHeight}px)` }}
+        style={{ height: 'calc(100% - 2rem)' }}
       >
         <ResizablePanelGroup
           className="h-full rounded border"
@@ -48,9 +47,7 @@ function CodeEditorContainer() {
 function TextEditorContainer() {
   return (
     <ResizablePanel defaultSize={75}>
-      <div className="flex h-full items-center justify-center p-6">
-        <span className="font-semibold">SlateJS</span>
-      </div>
+      <TextEditor />
     </ResizablePanel>
   )
 }

@@ -1,15 +1,14 @@
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
+import type { INLINE_VOID_NODES, NODES } from 'lib/slate/register'
+import { BLOCK_NODES, INLINE_NODES, VOID_NODES } from 'lib/slate/register'
+import { generateNodeId } from 'lib/slate/util'
 import type { CSSProperties, ReactNode } from 'react'
 import type { BaseEditor as _BaseEditor, Selection } from 'slate'
 import { createEditor as _createEditor } from 'slate'
 import type { HistoryEditor as _HistoryEditor } from 'slate-history'
 import { withHistory as _withHistory } from 'slate-history'
-import type { RenderElementProps as _RenderElementProps, RenderLeafProps as _RenderLeafProps } from 'slate-react'
+import type { RenderElementProps as _RenderElementProps } from 'slate-react'
 import { ReactEditor as _ReactEditor, Slate as _Slate, withReact as _withReact } from 'slate-react'
-
-import type { INLINE_VOID_NODES, NODES } from '@/lib/slate/register'
-import { BLOCK_NODES, INLINE_NODES, VOID_NODES } from '@/lib/slate/register'
-import { generateNodeId } from '@/lib/slate/util'
 
 export type TBlockNodeType = keyof typeof BLOCK_NODES
 export type TInlineNodeType = keyof typeof INLINE_NODES
@@ -17,7 +16,15 @@ export type TVoidNodeType = keyof typeof VOID_NODES
 export type TInlineVoidNodeType = keyof typeof INLINE_VOID_NODES
 export type TNodeType = keyof typeof NODES
 
-export type TTrueMark = 'bold' | 'code' | 'italic' | 'kbd' | 'strikethrough' | 'subscript' | 'superscript' | 'underline'
+export type TTrueMark =
+  | 'bold'
+  | 'code'
+  | 'italic'
+  | 'kbd'
+  | 'strikethrough'
+  | 'subscript'
+  | 'superscript'
+  | 'underline'
 export type TValueMark = keyof CSSProperties
 export type TMark = TTrueMark | TValueMark
 
@@ -68,7 +75,7 @@ export type TPlugin = (state: TState) => TState
 export type TRenderElement = (props: _RenderElementProps) => JSX.Element
 export type TRenderLeaf = (props: _RenderElementProps) => JSX.Element
 
-declare module 'slate' {
+/* declare module 'slate' {
   interface CustomTypes {
     Editor: TState
     Element: TBlockNode | TInlineNode | TInlineVoidNode | TVoidNode
@@ -84,7 +91,7 @@ declare module 'slate' {
     children: ReactNode
     leaf: TLeafNode<T, U>
   }
-}
+} */
 
 /* Type wrappers for Slate components and functions */
 export type TStateProps = {

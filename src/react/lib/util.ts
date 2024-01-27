@@ -36,13 +36,23 @@ export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs))
 }
 
-export function toStartCase(input: string) {
+/**
+ * Converts a string to start case (capitalizing the first letter of each word).
+ * @param input - The input string to be converted to start case.
+ * @returns The input string converted to start case.
+ */
+export function toStartCase(input: string): string {
   return input
     .split(' ')
     .map((word) => word.charAt(0).toUpperCase().concat(word.slice(1)))
     .join(' ')
 }
 
-export function getLocalStorageItem(key: TLocalStorageKey) {
+/**
+ * Retrieves a value from local storage using the provided key.
+ * @param key - The key used to identify the value in local storage.
+ * @returns The value associated with the provided key in local storage, or an empty string if not found.
+ */
+export function getLocalStorageItem(key: TLocalStorageKey): string {
   return localStorage.getItem(key) ?? ''
 }

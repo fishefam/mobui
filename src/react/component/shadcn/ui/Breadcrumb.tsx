@@ -1,17 +1,11 @@
 import { getLocalStorageItem, toStartCase } from 'lib/util'
 import { ChevronRightIcon, Edit2Icon, FolderGit2Icon } from 'lucide-react'
-import { ForwardedRef, forwardRef } from 'react'
 import { useStore } from 'react/Store'
 
-export default forwardRef(Breadcrumb)
-
-function Breadcrumb(_: unknown, ref: ForwardedRef<HTMLOListElement>) {
+export default function Breadcrumb() {
   const { questionName } = useStore()
   return (
-    <ol
-      ref={ref}
-      className="inline-flex items-center space-x-1 !text-gray-500 md:space-x-2 rtl:space-x-reverse"
-    >
+    <ol className="inline-flex h-8 items-center space-x-1 !text-gray-500 md:space-x-2 rtl:space-x-reverse">
       <li className="inline-flex items-center">
         <a
           className="inline-flex cursor-default items-center text-sm font-medium hover:text-blue-600 dark:hover:text-white"
@@ -48,7 +42,7 @@ function Breadcrumb(_: unknown, ref: ForwardedRef<HTMLOListElement>) {
           <span className="ms-1 inline-flex items-center justify-between gap-3 whitespace-nowrap text-sm font-medium md:ms-2">
             <span className="relative">
               <input
-                className="focus:text-accent-foreground block border-b-2 border-b-gray-200 bg-transparent py-2 ps-8 text-sm focus:border-b-blue-500 focus:outline-none"
+                className="block border-b-2 border-b-gray-200 bg-transparent py-2 ps-8 text-sm focus:border-b-blue-500 focus:text-accent-foreground focus:outline-none"
                 placeholder="Question Name"
                 value={questionName[0]}
                 onChange={({ target }) => questionName[1](target.value)}
