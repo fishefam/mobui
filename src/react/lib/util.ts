@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from 'clsx'
 import { customAlphabet } from 'nanoid'
 import { twMerge } from 'tailwind-merge'
+import { TLocalStorageKey } from 'type/store'
 
 /**
  * Generates a BEM (Block Element Modifier) class name based on the provided parameters.
@@ -33,4 +34,15 @@ export function nanoid(size: number = 9): string {
  */
 export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs))
+}
+
+export function toStartCase(input: string) {
+  return input
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase().concat(word.slice(1)))
+    .join(' ')
+}
+
+export function getLocalStorageItem(key: TLocalStorageKey) {
+  return localStorage.getItem(key) ?? ''
 }

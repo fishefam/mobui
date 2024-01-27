@@ -128,7 +128,7 @@ async function prepareData(
     [uidHashKey, hash(data.uid ?? '')],
     [classIdKey, data.classId ?? ''],
     [dataKey, JSON.stringify(data)],
-    [repoNameKey, document.querySelector('#pageName')?.textContent ?? 'Site'],
+    [repoNameKey, dom.querySelector('#pageName li:first-of-type')?.textContent?.trim() ?? 'Site'],
   ]
   localStorage.clear()
   for (const [key, value] of storageItems) localStorage.setItem(key, value)

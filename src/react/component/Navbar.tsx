@@ -1,4 +1,4 @@
-import { cn } from 'lib/util'
+import { cn, getLocalStorageItem } from 'lib/util'
 import { useState } from 'react'
 import Avatar, { AvatarFallback } from 'shadcn/Avatar'
 import {
@@ -27,8 +27,8 @@ type TMenuItemProps = {
   trigger: string
 }
 
-const CLASS_ID = localStorage.getItem('classId') ?? ''
-const USER_NAME = (localStorage.getItem('username') ?? '').replace(/\(.*$/, '')
+const CLASS_ID = getLocalStorageItem('classId')
+const USER_NAME = getLocalStorageItem('username').replace(/\(.*$/, '')
 const USER_INITIALS = USER_NAME.split(' ')
   .filter((_, i, { length }) => i === 0 || i === length - 1)
   .map((val) => val.charAt(0))
