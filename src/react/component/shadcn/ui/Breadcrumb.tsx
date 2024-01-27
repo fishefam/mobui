@@ -1,11 +1,17 @@
 import { getLocalStorageItem, toStartCase } from 'lib/util'
-import { ChevronRightIcon, Edit2Icon } from 'lucide-react'
+import { ChevronRightIcon, Edit2Icon, FolderGit2Icon } from 'lucide-react'
+import { ForwardedRef, forwardRef } from 'react'
 import { useStore } from 'react/Store'
 
-export default function Breadcrumb() {
+export default forwardRef(Breadcrumb)
+
+function Breadcrumb(_: unknown, ref: ForwardedRef<HTMLOListElement>) {
   const { questionName } = useStore()
   return (
-    <ol className="inline-flex items-center space-x-1 !text-gray-500 md:space-x-2 rtl:space-x-reverse">
+    <ol
+      ref={ref}
+      className="inline-flex items-center space-x-1 !text-gray-500 md:space-x-2 rtl:space-x-reverse"
+    >
       <li className="inline-flex items-center">
         <a
           className="inline-flex cursor-default items-center text-sm font-medium hover:text-blue-600 dark:hover:text-white"
@@ -25,9 +31,13 @@ export default function Breadcrumb() {
         <div className="flex items-center">
           <Chevron />
           <a
-            className="ms-1 cursor-default text-sm font-medium hover:text-blue-600 dark:hover:text-white md:ms-2"
+            className="ms-1 inline-flex cursor-default items-center justify-between gap-3 whitespace-nowrap text-sm font-medium hover:text-blue-600 dark:hover:text-white md:ms-2"
             href={`/${getLocalStorageItem('classId') !== '' ? getLocalStorageItem('classId') : '#'}/content`}
           >
+            <FolderGit2Icon
+              className="h-3 w-3"
+              fill="currentColor"
+            />
             Repository
           </a>
         </div>
@@ -44,7 +54,10 @@ export default function Breadcrumb() {
                 onChange={({ target }) => questionName[1](target.value)}
               />
               <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-2">
-                <Edit2Icon className="h-4 w-4" />
+                <Edit2Icon
+                  className="h-3 w-3"
+                  fill="currentColor"
+                />
               </div>
             </span>
           </span>
