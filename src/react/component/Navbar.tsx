@@ -184,7 +184,7 @@ function Link({ href, title }: TListItemProps) {
       <a
         href={href}
         className={cn(
-          'hover:bg-accent focus:bg-accent focus:text-accent-foreground hover:text-accent-foreground block cursor-default select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none',
+          'block cursor-default select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground',
         )}
       >
         <div className="text-sm font-medium leading-none">{title}</div>

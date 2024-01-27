@@ -85,3 +85,12 @@
 #root {
   @apply grid h-screen grid-rows-[max-content];
 }
+
+.cm-editor {
+  @apply h-full;
+}
+
+.cm-gutters {
+  @apply w-[5ch];
+  border: 0 !important;
+}

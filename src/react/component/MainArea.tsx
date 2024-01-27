@@ -1,6 +1,7 @@
-import { RefObject, useEffect, useRef, useState } from 'react'
+import { Fragment, RefObject, useEffect, useRef, useState } from 'react'
 import Breadcrumb from 'shadcn/Breadcrumb'
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from 'shadcn/resizable'
+import CodeEditor from 'shadcn/CodeEditor'
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from 'shadcn/Resizable'
 
 export default function MainArea() {
   const breadcrumbRef = useRef<HTMLOListElement>(null)
@@ -18,7 +19,7 @@ export default function MainArea() {
           direction="horizontal"
         >
           <CodeEditorContainer />
-          <ResizableHandle withHandle />
+          <Handle />
           <TextEditorContainer />
         </ResizablePanelGroup>
       </div>
@@ -30,23 +31,14 @@ function CodeEditorContainer() {
   return (
     <ResizablePanel defaultSize={25}>
       <ResizablePanelGroup direction="vertical">
-        <ResizablePanel>
-          <div className="flex h-full items-center justify-center p-6">
-            <span className="font-semibold">HTML</span>
-          </div>
-        </ResizablePanel>
-        <ResizableHandle withHandle />
-        <ResizablePanel>
-          <div className="flex h-full items-center justify-center p-6">
-            <span className="font-semibold">CSS</span>
-          </div>
-        </ResizablePanel>
-        <ResizableHandle withHandle />
-        <ResizablePanel>
-          <div className="flex h-full items-center justify-center p-6">
-            <span className="font-semibold">Javacript</span>
-          </div>
-        </ResizablePanel>
+        {(['HTML', 'CSS', 'JS'] as const).map((language, i, arr) => (
+          <Fragment key={language}>
+            <ResizablePanel className="!overflow-scroll">
+              <CodeEditor language={language} />
+            </ResizablePanel>
+            {i < arr.length - 1 ? <Handle /> : null}
+          </Fragment>
+        ))}
       </ResizablePanelGroup>
     </ResizablePanel>
   )
@@ -59,6 +51,15 @@ function TextEditorContainer() {
         <span className="font-semibold">SlateJS</span>
       </div>
     </ResizablePanel>
+  )
+}
+
+function Handle() {
+  return (
+    <ResizableHandle
+      withHandle
+      className="dark:bg-accent-foreground"
+    />
   )
 }
 
