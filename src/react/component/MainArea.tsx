@@ -1,11 +1,12 @@
-import { Fragment, RefObject, useEffect, useRef, useState } from 'react'
+import { useElementHeight } from 'hook/util'
+import { Fragment, useRef } from 'react'
 import Breadcrumb from 'shadcn/Breadcrumb'
 import CodeEditor from 'shadcn/CodeEditor'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from 'shadcn/Resizable'
 
 export default function MainArea() {
   const breadcrumbRef = useRef<HTMLOListElement>(null)
-  const breadcrumbHeight = useBreadcrumbHeight(breadcrumbRef)
+  const breadcrumbHeight = useElementHeight(breadcrumbRef)
 
   return (
     <div className="h-full">
@@ -33,7 +34,7 @@ function CodeEditorContainer() {
       <ResizablePanelGroup direction="vertical">
         {(['HTML', 'CSS', 'JS'] as const).map((language, i, arr) => (
           <Fragment key={language}>
-            <ResizablePanel className="!overflow-scroll">
+            <ResizablePanel>
               <CodeEditor language={language} />
             </ResizablePanel>
             {i < arr.length - 1 ? <Handle /> : null}
@@ -55,18 +56,5 @@ function TextEditorContainer() {
 }
 
 function Handle() {
-  return (
-    <ResizableHandle
-      withHandle
-      className="dark:bg-accent-foreground"
-    />
-  )
-}
-
-function useBreadcrumbHeight(ref: RefObject<HTMLOListElement>) {
-  const [height, setHeight] = useState(0)
-  useEffect(() => {
-    if (ref.current) setHeight(ref.current.clientHeight)
-  }, [ref])
-  return height
+  return <ResizableHandle withHandle />
 }
