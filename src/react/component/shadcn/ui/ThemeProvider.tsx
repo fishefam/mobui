@@ -4,9 +4,7 @@ import { TProps, TSetState } from 'type/common'
 type TTheme = 'dark' | 'light'
 type TState = { setTheme: TSetState<TTheme>; theme: TTheme }
 
-const SYSTEM_THEME: TTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
-  ? 'dark'
-  : 'light'
+const SYSTEM_THEME: TTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 const INITIAL_STATE: TState = {
   setTheme: (_: SetStateAction<TTheme>) => {},
   theme: SYSTEM_THEME,
