@@ -1,4 +1,5 @@
 import CodeEditor, { getCodeStore } from 'component/CodeEditor'
+import { cn } from 'lib/util'
 import { Fragment, useRef } from 'react'
 import { useStore } from 'react/Store'
 import Breadcrumb from 'shadcn/Breadcrumb'
@@ -96,9 +97,14 @@ function TextEditorContainer() {
     <ResizablePanel>
       <div
         ref={ref}
-        className="h-full min-w-[37rem]"
+        className="relative h-full min-w-[37rem]"
       >
-        {currentSection === 'algorithm' ? <AlgoPreview parent={ref} /> : <TextEditor />}
+        <div className={cn('absolute left-0 top-0 hidden h-full w-full', currentSection === 'algorithm' && '!block')}>
+          <AlgoPreview parent={ref} />
+        </div>
+        <div className={cn('absolute left-0 top-0 hidden h-full w-full', currentSection !== 'algorithm' && '!block')}>
+          <TextEditor />
+        </div>
       </div>
     </ResizablePanel>
   )
