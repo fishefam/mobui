@@ -91,11 +91,12 @@ function TextEditorContainer() {
   const { section } = useStore()
   const [currentSection] = section
   const ref = useRef<HTMLDivElement>(null)
+
   return (
     <ResizablePanel>
       <div
         ref={ref}
-        className="h-full"
+        className="h-full min-w-[37rem]"
       >
         {currentSection === 'algorithm' ? <AlgoPreview parent={ref} /> : <TextEditor />}
       </div>
