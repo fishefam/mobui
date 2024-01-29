@@ -1,7 +1,16 @@
 import hash from 'shorthash2'
 import type { BaseRange, NodeEntry } from 'slate'
 import { isEditor } from 'slate'
-import { TBlockNode, TBlockNodeType, TInlineVoidNode, TInlineVoidNodeType, TLeafNode, TMark, TSlateEditor, TVoidNodeType } from 'type/slate'
+import {
+  TBlockNode,
+  TBlockNodeType,
+  TInlineVoidNode,
+  TInlineVoidNodeType,
+  TLeafNode,
+  TMark,
+  TSlateEditor,
+  TVoidNodeType,
+} from 'type/slate'
 
 import { getInfo_RawData } from '../data'
 import { nanoid } from '../util'
@@ -17,11 +26,18 @@ export function checkSelection(state: TSlateEditor, cb: (selection: BaseRange) =
   if (selection) cb(selection)
 }
 
-export function retrieveNode<T extends TBlockNodeType | TInlineVoidNodeType | TVoidNodeType = TBlockNodeType>(state: TSlateEditor, nodeType: T) {
-  const [nodeEntry] = state.nodes<T extends TBlockNodeType ? TBlockNode : T extends TInlineVoidNodeType ? TInlineVoidNode : TBlockNode>({
+export function retrieveNode<T extends TBlockNodeType | TInlineVoidNodeType | TVoidNodeType = TBlockNodeType>(
+  state: TSlateEditor,
+  nodeType: T,
+) {
+  const [nodeEntry] = state.nodes<
+    T extends TBlockNodeType ? TBlockNode : T extends TInlineVoidNodeType ? TInlineVoidNode : TBlockNode
+  >({
     match: (node) => !isEditor(node) && !isLeafNode(node) && node.type === nodeType,
   })
-  return nodeEntry as NodeEntry<T extends TBlockNodeType ? TBlockNode : T extends TInlineVoidNodeType ? TInlineVoidNode : TBlockNode> | undefined
+  return nodeEntry as
+    | NodeEntry<T extends TBlockNodeType ? TBlockNode : T extends TInlineVoidNodeType ? TInlineVoidNode : TBlockNode>
+    | undefined
 }
 
 export function retrieveLeafNode(state: TSlateEditor) {

@@ -26,9 +26,7 @@ export function selectElement<T extends HTMLElement>(selector: string): T {
  * @param options - The options for creating the HTML element.
  * @returns The created HTML element.
  */
-export function createElement<T extends keyof HTMLElementTagNameMap>(
-  options: TCreateElementOptions<T>,
-): HTMLElement {
+export function createElement<T extends keyof HTMLElementTagNameMap>(options: TCreateElementOptions<T>): HTMLElement {
   const { attributes, classnames, innerHtml, parent, tag, text } = options
   const element = document.createElement(tag)
   if (innerHtml) element.innerHTML = innerHtml

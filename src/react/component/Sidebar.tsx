@@ -23,7 +23,7 @@ export default function Sidebar() {
         <li key={section}>
           <a
             className={cn(
-              'hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground group flex cursor-default items-center rounded-lg p-2',
+              'group flex cursor-default items-center rounded-lg p-2 hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground',
               section === currentSection ? 'bg-accent text-accent-foreground' : '',
             )}
             onClick={(event) => selectSection(event, section, setSection)}
@@ -32,7 +32,7 @@ export default function Sidebar() {
               className={cn(
                 'h-5 w-5 text-gray-500 transition duration-75 dark:group-hover:text-white group-hover:dark:text-gray-400',
                 section === currentSection
-                  ? 'text-accent-foreground group-hover:dark:text-accent-foreground dark:group-hover:text-accent-foreground'
+                  ? 'text-accent-foreground dark:group-hover:text-accent-foreground group-hover:dark:text-accent-foreground'
                   : '',
               )}
             />

@@ -1,9 +1,16 @@
-import { ChevronDown, Pencil } from 'lucide-react'
+import { Check, ChevronDown, Eye, Pencil } from 'lucide-react'
+import { useStore } from 'react/Store'
 import { Dropdown, DropdownContent, DropdownItem, DropdownTrigger } from 'shadcn/Dropdown'
 import { ToggleGroup, ToggleGroupItem } from 'shadcn/ToggleGroup'
 import { Tooltip, TooltipContent, TooltipTrigger } from 'shadcn/Tooltip'
 
 export default function GroupLast() {
+  const store = useStore()
+  const [currentSection] = store.section
+  const editingMode =
+    currentSection === 'algorithm' ? 'Editing' : store[`${currentSection}SlateReadOnly`][0] ? 'Viewing' : 'Editing'
+  const setReadOnly = currentSection === 'algorithm' ? () => {} : store[`${currentSection}SlateReadOnly`][1]
+
   return (
     <ToggleGroup
       size="sm"
@@ -19,13 +26,11 @@ export default function GroupLast() {
               <div>
                 <ToggleGroupItem
                   value="grouplast"
-                  onClick={(e) => {
-                    e.preventDefault()
-                  }}
+                  onClick={(e) => e.preventDefault()}
                 >
                   <span className="inline-flex items-center gap-1 text-xs">
-                    <Pencil className="h-3 w-3" />
-                    Editing
+                    {editingMode === 'Editing' ? <Pencil className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                    {editingMode}
                   </span>
                   <ChevronDown className="h-3 w-3" />
                 </ToggleGroupItem>
@@ -35,8 +40,22 @@ export default function GroupLast() {
           <TooltipContent>Editing Mode</TooltipContent>
         </Tooltip>
         <DropdownContent>
-          <DropdownItem>Editing</DropdownItem>
-          <DropdownItem>Viewing</DropdownItem>
+          <DropdownItem onClick={() => setReadOnly(false)}>
+            <div className="flex w-full items-center justify-between">
+              <span className="inline-flex items-center gap-1 text-xs">
+                <Pencil className="h-3 w-3" /> Editing
+              </span>
+              {editingMode === 'Editing' ? <Check className="h-3 w-3" /> : null}
+            </div>
+          </DropdownItem>
+          <DropdownItem onClick={() => setReadOnly(true)}>
+            <div className="flex w-full items-center justify-between">
+              <span className="inline-flex items-center gap-1 text-xs">
+                <Eye className="h-3 w-3" /> Viewing
+              </span>
+              {editingMode === 'Viewing' ? <Check className="h-3 w-3" /> : null}
+            </div>
+          </DropdownItem>
         </DropdownContent>
       </Dropdown>
     </ToggleGroup>

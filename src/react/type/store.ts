@@ -12,25 +12,21 @@ export type TStore = {
   authornotesHTML: TStoreProps<string>
   authornotesJS: TStoreProps<string>
   authornotesSlate: TStoreProps<TSlateEditor>
+  authornotesSlateReadOnly: TStoreProps<boolean>
   feedbackCSS: TStoreProps<string>
   feedbackHTML: TStoreProps<string>
   feedbackJS: TStoreProps<string>
   feedbackSlate: TStoreProps<TSlateEditor>
+  feedbackSlateReadOnly: TStoreProps<boolean>
   questionCSS: TStoreProps<string>
   questionHTML: TStoreProps<string>
   questionJS: TStoreProps<string>
   questionName: TStoreProps<string>
   questionSlate: TStoreProps<TSlateEditor>
+  questionSlateReadOnly: TStoreProps<boolean>
   section: TStoreProps<TSection>
 }
-export type TStoreCodeKey = Exclude<
-  keyof TStore,
-  'questionName' | 'section' | 'algorithmPreview' | `${TStorePrefix}Slate`
->
-export type TStoreProp<T extends keyof TStore, U extends 'state' | 'setstate' | 'pair' = 'state'> = U extends 'state'
-  ? TStore[T][0]
-  : U extends 'setstate'
-    ? TStore[T][1]
-    : TStore[T]
+export type TStoreCodeKey = Exclude<keyof TStore, 'questionName' | 'section' | 'algorithmPreview' | `${TStorePrefix}Slate`>
+export type TStoreProp<T extends keyof TStore, U extends 'state' | 'setstate' | 'pair' = 'state'> = U extends 'state' ? TStore[T][0] : U extends 'setstate' ? TStore[T][1] : TStore[T]
 
 export type TLocalStorageKey = 'data' | 'extURL' | 'uidHash' | 'classId' | 'username' | 'reponame'

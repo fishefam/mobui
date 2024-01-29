@@ -142,8 +142,6 @@ async function prepareData(
 function extractUsername({ body }: Document): string {
   const navbarNodes = Array.from(body.querySelector('#top #global .container')?.childNodes ?? [])
   const textNodes = navbarNodes.filter(({ nodeName }) => nodeName === '#text')
-  const username = textNodes
-    .map((s) => s.textContent?.replace(/\n|\t|\|/g, '').trim())
-    .filter((s) => s !== '')[0]
+  const username = textNodes.map((s) => s.textContent?.replace(/\n|\t|\|/g, '').trim()).filter((s) => s !== '')[0]
   return username ?? ''
 }

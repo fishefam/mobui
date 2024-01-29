@@ -20,9 +20,7 @@ export type TInfo_NormalizedData = { [key in TInfoKey]: TInfo_NormalizedValues }
 export type TCode_NormalizedData = { [key in TCodeKey]: TCode_NormalizedValues }
 export type TText_NormalizedData = { [key in TTextKey]: TText_NormalizedValues }
 
-export type TBaseValues<T extends 'CodeMirror' | 'Slate'> = T extends 'CodeMirror'
-  ? string
-  : { state: TSlateState; value: TSlateValue }
+export type TBaseValues<T extends 'CodeMirror' | 'Slate'> = T extends 'CodeMirror' ? string : { state: TSlateState; value: TSlateValue }
 
 export type TInfo_FinalValues = string
 export type TText_FinalValues = {

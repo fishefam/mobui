@@ -32,10 +32,7 @@ export const baseConfigs = {
   loader: { '.json': 'copy' },
   logLevel: 'info',
   outdir: 'dist',
-  plugins: [
-    clean({ patterns: 'dist' }),
-    style({ postcss: { plugins: [autoprefixer(), tailwindcss()] } }),
-  ],
+  plugins: [clean({ patterns: 'dist' }), style({ postcss: { plugins: [autoprefixer(), tailwindcss()] } })],
 }
 
 /**

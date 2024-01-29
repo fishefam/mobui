@@ -3,7 +3,7 @@
   "htmlWhitespaceSensitivity": "ignore",
   "jsxSingleQuote": false,
   "plugins": ["prettier-plugin-tailwindcss"],
-  "printWidth": 150,
+  "printWidth": 120,
   "quoteProps": "consistent",
   "semi": false,
   "singleAttributePerLine": true,

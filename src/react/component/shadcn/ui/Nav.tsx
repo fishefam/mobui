@@ -49,7 +49,7 @@ export function NavContent(props: TProps) {
   return (
     <NavPrimitive.Content
       {...props}
-      className={cn('bg-popover left-0 top-0 w-full md:absolute md:w-auto')}
+      className={cn('left-0 top-0 w-full bg-popover md:absolute md:w-auto')}
     />
   )
 }
@@ -71,10 +71,10 @@ export function NavIndicator(props: TProps) {
     <NavPrimitive.Indicator
       {...props}
       className={cn(
-        'data-[state=visible]:animate-in data-[state=hidden]:animate-out data-[state=hidden]:fade-out data-[state=visible]:fade-in top-full z-[1] flex h-1.5 items-end justify-center overflow-hidden',
+        'top-full z-[1] flex h-1.5 items-end justify-center overflow-hidden data-[state=visible]:animate-in data-[state=hidden]:animate-out data-[state=hidden]:fade-out data-[state=visible]:fade-in',
       )}
     >
-      <div className="bg-border relative top-[60%] h-2 w-2 rotate-45 rounded-tl-sm shadow-md" />
+      <div className="relative top-[60%] h-2 w-2 rotate-45 rounded-tl-sm bg-border shadow-md" />
     </NavPrimitive.Indicator>
   )
 }

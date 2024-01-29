@@ -12,15 +12,18 @@ const INITIAL_STORE: TStore = {
   authornotesHTML: ['', PLACEHOLDER],
   authornotesJS: ['', PLACEHOLDER],
   authornotesSlate: [createSlateEditor(), PLACEHOLDER],
+  authornotesSlateReadOnly: [false, PLACEHOLDER],
   feedbackCSS: ['', PLACEHOLDER],
   feedbackHTML: ['', PLACEHOLDER],
   feedbackJS: ['', PLACEHOLDER],
   feedbackSlate: [createSlateEditor(), PLACEHOLDER],
+  feedbackSlateReadOnly: [false, PLACEHOLDER],
   questionCSS: ['', PLACEHOLDER],
   questionHTML: ['', PLACEHOLDER],
   questionJS: ['', PLACEHOLDER],
   questionName: [JSON.parse(getLocalStorageItem('data')).name ?? 'Question Designer', PLACEHOLDER],
   questionSlate: [createSlateEditor(), PLACEHOLDER],
+  questionSlateReadOnly: [false, PLACEHOLDER],
   section: ['question', PLACEHOLDER],
 }
 
@@ -33,14 +36,19 @@ export default function StoreProvider(props: TProps) {
   const authornotesHTML = useState<TStoreProp<'authornotesHTML'>>(getInitialState('authornotesHTML'))
   const authornotesJS = useState<TStoreProp<'authornotesJS'>>(getInitialState('authornotesJS'))
   const authornotesSlate = useState<TStoreProp<'authornotesSlate'>>(getInitialState('authornotesSlate'))
+  const authornotesSlateReadOnly = useState<TStoreProp<'authornotesSlateReadOnly'>>(
+    getInitialState('authornotesSlateReadOnly'),
+  )
   const feedbackCSS = useState<TStoreProp<'feedbackCSS'>>(getInitialState('feedbackCSS'))
   const feedbackHTML = useState<TStoreProp<'feedbackHTML'>>(getInitialState('feedbackHTML'))
   const feedbackJS = useState<TStoreProp<'feedbackJS'>>(getInitialState('feedbackJS'))
   const feedbackSlate = useState<TStoreProp<'feedbackSlate'>>(getInitialState('feedbackSlate'))
+  const feedbackSlateReadOnly = useState<TStoreProp<'feedbackSlateReadOnly'>>(getInitialState('feedbackSlateReadOnly'))
   const questionCSS = useState<TStoreProp<'questionCSS'>>(getInitialState('questionCSS'))
   const questionHTML = useState<TStoreProp<'questionHTML'>>(getInitialState('questionHTML'))
   const questionJS = useState<TStoreProp<'questionJS'>>(getInitialState('questionJS'))
   const questionSlate = useState<TStoreProp<'questionSlate'>>(getInitialState('questionSlate'))
+  const questionSlateReadOnly = useState<TStoreProp<'questionSlateReadOnly'>>(getInitialState('questionSlateReadOnly'))
   const questionName = useState<TStoreProp<'questionName'>>(getInitialState('questionName'))
   const section = useState<TStoreProp<'section'>>(getInitialState('section'))
 
@@ -54,15 +62,18 @@ export default function StoreProvider(props: TProps) {
         authornotesHTML,
         authornotesJS,
         authornotesSlate,
+        authornotesSlateReadOnly,
         feedbackCSS,
         feedbackHTML,
         feedbackJS,
         feedbackSlate,
+        feedbackSlateReadOnly,
         questionCSS,
         questionHTML,
         questionJS,
         questionName,
         questionSlate,
+        questionSlateReadOnly,
         section,
       }}
     />
