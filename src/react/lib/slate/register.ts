@@ -1,4 +1,4 @@
-import { BaseElement } from 'component/slate/block/BaseElement'
+import { BaseElement } from 'component/slate/BaseElement'
 import { MarkLeaf } from 'component/slate/MarkLeaf'
 import { ReactElement } from 'react'
 import { TMark, TTrueMark, TValueMark } from 'type/slate'

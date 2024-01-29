@@ -1,4 +1,4 @@
-import { BaseElement } from 'component/slate/block/BaseElement'
+import { BaseElement } from 'component/slate/BaseElement'
 import type { RenderElementProps, RenderLeafProps } from 'slate-react'
 import { TMark, TNodeType, TRenderElement } from 'type/slate'
 
