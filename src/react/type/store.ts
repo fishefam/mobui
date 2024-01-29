@@ -26,7 +26,7 @@ export type TStore = {
   questionSlateReadOnly: TStoreProps<boolean>
   section: TStoreProps<TSection>
 }
-export type TStoreCodeKey = Exclude<keyof TStore, 'questionName' | 'section' | 'algorithmPreview' | `${TStorePrefix}Slate`>
+export type TStoreCodeKey = Exclude<keyof TStore, 'questionName' | 'section' | 'algorithmPreview' | `${TStorePrefix}SlateReadOnly` | `${TStorePrefix}Slate`>
 export type TStoreProp<T extends keyof TStore, U extends 'state' | 'setstate' | 'pair' = 'state'> = U extends 'state' ? TStore[T][0] : U extends 'setstate' ? TStore[T][1] : TStore[T]
 
 export type TLocalStorageKey = 'data' | 'extURL' | 'uidHash' | 'classId' | 'username' | 'reponame'
