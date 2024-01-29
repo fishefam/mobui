@@ -1,4 +1,5 @@
 import { Slate } from 'lib/slate'
+import { renderElement, renderLeaf } from 'lib/slate/renderer'
 import { cn } from 'lib/util'
 import { useStore } from 'react/Store'
 import { Editable } from 'slate-react'
@@ -51,6 +52,8 @@ export default function TextEditor() {
             <Editable
               className="min-h-[30rem] p-6 focus:outline-none"
               readOnly={readOnly}
+              renderElement={renderElement}
+              renderLeaf={renderLeaf}
             />
           </div>
         </Slate>

@@ -1,23 +1,14 @@
-import type { EditorStateConfig, EditorViewConfig } from '@uiw/react-codemirror'
-import { EditorState, EditorView } from '@uiw/react-codemirror'
 import type {
-  TBaseValues,
   TCode_NormalizedData,
   TCode_RawData,
   TCodeKey,
   TInfo_NormalizedData,
   TInfo_RawData,
   TInfoData,
-  TText_FinalValues,
   TText_NormalizedData,
-  TText_NormalizedKey,
   TText_RawData,
-  TTextData,
   TTextKey,
 } from 'type/data'
-import { createState, type TValue } from 'type/slate'
-
-import { extractHTML, MOBIUS_DATA_KEY, prettierSync } from './util'
 
 export function getInfo_RawData(): TInfo_RawData {
   const {
@@ -65,20 +56,20 @@ export function normalizeTextData(data: TText_RawData): TText_NormalizedData {
   return Object.fromEntries(merge)
 }
 
-export function prepareTextData(data: TText_NormalizedData, _?: object): TTextData {
-  const keys: TText_NormalizedKey[] = ['authorNotes', 'feedback', 'question']
-  const values = Object.values(data)
-  const transforms = values.map<TText_FinalValues>((v) => ({
-    codemirror: {
-      css: createCodeMirrorBaseValues(v.css),
-      html: createCodeMirrorBaseValues(v.html),
-      javascript: createCodeMirrorBaseValues(v.javascript),
-    },
-    slate: createSlateBaseValues(deserialize(v)),
-  }))
-  const merge = keys.map((k, i) => [k, transforms[i]])
-  return Object.fromEntries(merge)
-}
+// export function prepareTextData(data: TText_NormalizedData, _?: object): TTextData {
+//   const keys: TText_NormalizedKey[] = ['authorNotes', 'feedback', 'question']
+//   const values = Object.values(data)
+//   const transforms = values.map<TText_FinalValues>((v) => ({
+//     codemirror: {
+//       css: createCodeMirrorBaseValues(v.css),
+//       html: createCodeMirrorBaseValues(v.html),
+//       javascript: createCodeMirrorBaseValues(v.javascript),
+//     },
+//     slate: createSlateBaseValues(deserialize(v)),
+//   }))
+//   const merge = keys.map((k, i) => [k, transforms[i]])
+//   return Object.fromEntries(merge)
+// }
 
 export function prepareInfoData() {
   return getInfo_RawData() as TInfoData
@@ -110,16 +101,16 @@ export function prepareInfoData() {
 //   return typeof data.authorNotes !== 'undefined'
 // }
 
-function createCodeMirrorBaseValues(
-  value: string,
-  configs?: { state?: EditorStateConfig; view?: EditorViewConfig },
-): TBaseValues<'CodeMirror'> {
-  return { state: EditorState.create(configs?.state), value, view: new EditorView(configs?.view) }
-}
+// function createCodeMirrorBaseValues(
+//   value: string,
+//   configs?: { state?: EditorStateConfig; view?: EditorViewConfig },
+// ): TBaseValues<'CodeMirror'> {
+//   return { state: EditorState.create(configs?.state), value, view: new EditorView(configs?.view) }
+// }
 
-function createSlateBaseValues(value: TValue): TBaseValues<'Slate'> {
-  return { state: createState(), value }
-}
+// function createSlateBaseValues(value: TValue): TBaseValues<'Slate'> {
+//   return { state: createState(), value }
+// }
 
 // function isCodeMirrorData(preparedData: TCodeData | TTextData): preparedData is TCodeData {
 //   const data = preparedData as TCodeData

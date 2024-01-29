@@ -1,10 +1,9 @@
-import type { TInlineNodeType, TNode, TState } from '@/type/slate'
+import { TInlineNodeType, TNode, TSlateEditor } from 'type/slate'
 
-import { isLeafNode } from '@/type/slate'
-
+import { isLeafNode } from '..'
 import { INLINE_NODES, INLINE_VOID_NODES, VOID_NODES } from '../register'
 
-export function withNodeType(state: TState) {
+export function withNodeType(state: TSlateEditor) {
   const { isInline, isVoid } = state
   state.isInline = (node: TNode) => {
     if (

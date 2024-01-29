@@ -1,4 +1,4 @@
-import type { TState as TSlateState, TValue as TSlateValue } from './slate'
+import { TValue } from './slate'
 
 export type TInfoKey = 'actionId' | 'classId' | 'customCss' | 'name' | 'uid'
 export type TCodeKey = 'algorithm'
@@ -20,18 +20,14 @@ export type TInfo_NormalizedData = { [key in TInfoKey]: TInfo_NormalizedValues }
 export type TCode_NormalizedData = { [key in TCodeKey]: TCode_NormalizedValues }
 export type TText_NormalizedData = { [key in TTextKey]: TText_NormalizedValues }
 
-export type TBaseValues<T extends 'CodeMirror' | 'Slate'> = T extends 'CodeMirror' ? string : { state: TSlateState; value: TSlateValue }
+export type TBaseValues<T extends 'CodeMirror' | 'Slate'> = T extends 'CodeMirror' ? string : TValue
 
 export type TInfo_FinalValues = string
 export type TText_FinalValues = {
-  codemirror: {
-    [key in Extract<TCodeLang, 'css' | 'html' | 'javascript'>]: TBaseValues<'CodeMirror'>
-  }
+  codemirror: { [key in 'CSS' | 'HTMl' | 'JS']: TBaseValues<'CodeMirror'> }
   slate: TBaseValues<'Slate'>
 }
-export type TCode_FinalValues = {
-  codemirror: { plain: TBaseValues<'CodeMirror'> }
-}
+export type TCode_FinalValues = TBaseValues<'CodeMirror'>
 
 export type TInfoData = { [key in TInfo_NormalizedKey]: TInfo_FinalValues }
 export type TCodeData = { [key in TCode_NormalizedKey]: TCode_FinalValues }

@@ -1,4 +1,3 @@
-import hash from 'shorthash2'
 import type { BaseRange, NodeEntry } from 'slate'
 import { isEditor } from 'slate'
 import {
@@ -12,13 +11,12 @@ import {
   TVoidNodeType,
 } from 'type/slate'
 
-import { getInfo_RawData } from '../data'
 import { nanoid } from '../util'
 import { isLeafNode } from '.'
 
 export function generateNodeId() {
-  const { uid } = getInfo_RawData()
-  return `${hash(uid?.length ? uid : nanoid(5))}-${nanoid()}`
+  const hash = localStorage.getItem('uidHash')!
+  return `${hash.length ? hash : nanoid(5)}-${nanoid()}`
 }
 
 export function checkSelection(state: TSlateEditor, cb: (selection: BaseRange) => unknown) {

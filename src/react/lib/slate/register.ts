@@ -1,13 +1,12 @@
+import { BaseElement } from 'component/slate/block/BaseElement'
+import { TrueMarkLeaf, ValueMarkLeaf } from 'component/slate/leaf/MarkLeaf'
 import { TMark } from 'type/slate'
 
-const BaseElement = 0
 const LinkElement = 0
 const TableCellElement = 0
 const TableElement = 0
 const TableRowElement = 0
 const LatexElement = 0
-const TrueMarkLeaf = 0
-const ValueMarkLeaf = 0
 
 export const BLOCK_NODES = {
   'blockquote': BaseElement,
@@ -22,17 +21,17 @@ export const BLOCK_NODES = {
   'ordered-list': BaseElement,
   'paragraph': BaseElement,
   'tabbable': BaseElement,
-  'table': TableElement,
-  'table-cell': TableCellElement,
+  // 'table': TableElement,
+  // 'table-cell': TableCellElement,
   'table-header': BaseElement,
-  'table-row': TableRowElement,
+  // 'table-row': TableRowElement,
   'todo': BaseElement,
   'unordered-list': BaseElement,
 } as const
 
 export const INLINE_NODES = {
   'code-syntax': BaseElement,
-  'link': LinkElement,
+  // 'link': LinkElement,
   'mention': BaseElement,
 } as const
 
@@ -45,7 +44,7 @@ export const VOID_NODES = {
 
 export const INLINE_VOID_NODES = {
   'inline-image': BaseElement,
-  'latex': LatexElement,
+  // 'latex': LatexElement,
 } as const
 
 export const TRUE_MARKS = {

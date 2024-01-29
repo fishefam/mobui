@@ -1,14 +1,13 @@
-import type { TBlockNode, TNode, TState } from '@/type/slate'
-
-import { isLeafNode } from '@/type/slate'
 import { isEditor, Node, Transforms } from 'slate'
+import { TBlockNode, TMark, TNode, TSlateEditor } from 'type/slate'
 
+import { isLeafNode } from '..'
 import { LIFTED_MARKS } from '../register'
 
-export function withMark(state: TState) {
+export function withMark(state: TSlateEditor) {
   const { addMark } = state
   state.addMark = (mark, value) => {
-    if (!LIFTED_MARKS.includes(mark)) {
+    if (!LIFTED_MARKS.includes(mark as TMark)) {
       addMark(mark, value)
       return
     }

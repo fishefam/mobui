@@ -29,7 +29,7 @@ export type TNoneLeafNode<T extends string = never> = TBlockNode<T> | TInlineNod
 export type TNode<T extends string = never> = TNoneLeafNode<T> | TLeafNode
 
 export type TSlateEditor = BaseEditor & ReactEditor & HistoryEditor
-export type TSlatePlugin = (editor: BaseEditor) => BaseEditor
+export type TSlatePlugin = (editor: TSlateEditor) => TSlateEditor
 
 export type TValue = TBlockNode[]
 

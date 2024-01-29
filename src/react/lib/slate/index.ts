@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import { BaseEditor, createEditor } from 'slate'
+import { createEditor } from 'slate'
 import { withHistory } from 'slate-history'
 import { ReactEditor as _ReactEditor, Slate as _Slate, withReact } from 'slate-react'
 import {
@@ -16,9 +16,12 @@ import {
   TVoidNodeType,
 } from 'type/slate'
 
+import { withMark } from './plugin/withMark'
+import { withNodeId } from './plugin/withNodeId'
+import { withNodeType } from './plugin/withNodeType'
 import { BLOCK_NODES, INLINE_NODES, VOID_NODES } from './register'
 
-const PLUGINS: TSlatePlugin[] = []
+const PLUGINS: TSlatePlugin[] = [withNodeType, withMark, withNodeId]
 
 export const Slate = _Slate as (props: TSlateEditorProps) => ReactElement
 export const ReactEditor = _ReactEditor as Omit<typeof _ReactEditor, 'focus'> & {
@@ -26,7 +29,7 @@ export const ReactEditor = _ReactEditor as Omit<typeof _ReactEditor, 'focus'> & 
 }
 
 export function createSlateEditor() {
-  let baseEditor = createEditor() as BaseEditor
+  let baseEditor = createEditor()
   for (const plugin of PLUGINS) baseEditor = plugin(baseEditor)
   return withReact(withHistory(baseEditor)) as TSlateEditor
 }

@@ -1,3 +1,4 @@
+import { BaseElement } from 'component/slate/block/BaseElement'
 import type { RenderElementProps, RenderLeafProps } from 'slate-react'
 import { TMark, TNodeType, TRenderElement } from 'type/slate'
 
@@ -20,10 +21,11 @@ export function renderElement({ attributes, children, element }: RenderElementPr
 
   return (
     <BaseElement
-      children={children}
       attributes={attributes}
       element={element}
-    />
+    >
+      {children}
+    </BaseElement>
   )
 }
 
@@ -44,10 +46,10 @@ export function renderLeaf({ attributes, children, leaf }: RenderLeafProps) {
 }
 
 export function typeToTag(type: TNodeType) {
-  if (/heading-/.test(type)) return `h${type[type.length - 1]}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
-  if (type === 'link') return 'a'
-  if (type === 'table') return 'table'
-  if (type === 'table-row') return 'tr'
-  if (type === 'table-cell') return 'td'
+  if (/heading-/.test(type)) return `h${type[type.length - 1]}` as `h${1 | 2 | 3 | 4 | 5 | 6}`
+  // if (type === 'link') return 'a'
+  // if (type === 'table') return 'table'
+  // if (type === 'table-row') return 'tr'
+  // if (type === 'table-cell') return 'td'
   return 'div'
 }
