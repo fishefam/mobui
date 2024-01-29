@@ -1,6 +1,7 @@
+import { Slate } from 'lib/slate'
 import { cn } from 'lib/util'
 import { useStore } from 'react/Store'
-import { Editable, Slate } from 'slate-react'
+import { Editable } from 'slate-react'
 import { TSlateEditor } from 'type/slate'
 import { TStoreProp } from 'type/store'
 
@@ -25,14 +26,9 @@ export default function TextEditor() {
         <Slate
           key={section}
           editor={editor}
-          initialValue={[{ children: [{ text: 'Hello' }] }]}
+          initialValue={[{ attributes: {}, children: [{ text: section }], id: '', style: {}, type: 'paragraph' }]}
         >
-          <div
-            className={cn(
-              'absolute left-0 top-0 hidden h-full w-full overflow-auto',
-              section === currentSection && '!block',
-            )}
-          >
+          <div className={cn('absolute left-0 top-0 hidden h-full w-full overflow-auto', section === currentSection && '!block')}>
             <div className="sticky top-0 z-10 w-full bg-white dark:bg-accent">
               <SlateToolbar />
             </div>

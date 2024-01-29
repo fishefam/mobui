@@ -3,12 +3,20 @@
   "htmlWhitespaceSensitivity": "ignore",
   "jsxSingleQuote": false,
   "plugins": ["prettier-plugin-tailwindcss"],
-  "printWidth": 120,
+  "printWidth": 150,
   "quoteProps": "consistent",
   "semi": false,
   "singleAttributePerLine": true,
   "singleQuote": true,
   "tailwindFunctions": ["cn", "clsx", "twMerge"],
   "trailingComma": "all",
-  "useTabs": false
+  "useTabs": false,
+  "overrides": [
+    {
+      "files": "./src/react/type/**/*.ts",
+      "options": {
+        "printWidth": 300
+      }
+    }
+  ]
 }

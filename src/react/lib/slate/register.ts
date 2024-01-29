@@ -1,17 +1,13 @@
-import type { TMark } from '@/type/slate'
+import { TMark } from 'type/slate'
 
-import { BaseElement } from '@/component/slate/block/BaseElement'
-import { TableCellElement, TableElement, TableRowElement } from '@/component/slate/block/TableElement'
-import { LinkElement } from '@/component/slate/inline/LinkElement'
-import { TrueMarkLeaf, ValueMarkLeaf } from '@/component/slate/leaf/MarkLeaf'
-import { LatexElement } from '@/component/slate/void/LatexElement'
-
-import { withMark } from './plugin/withMark'
-import { withNodeId } from './plugin/withNodeId'
-import { withNodeType } from './plugin/withNodeType'
-import { withTable } from './plugin/withTable'
-
-export const SLATE_PLUGINS = [withNodeId, withNodeType, withTable, withMark]
+const BaseElement = 0
+const LinkElement = 0
+const TableCellElement = 0
+const TableElement = 0
+const TableRowElement = 0
+const LatexElement = 0
+const TrueMarkLeaf = 0
+const ValueMarkLeaf = 0
 
 export const BLOCK_NODES = {
   'blockquote': BaseElement,

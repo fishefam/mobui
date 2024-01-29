@@ -1,7 +1,5 @@
-import type { TMark, TNodeType, TRenderElement } from '@/type/slate'
 import type { RenderElementProps, RenderLeafProps } from 'slate-react'
-
-import { BaseElement } from '@/component/slate/block/BaseElement'
+import { TMark, TNodeType, TRenderElement } from 'type/slate'
 
 import { MARKS, NODES } from './register'
 
@@ -22,8 +20,8 @@ export function renderElement({ attributes, children, element }: RenderElementPr
 
   return (
     <BaseElement
-      attributes={attributes}
       children={children}
+      attributes={attributes}
       element={element}
     />
   )

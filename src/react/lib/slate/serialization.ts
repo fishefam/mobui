@@ -1,14 +1,13 @@
-import type { TBlockNode, TInlineNode, TNode, TText, TTrueMark, TValue, TVoidNode } from '@/type/slate'
-
-import { isLeafNode } from '@/type/slate'
 import { encode } from 'html-entities'
 import toInlineStyle from 'style-object-to-css-string'
+import { TBlockNode, TInlineNode, TNode, TText, TTrueMark, TValue, TVoidNode } from 'type/slate'
 
-import { typeToTag } from './render'
+import { isLeafNode } from '.'
+import { typeToTag } from './renderer'
 
 export function serialize(value: TValue) {
   let html = ''
-  for (const { attrs, children, id, style: _style, type } of value) {
+  for (const { attributes: attrs, children, id, style: _style, type } of value) {
     const tag = typeToTag(type)
     const attr = objectToString(attrs)
     const style = toInlineStyle(_style)
