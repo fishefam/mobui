@@ -48,6 +48,9 @@ export function renderLeaf({ attributes, children, leaf }: RenderLeafProps) {
 export function typeToTag(type: TNodeType) {
   if (/heading-/.test(type)) return `h${type[type.length - 1]}` as `h${1 | 2 | 3 | 4 | 5 | 6}`
   if (type === 'blockquote') return 'blockquote'
+  if (type === 'unordered-list') return 'ul'
+  if (type === 'ordered-list') return 'ol'
+  if (type === 'list-item') return 'li'
   // if (type === 'link') return 'a'
   // if (type === 'table') return 'table'
   // if (type === 'table-row') return 'tr'

@@ -5,9 +5,9 @@ import { isLeafNode } from '..'
 import { BLOCK_NODES } from '../register'
 import { generateNodeId } from '../util'
 
-export function withNodeId(state: TSlateEditor) {
-  const { apply } = state
-  state.apply = (operation: BaseOperation) => {
+export function withNodeId(editor: TSlateEditor) {
+  const { apply } = editor
+  editor.apply = (operation: BaseOperation) => {
     if (operation.type === 'split_node' && operation.position === 1) {
       const props = operation.properties as TNode
       if (!isLeafNode(props)) {
@@ -15,7 +15,7 @@ export function withNodeId(state: TSlateEditor) {
         if (isBlockNode) props.id = generateNodeId()
       }
     }
-    return apply(operation)
+    apply(operation)
   }
-  return state
+  return editor
 }

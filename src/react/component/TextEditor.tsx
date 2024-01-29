@@ -1,8 +1,9 @@
 import { Slate } from 'lib/slate'
 import { renderElement, renderLeaf } from 'lib/slate/renderer'
 import { cn } from 'lib/util'
+import { useEffect } from 'react'
 import { useStore } from 'react/Store'
-import { Editable } from 'slate-react'
+import { Editable, ReactEditor } from 'slate-react'
 import { TSlateEditor } from 'type/slate'
 import { TStoreProp } from 'type/store'
 
@@ -31,6 +32,8 @@ export default function TextEditor() {
     { editor: authornotesEditor, readOnly: authornotesReadOnly, section: 'authornotes' },
     { editor: feedbackEditor, readOnly: feedbackReadOnly, section: 'feedback' },
   ]
+
+  useEffect(() => ReactEditor.focus(questionEditor), [questionEditor])
 
   return (
     <div className="relative h-full">

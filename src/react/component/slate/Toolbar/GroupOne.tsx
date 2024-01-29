@@ -61,14 +61,14 @@ function ToggleItem({ Icon, mark }: { Icon: LucideIcon; mark?: TMark }) {
       className={cn('cursor-default')}
       data-state={Object.keys(editor.getMarks() ?? {}).includes(mark ?? '') ? 'on' : 'off'}
       value="groupone"
-      onClick={(event) => handleToggleMark(event, editor, mark)}
+      onClick={(event) => toggleMark(event, editor, mark)}
     >
       <Icon className="h-3 w-3" />
     </ToggleGroupItem>
   )
 }
 
-function handleToggleMark(event: MouseEvent<HTMLButtonElement>, editor: TSlateEditor, mark?: TMark) {
+function toggleMark(event: MouseEvent<HTMLButtonElement>, editor: TSlateEditor, mark?: TMark) {
   event.preventDefault()
   if (mark) {
     const currentMark = editor.getMarks()

@@ -1,13 +1,12 @@
-import { ReactEditor } from 'lib/slate'
+import { isBlockNode, ReactEditor } from 'lib/slate'
 import { generateNodeId } from 'lib/slate/util'
 import { ChevronDown, Heading1, Heading2, Heading3, Heading4, LucideIcon, Pilcrow, Plus, Quote } from 'lucide-react'
-import { useState } from 'react'
 import { Dropdown, DropdownContent, DropdownItem, DropdownLabel, DropdownTrigger } from 'shadcn/Dropdown'
 import { ToggleGroup, ToggleGroupItem } from 'shadcn/ToggleGroup'
 import { Tooltip, TooltipContent, TooltipTrigger } from 'shadcn/Tooltip'
+import { isEditor, Node } from 'slate'
 import { Transforms } from 'slate'
 import { useSlate } from 'slate-react'
-import { TSetState } from 'type/common'
 import { TBlockNode, TBlockNodeType, TSlateEditor } from 'type/slate'
 
 const SUB_ITEMS: { Icon: LucideIcon; title: string; type: TBlockNodeType }[] = [
@@ -36,8 +35,10 @@ const ITEMS = [
 
 export default function GroupZero() {
   const editor = useSlate()
-  const [currentNodeType, setCurrentNodeType] = useState<TBlockNodeType>('paragraph')
-  const nodeTypeLabel = SUB_ITEMS.filter(({ type }) => type === currentNodeType)[0].title
+  const node = Node.get(editor, editor.selection?.anchor.path.slice(0, -1) ?? [])
+  const filteredSubItems =
+    !isEditor(node) && isBlockNode(node) ? SUB_ITEMS.filter(({ type }) => node.type === type) : []
+  const nodeTypeLabel = filteredSubItems.length ? filteredSubItems[0].title : 'Paragraph'
 
   return (
     <ToggleGroup
@@ -55,9 +56,7 @@ export default function GroupZero() {
                 <div>
                   <ToggleGroupItem
                     value="groupzero"
-                    onClick={(e) => {
-                      e.preventDefault()
-                    }}
+                    onClick={(event) => event.preventDefault()}
                   >
                     <TriggerIcon
                       className="h-3 w-3"
@@ -76,7 +75,7 @@ export default function GroupZero() {
               <DropdownItem
                 key={title}
                 className="space-x-2"
-                onClick={() => handleNode(editor, type, setCurrentNodeType, tooltip === 'Insert' ? 'add' : 'change')}
+                onClick={() => handleNode(editor, type, tooltip === 'Insert' ? 'add' : 'change')}
               >
                 <span>
                   <Icon className="h-5 w-5" />
@@ -91,17 +90,32 @@ export default function GroupZero() {
   )
 }
 
-function handleNode(
-  editor: TSlateEditor,
-  type: TBlockNodeType,
-  setCurrentNodeType: TSetState<TBlockNodeType>,
-  action: 'add' | 'change',
-) {
+function handleNode(editor: TSlateEditor, type: TBlockNodeType, action: 'add' | 'change') {
   if (action === 'add') {
     const node: TBlockNode = { attributes: {}, children: [{ text: '' }], id: generateNodeId(), style: {}, type }
     Transforms.insertNodes(editor, node)
   }
-  if (action === 'change') Transforms.setNodes(editor, { type })
-  setCurrentNodeType(type)
+  if (action === 'change') {
+    const node = Node.get(editor, editor.selection?.anchor.path.slice(0, -1) ?? [])
+    const isListNode = !isEditor(node) && isBlockNode(node) && node.type.includes('list')
+    if (!isListNode) Transforms.setNodes(editor, { type })
+    if (isListNode) {
+      const wrapperNode: TBlockNode = {
+        attributes: {},
+        children: [{ text: '' }],
+        id: generateNodeId(),
+        style: {},
+        type,
+      }
+      const listItemNode: TBlockNode = {
+        ...node,
+        type: 'list-item',
+      }
+      Transforms.unwrapNodes(editor)
+      for (const _node of [listItemNode, wrapperNode]) {
+        Transforms.wrapNodes(editor, _node, { at: editor.selection?.anchor.path })
+      }
+    }
+  }
   ReactEditor.focus(editor)
 }

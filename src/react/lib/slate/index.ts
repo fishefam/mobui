@@ -1,7 +1,8 @@
 import { ReactElement } from 'react'
-import { createEditor } from 'slate'
+import { createEditor, Node } from 'slate'
 import { withHistory } from 'slate-history'
 import { ReactEditor as _ReactEditor, Slate as _Slate, withReact } from 'slate-react'
+import { TObject } from 'type/common'
 import {
   TBlockNode,
   TBlockNodeType,
@@ -16,12 +17,13 @@ import {
   TVoidNodeType,
 } from 'type/slate'
 
+import { withList } from './plugin/withList'
 import { withMark } from './plugin/withMark'
 import { withNodeId } from './plugin/withNodeId'
 import { withNodeType } from './plugin/withNodeType'
 import { BLOCK_NODES, INLINE_NODES, VOID_NODES } from './register'
 
-const PLUGINS: TSlatePlugin[] = [withNodeType, withMark, withNodeId]
+const PLUGINS: TSlatePlugin[] = [withNodeType, withMark, withNodeId, withList]
 
 export const Slate = _Slate as (props: TSlateEditorProps) => ReactElement
 export const ReactEditor = _ReactEditor as Omit<typeof _ReactEditor, 'focus'> & {
@@ -66,4 +68,8 @@ export function isVoidNode(node: Record<string, unknown>): node is TVoidNode {
   const hasChildren = !!node.children
   const isVoidNodeType = Object.keys(VOID_NODES).includes(node.type as TVoidNodeType)
   return hasType && hasChildren && isVoidNodeType
+}
+
+export function hasTypeProp(property: Partial<Node>): property is { type: TNodeType } {
+  return !!(property as TObject).type
 }

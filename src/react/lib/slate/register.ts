@@ -13,6 +13,7 @@ export const BLOCK_NODES = {
   'heading-4': BaseElement,
   'heading-5': BaseElement,
   'heading-6': BaseElement,
+  'list-item': BaseElement,
   'ordered-list': BaseElement,
   'paragraph': BaseElement,
   'tabbable': BaseElement,
@@ -43,14 +44,15 @@ export const INLINE_VOID_NODES = {
 } as const
 
 export const TRUE_MARKS = {
-  bold: MarkLeaf,
-  code: MarkLeaf,
-  italic: MarkLeaf,
-  kbd: MarkLeaf,
-  strikethrough: MarkLeaf,
-  subscript: MarkLeaf,
-  superscript: MarkLeaf,
-  underline: MarkLeaf,
+  'bold': MarkLeaf,
+  'code': MarkLeaf,
+  'italic': MarkLeaf,
+  'kbd': MarkLeaf,
+  'list-item': MarkLeaf,
+  'strikethrough': MarkLeaf,
+  'subscript': MarkLeaf,
+  'superscript': MarkLeaf,
+  'underline': MarkLeaf,
 } as { [key in TTrueMark]: () => ReactElement }
 
 export const VALUE_MARKS = {

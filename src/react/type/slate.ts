@@ -4,6 +4,8 @@ import { BaseEditor } from 'slate'
 import { HistoryEditor } from 'slate-history'
 import { ReactEditor, RenderElementProps as _RenderElementProps, RenderLeafProps as _RenderLeafProps } from 'slate-react'
 
+import { TObject } from './common'
+
 export type TTrueMark = 'bold' | 'code' | 'italic' | 'kbd' | 'strikethrough' | 'subscript' | 'superscript' | 'underline'
 export type TValueMark = keyof CSSProperties
 export type TMark = TTrueMark | TValueMark
@@ -16,10 +18,11 @@ export type TVoidNodeType = keyof typeof VOID_NODES
 export type TInlineVoidNodeType = keyof typeof INLINE_VOID_NODES
 export type TNodeType = keyof typeof NODES
 
-export type TCommonNodeProps<T extends string = never> = { attributes: { [key in T]: string }; id: string; style: CSSProperties }
+export type TPluginNodeProps = { switchingType: TBlockNodeType }
+export type TCommonNodeProps<T extends string = never> = { attributes: TObject<T>; id: string; style: CSSProperties } & Partial<TPluginNodeProps>
 export type TCommonNode<T, U extends string> = T & TCommonNodeProps<U>
 
-export type TLeafNode<T extends TMark = never> = TText & { [key in T]?: T extends TTrueMark ? true : string }
+export type TLeafNode<T extends TMark = never> = TText & Partial<{ [key in T]: T extends TTrueMark ? true : string }>
 export type TBlockNode<T extends string = never> = TCommonNode<{ children: (TBlockNode | TInlineNode | TLeafNode | TVoidNode)[]; type: TBlockNodeType }, T>
 export type TInlineNode<T extends string = never> = TCommonNode<{ children: (TBlockNode | TInlineNode | TLeafNode)[]; type: TInlineNodeType }, T>
 export type TVoidNode<T extends string = never> = TCommonNode<{ children: [TLeafNode]; type: TVoidNodeType; voidData?: { [key: string]: boolean | number | string } }, T>
