@@ -1,12 +1,11 @@
 import { Tooltip } from '@radix-ui/react-tooltip'
-import { isBlockNode } from 'lib/slate'
-import { toggleList } from 'lib/slate/plugin/withList'
+import { isBlockNode, Transforms } from 'lib/slate'
 import { Indent, List, ListOrdered, Outdent } from 'lucide-react'
-import { CSSProperties, MouseEvent } from 'react'
+import { MouseEvent } from 'react'
 import { ToggleGroup, ToggleGroupItem } from 'shadcn/ToggleGroup'
 import { TooltipContent, TooltipTrigger } from 'shadcn/Tooltip'
-import { isEditor, Node, Transforms } from 'slate'
-import { ReactEditor, useSlate } from 'slate-react'
+import { isEditor, Node } from 'slate'
+import { useSlate } from 'slate-react'
 import { TBlockNode, TBlockNodeType, TSlateEditor } from 'type/slate'
 
 const ITEMS = [
@@ -31,7 +30,7 @@ export default function GroupTwo() {
                 className="cursor-default"
                 data-state={type === _type ? 'on' : 'off'}
                 value="grouptwo"
-                onClick={(event) => handleToggler(event, editor, tooltip)}
+                onClick={(event) => _type !== 'non-type' && handleToggler(event, editor, _type)}
               >
                 <Icon className="h-3 w-3" />
               </ToggleGroupItem>
@@ -44,50 +43,8 @@ export default function GroupTwo() {
   )
 }
 
-function handleToggler(
-  event: MouseEvent<HTMLButtonElement>,
-  editor: TSlateEditor,
-  tooltip: (typeof ITEMS)['0' | '1' | '2' | '3']['tooltip'],
-): void {
+function handleToggler(event: MouseEvent<HTMLButtonElement>, editor: TSlateEditor, type: TBlockNodeType): void {
   event.preventDefault()
   const { selection } = editor
-  if (selection) {
-    if (tooltip === 'Unordered List') toggleList(editor, 'unordered-list')
-    if (tooltip === 'Ordered List') toggleList(editor, 'ordered-list')
-  }
-  ReactEditor.focus(editor)
-}
-
-function wrapToList(editor: TSlateEditor, type: 'unordered-list' | 'ordered-list', isTypeChange: boolean) {
-  // if (isTypeChange)
-  // Transforms.setNodes(editor, { style: toggleListStyle(type), type } as TBlockNode, {
-  //   at: editor.selection?.anchor.path.slice(0, -2) ?? [],
-  // })
-  // if (!isTypeChange) {
-  Transforms.setNodes(editor, { type } as TBlockNode)
-  // Transforms.wrapNodes(editor, {
-  //   attributes: {},
-  //   children: [{ text: '' }],
-  //   id: generateNodeId(),
-  //   style: toggleListStyle(type),
-  //   type,
-  // } as TBlockNode)
-  // }
-}
-
-function unwrapList(editor: TSlateEditor) {
-  Transforms.setNodes(editor, { type: 'paragraph' } as TBlockNode)
-  console.log(Node.parent(editor, editor.selection?.anchor.path ?? []))
-  // Transforms.setNodes(editor, { type: 'paragraph' } as TBlockNode)
-  // Transforms.unwrapNodes(editor, {
-  //   at: editor.selection?.anchor.path.slice(0, -2),
-  // })
-}
-function toggleListStyle(type: TBlockNodeType): CSSProperties {
-  return {
-    listStyleType: type === 'unordered-list' ? 'disc' : 'decimal',
-    marginBottom: '1.5rem',
-    marginLeft: '1.5rem',
-    marginTop: '1.5rem',
-  }
+  if (selection) Transforms.changeBlockType(editor, type)
 }

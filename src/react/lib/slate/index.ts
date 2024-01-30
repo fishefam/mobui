@@ -1,5 +1,6 @@
 import { ReactElement } from 'react'
 import { createEditor, Node } from 'slate'
+import { Transforms as _Transforms } from 'slate'
 import { withHistory } from 'slate-history'
 import { ReactEditor as _ReactEditor, Slate as _Slate, withReact } from 'slate-react'
 import { TObject } from 'type/common'
@@ -17,18 +18,21 @@ import {
   TVoidNodeType,
 } from 'type/slate'
 
-import { withList } from './plugin/withList'
-import { withMark } from './plugin/withMark'
-import { withNodeId } from './plugin/withNodeId'
-import { withNodeType } from './plugin/withNodeType'
+import withBlockTypeChange from './plugin/withBlockTypeChange'
+import withList from './plugin/withList'
+import withMark from './plugin/withMark'
+import withNodeId from './plugin/withNodeId'
+import withNodeType from './plugin/withNodeType'
+import withPlaceholder from './plugin/withPlaceholder'
 import { BLOCK_NODES, INLINE_NODES, VOID_NODES } from './register'
 
-const PLUGINS: TSlatePlugin[] = [withNodeType, withMark, withNodeId, withList]
+const PLUGINS: TSlatePlugin[] = [withNodeType, withMark, withNodeId, withList, withBlockTypeChange, withPlaceholder]
 
 export const Slate = _Slate as (props: TSlateEditorProps) => ReactElement
 export const ReactEditor = _ReactEditor as Omit<typeof _ReactEditor, 'focus'> & {
   focus: (editor: TSlateEditor, options?: { retries: number }) => void
 }
+export const Transforms = { ..._Transforms, changeBlockType }
 
 export function createSlateEditor() {
   let baseEditor = createEditor()
@@ -51,10 +55,10 @@ export function isVoidNodeType(type: TNodeType): type is TVoidNodeType {
 export function isLeafNode(node: Record<string, unknown>): node is TLeafNode {
   return typeof node.text === 'string'
 }
-export function isBlockNode(node: Record<string, unknown>): node is TBlockNode {
-  const hasType = !!node.type
+export function isBlockNode(node: Record<string, unknown> | TSlateEditor): node is TBlockNode {
+  const hasType = !!(node as { type: unknown }).type
   const hasChildren = !!node.children
-  const isBlockNodeType = Object.keys(BLOCK_NODES).includes(node.type as TBlockNodeType)
+  const isBlockNodeType = Object.keys(BLOCK_NODES).includes((node as { type: unknown }).type as TBlockNodeType)
   return hasType && hasChildren && isBlockNodeType
 }
 export function isInlineNode(node: Record<string, unknown>): node is TInlineNode {
@@ -72,4 +76,16 @@ export function isVoidNode(node: Record<string, unknown>): node is TVoidNode {
 
 export function hasTypeProp(property: Partial<Node>): property is { type: TNodeType } {
   return !!(property as TObject).type
+}
+
+/* Addon functions for Transform namespace */
+function changeBlockType(editor: TSlateEditor, nextType: TBlockNodeType) {
+  const { selection } = editor
+  if (selection) {
+    const node = Node.get(editor, selection.anchor.path.slice(0, -1))
+    if (isBlockNode(node)) {
+      editor.setNodes({ nextType, previousType: node.type })
+      editor.setNodes({ nextType: undefined })
+    }
+  }
 }

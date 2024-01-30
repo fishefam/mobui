@@ -5,7 +5,7 @@ import { isLeafNode } from '..'
 import { BLOCK_NODES } from '../register'
 import { generateNodeId } from '../util'
 
-export function withNodeId(editor: TSlateEditor) {
+export default function withNodeId(editor: TSlateEditor) {
   const { apply } = editor
   editor.apply = (operation: BaseOperation) => {
     if (operation.type === 'split_node' && operation.position === 1) {

@@ -18,8 +18,8 @@ export type TVoidNodeType = keyof typeof VOID_NODES
 export type TInlineVoidNodeType = keyof typeof INLINE_VOID_NODES
 export type TNodeType = keyof typeof NODES
 
-export type TPluginNodeProps = { switchingType: TBlockNodeType }
-export type TCommonNodeProps<T extends string = never> = { attributes: TObject<T>; id: string; style: CSSProperties } & Partial<TPluginNodeProps>
+export type TPluginNodeProps = { className: string; nextType: TBlockNodeType }
+export type TCommonNodeProps<T extends string = never> = { attributes: TObject<T>; id: string; placeholder: string; previousType: TBlockNodeType; style: CSSProperties } & Partial<TPluginNodeProps>
 export type TCommonNode<T, U extends string> = T & TCommonNodeProps<U>
 
 export type TLeafNode<T extends TMark = never> = TText & Partial<{ [key in T]: T extends TTrueMark ? true : string }>

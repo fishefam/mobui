@@ -45,12 +45,14 @@ export function retrieveLeafNode(state: TSlateEditor) {
   return nodeEntry
 }
 
-export function createBlockNode(): TBlockNode {
+export function createBlockNode(type: TBlockNodeType = 'paragraph', text = ''): TBlockNode {
   return {
     attributes: {},
-    children: [{ text: '' }],
+    children: [{ text }],
     id: generateNodeId(),
+    placeholder: 'Start typing...',
+    previousType: type,
     style: {},
-    type: 'paragraph',
+    type,
   }
 }

@@ -1,5 +1,6 @@
 import { Slate } from 'lib/slate'
 import { renderElement, renderLeaf } from 'lib/slate/renderer'
+import { createBlockNode } from 'lib/slate/util'
 import { cn } from 'lib/util'
 import { useEffect } from 'react'
 import { useStore } from 'react/Store'
@@ -41,7 +42,7 @@ export default function TextEditor() {
         <Slate
           key={section}
           editor={editor}
-          initialValue={[{ attributes: {}, children: [{ text: section }], id: '', style: {}, type: 'paragraph' }]}
+          initialValue={[createBlockNode('paragraph', section)]}
         >
           <div
             className={cn(

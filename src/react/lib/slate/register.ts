@@ -1,6 +1,6 @@
 import { BaseElement } from 'component/slate/BaseElement'
 import { MarkLeaf } from 'component/slate/MarkLeaf'
-import { ReactElement } from 'react'
+import { TComponent } from 'type/common'
 import { TMark, TTrueMark, TValueMark } from 'type/slate'
 
 export const BLOCK_NODES = {
@@ -44,22 +44,21 @@ export const INLINE_VOID_NODES = {
 } as const
 
 export const TRUE_MARKS = {
-  'bold': MarkLeaf,
-  'code': MarkLeaf,
-  'italic': MarkLeaf,
-  'kbd': MarkLeaf,
-  'list-item': MarkLeaf,
-  'strikethrough': MarkLeaf,
-  'subscript': MarkLeaf,
-  'superscript': MarkLeaf,
-  'underline': MarkLeaf,
-} as { [key in TTrueMark]: () => ReactElement }
+  bold: MarkLeaf,
+  code: MarkLeaf,
+  italic: MarkLeaf,
+  kbd: MarkLeaf,
+  strikethrough: MarkLeaf,
+  subscript: MarkLeaf,
+  superscript: MarkLeaf,
+  underline: MarkLeaf,
+} as { [key in TTrueMark]: TComponent }
 
 export const VALUE_MARKS = {
   backgroundColor: MarkLeaf,
   color: MarkLeaf,
   textAlign: MarkLeaf,
-} as { [key in TValueMark]: () => ReactElement }
+} as { [key in TValueMark]: TComponent }
 
 export const NODES = { ...BLOCK_NODES, ...INLINE_NODES, ...VOID_NODES, ...INLINE_VOID_NODES }
 export const MARKS = { ...TRUE_MARKS, ...VALUE_MARKS }

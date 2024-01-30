@@ -1,8 +1,9 @@
 import { typeToTag } from 'lib/slate/renderer'
-import type { RenderElementProps } from 'slate-react'
+import { cn } from 'lib/util'
+import { type RenderElementProps } from 'slate-react'
 
 export function BaseElement({ attributes, children, element }: RenderElementProps) {
-  const { attributes: attrs, id, style, type } = element
+  const { attributes: attrs, className, id, placeholder, style, type } = element
   const Tag = typeToTag(type)
   const elementStyle = { ...style, ...getHeadingTagStyle(Tag) }
 
@@ -10,6 +11,8 @@ export function BaseElement({ attributes, children, element }: RenderElementProp
     <Tag
       {...attributes}
       {...attrs}
+      aria-placeholder={placeholder}
+      className={cn(className)}
       id={id}
       style={elementStyle}
     >

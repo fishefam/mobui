@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ['./src/react/**/*.tsx'],
+  content: ['./src/react/**/*.{ts,tsx}'],
   darkMode: ['class'],
   plugins: [require('tailwindcss-animate'), require('tailwind-scrollbar')],
   prefix: '',
