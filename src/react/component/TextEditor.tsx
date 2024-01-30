@@ -42,7 +42,7 @@ export default function TextEditor() {
         <Slate
           key={section}
           editor={editor}
-          initialValue={[createBlockNode('paragraph', section)]}
+          initialValue={[createBlockNode({ text: section, type: 'paragraph' })]}
         >
           <div
             className={cn(

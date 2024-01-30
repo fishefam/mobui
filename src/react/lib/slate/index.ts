@@ -1,9 +1,9 @@
+import { hasProps } from 'lib/util'
 import { ReactElement } from 'react'
-import { createEditor, Node } from 'slate'
+import { BaseOperation, createEditor, SetNodeOperation } from 'slate'
 import { Transforms as _Transforms } from 'slate'
 import { withHistory } from 'slate-history'
 import { ReactEditor as _ReactEditor, Slate as _Slate, withReact } from 'slate-react'
-import { TObject } from 'type/common'
 import {
   TBlockNode,
   TBlockNodeType,
@@ -11,6 +11,8 @@ import {
   TInlineNodeType,
   TLeafNode,
   TNodeType,
+  TPluginNodeProps,
+  TSetNodeOperation,
   TSlateEditor,
   TSlateEditorProps,
   TSlatePlugin,
@@ -20,13 +22,9 @@ import {
 
 import withBlockTypeChange from './plugin/withBlockTypeChange'
 import withList from './plugin/withList'
-import withMark from './plugin/withMark'
-import withNodeId from './plugin/withNodeId'
-import withNodeType from './plugin/withNodeType'
-import withPlaceholder from './plugin/withPlaceholder'
 import { BLOCK_NODES, INLINE_NODES, VOID_NODES } from './register'
 
-const PLUGINS: TSlatePlugin[] = [withNodeType, withMark, withNodeId, withList, withBlockTypeChange, withPlaceholder]
+const PLUGINS: TSlatePlugin[] = [withBlockTypeChange, withList]
 
 export const Slate = _Slate as (props: TSlateEditorProps) => ReactElement
 export const ReactEditor = _ReactEditor as Omit<typeof _ReactEditor, 'focus'> & {
@@ -74,18 +72,53 @@ export function isVoidNode(node: Record<string, unknown>): node is TVoidNode {
   return hasType && hasChildren && isVoidNodeType
 }
 
-export function hasTypeProp(property: Partial<Node>): property is { type: TNodeType } {
-  return !!(property as TObject).type
+export function isOperation<
+  U extends BaseOperation,
+  T extends BaseOperation['type'] =
+    | 'insert_node'
+    | 'insert_text'
+    | 'merge_node'
+    | 'move_node'
+    | 'remove_node'
+    | 'remove_text'
+    | 'set_node'
+    | 'set_selection'
+    | 'split_node',
+>(types: T[], operation: BaseOperation): operation is U {
+  return getOperations(...types).includes(operation.type)
+}
+
+export function isSetNodeOperation<T extends keyof TPluginNodeProps>(
+  keys: T[],
+  operation: BaseOperation,
+): operation is TSetNodeOperation {
+  return (
+    isOperation<SetNodeOperation>(['set_node'], operation) &&
+    hasProps<T, TPluginNodeProps[T]>(keys, operation.newProperties)
+  )
+}
+
+export function getOperations<T extends BaseOperation['type']>(...types: T[]) {
+  return [
+    'insert_node',
+    'insert_text',
+    'merge_node',
+    'move_node',
+    'remove_node',
+    'remove_text',
+    'set_node',
+    'set_selection',
+    'split_node',
+  ].filter((v) => types.includes(v as T))
 }
 
 /* Addon functions for Transform namespace */
-function changeBlockType(editor: TSlateEditor, nextType: TBlockNodeType) {
+function changeBlockType(
+  editor: TSlateEditor,
+  nextType: TBlockNodeType,
+  optional: { wrapperListType?: TBlockNodeType } = {},
+) {
   const { selection } = editor
-  if (selection) {
-    const node = Node.get(editor, selection.anchor.path.slice(0, -1))
-    if (isBlockNode(node)) {
-      editor.setNodes({ nextType, previousType: node.type })
-      editor.setNodes({ nextType: undefined })
-    }
-  }
+  const { wrapperListType } = optional
+  if (selection) editor.setNodes({ nextType, wrapperListType })
 }

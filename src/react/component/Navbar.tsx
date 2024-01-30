@@ -1,5 +1,6 @@
 import { cn, getLocalStorageItem } from 'lib/util'
 import { useState } from 'react'
+import { useStore } from 'react/Store'
 import Avatar, { AvatarFallback } from 'shadcn/Avatar'
 import {
   Dropdown,
@@ -10,7 +11,6 @@ import {
   DropdownTrigger,
 } from 'shadcn/Dropdown'
 import Nav, { NavContent, NavItem, NavLink, NavList, NavTrigger, NavViewport } from 'shadcn/Nav'
-import { useTheme } from 'shadcn/ThemeProvider'
 import { TSetState } from 'type/common'
 
 type TItems = {
@@ -105,7 +105,9 @@ export default function Navbar() {
 }
 
 function Profile() {
-  const { setTheme, theme } = useTheme()
+  const { theme: _theme } = useStore()
+  const [theme, setTheme] = _theme
+
   return (
     <Dropdown>
       <DropdownTrigger className="rounded-full focus:ring-2">
@@ -194,7 +196,10 @@ function Link({ href, title }: TListItemProps) {
 }
 
 function Logo() {
-  const { theme } = useTheme()
+  const {
+    theme: [theme],
+  } = useStore()
+
   return (
     <svg
       className={cn('h-10', theme === 'dark' ? 'text-yellow-500' : 'text-violet-500')}

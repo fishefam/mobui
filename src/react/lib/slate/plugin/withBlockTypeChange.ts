@@ -1,7 +1,13 @@
 import { BaseOperation } from 'slate'
-import { TObject } from 'type/common'
-import { TBlockNodeType, TSlateEditor } from 'type/slate'
+import { TSlateEditor } from 'type/slate'
 
+import { isSetNodeOperation } from '..'
+
+/**
+ * Enhances a Slate.js editor to handle block type changes.
+ * @param editor - The Slate.js editor to enhance.
+ * @returns The enhanced editor.
+ */
 export default function withBlockTypeChange(editor: TSlateEditor) {
   const { apply } = editor
   editor.apply = (operation) => {
@@ -11,11 +17,13 @@ export default function withBlockTypeChange(editor: TSlateEditor) {
   return editor
 }
 
+/**
+ * Handles block type changes based on the applied operation.
+ * @param editor - The Slate.js editor.
+ * @param operation - The applied operation.
+ */
 function changeBlockType(editor: TSlateEditor, operation: BaseOperation) {
-  if (operation.type === 'set_node' && editor.selection && hasNextType(operation.newProperties))
+  if (editor.selection && isSetNodeOperation(['nextType'], operation)) {
     editor.setNodes({ type: operation.newProperties.nextType })
-}
-
-function hasNextType(property: TObject): property is { nextType: TBlockNodeType } {
-  return !!property.nextType
+  }
 }

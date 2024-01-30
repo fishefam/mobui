@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from 'clsx'
 import { customAlphabet } from 'nanoid'
 import { twMerge } from 'tailwind-merge'
+import { TObject } from 'type/common'
 import { TLocalStorageKey } from 'type/store'
 
 /**
@@ -55,4 +56,19 @@ export function toStartCase(input: string): string {
  */
 export function getLocalStorageItem(key: TLocalStorageKey): string {
   return localStorage.getItem(key) ?? ''
+}
+
+/**
+ * Checks if an object has specific properties with non-falsy values.
+ * @param property - The object to check for properties.
+ * @param keys - The list of property keys to check.
+ * @returns A boolean indicating whether the object has all specified properties.
+ */
+export function hasProps<T extends string, U>(keys: T[], property: TObject): property is { [key in T]: U } {
+  const checks = keys.map((key) => !!property[key]).filter((v) => !v)
+  return checks.length === 0
+}
+
+export function hasString<T extends string>(strings: T[], value = ''): value is T {
+  return strings.includes(value as T)
 }

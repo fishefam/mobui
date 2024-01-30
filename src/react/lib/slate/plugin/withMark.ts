@@ -4,6 +4,11 @@ import { TBlockNode, TMark, TNode, TSlateEditor } from 'type/slate'
 import { isLeafNode } from '..'
 import { LIFTED_MARKS } from '../register'
 
+/**
+ * Enhances a Slate.js editor to handle custom marks, specifically handling lifted marks.
+ * @param editor - The Slate.js editor to enhance.
+ * @returns The enhanced editor.
+ */
 export default function withMark(editor: TSlateEditor) {
   const { addMark } = editor
   editor.addMark = (mark, value) => {
@@ -15,6 +20,7 @@ export default function withMark(editor: TSlateEditor) {
     const [node] = editor.nodes({
       match: (node) => !isEditor(node) && isLeafNode(node),
     })
+
     if (node) {
       const [, path] = node
       const parent = Node.parent(editor, path) as TNode
@@ -25,5 +31,6 @@ export default function withMark(editor: TSlateEditor) {
       }
     }
   }
+
   return editor
 }

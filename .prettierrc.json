@@ -13,10 +13,8 @@
   "useTabs": false,
   "overrides": [
     {
-      "files": "./src/react/type/**/*.ts",
-      "options": {
-        "printWidth": 300
-      }
+      "files": ["./src/react/type/**/*.ts", "./src/react/Store.tsx"],
+      "options": { "printWidth": 300 }
     }
   ]
 }

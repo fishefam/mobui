@@ -45,6 +45,5 @@ export default function GroupTwo() {
 
 function handleToggler(event: MouseEvent<HTMLButtonElement>, editor: TSlateEditor, type: TBlockNodeType): void {
   event.preventDefault()
-  const { selection } = editor
-  if (selection) Transforms.changeBlockType(editor, type)
+  Transforms.changeBlockType(editor, 'list-item', { wrapperListType: type })
 }

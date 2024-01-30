@@ -15,6 +15,7 @@
   "devDependencies": {
     "@types/chrome": "^0.0.258",
     "@types/firefox-webext-browser": "^120.0.0",
+    "@types/lodash": "^4.14.202",
     "@types/node": "^20.11.6",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
@@ -28,6 +29,7 @@
     "esbuild-style-plugin": "^1.6.3",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-perfectionist": "^2.5.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-simple-import-sort": "^10.0.0",
@@ -67,6 +69,7 @@
     "@uiw/react-codemirror": "^4.21.21",
     "better-react-mathjax": "^2.0.3",
     "html-entities": "^2.4.0",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.315.0",
     "nanoid": "^5.0.4",
     "react": "^18.2.0",

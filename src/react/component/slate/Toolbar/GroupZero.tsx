@@ -91,7 +91,7 @@ export default function GroupZero() {
 
 function handleNode(editor: TSlateEditor, type: TBlockNodeType, action: 'add' | 'change') {
   if (action === 'add' && editor.selection) {
-    editor.insertNodes(createBlockNode(type), { at: [editor.selection.anchor.path[0] + 1] })
+    editor.insertNodes(createBlockNode({ type }), { at: [editor.selection.anchor.path[0] + 1] })
     editor.collapse()
     editor.select([editor.selection.anchor.path[0] + 1])
   }

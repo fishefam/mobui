@@ -5,6 +5,11 @@ import { isLeafNode } from '..'
 import { BLOCK_NODES } from '../register'
 import { generateNodeId } from '../util'
 
+/**
+ * Enhances a Slate.js editor to handle the assignment of unique node IDs during split_node operations.
+ * @param editor - The Slate.js editor to enhance.
+ * @returns The enhanced editor.
+ */
 export default function withNodeId(editor: TSlateEditor) {
   const { apply } = editor
   editor.apply = (operation: BaseOperation) => {

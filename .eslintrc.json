@@ -24,14 +24,16 @@
     "sort-destructure-keys",
     "sort-keys-fix",
     "typescript-sort-keys",
-    "unused-imports"
+    "unused-imports",
+    "perfectionist"
   ],
   "settings": { "react": { "version": "detect" } },
   "rules": {
-    "react/prop-types": "off",
     "@typescript-eslint/no-unused-vars": "off",
     "linebreak-style": ["warn", "unix"],
+    "perfectionist/sort-union-types": ["warn", { "type": "natural", "order": "asc" }],
     "quotes": ["warn", "single", { "avoidEscape": true }],
+    "react/prop-types": "off",
     "react/react-in-jsx-scope": "off",
     "semi": ["warn", "never"],
     "simple-import-sort/exports": "warn",

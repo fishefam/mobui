@@ -6,13 +6,14 @@ import ReactCodeMirror from '@uiw/react-codemirror'
 import { useStore } from 'react/Store'
 import { TStore, TStoreCodeKey } from 'type/store'
 
-import { useTheme } from './shadcn/ui/ThemeProvider'
-
-type TCodeEditorProps = { language: 'HTML' | 'CSS' | 'JS' | 'ALGORITHM' }
+type TCodeEditorProps = { language: 'ALGORITHM' | 'CSS' | 'HTML' | 'JS' }
 
 export default function CodeEditor({ language }: TCodeEditorProps) {
   const store = useStore()
-  const { theme } = useTheme()
+  const {
+    theme: [theme],
+  } = useStore()
+
   const lang =
     language === 'HTML'
       ? langs.html()
@@ -45,6 +46,6 @@ export default function CodeEditor({ language }: TCodeEditorProps) {
   )
 }
 
-export function getCodeStore(store: TStore, language: 'HTML' | 'CSS' | 'JS' | 'ALGORITHM') {
+export function getCodeStore(store: TStore, language: 'ALGORITHM' | 'CSS' | 'HTML' | 'JS') {
   return store[`${store.section[0]}${language !== 'ALGORITHM' ? language : ''}` as TStoreCodeKey]
 }

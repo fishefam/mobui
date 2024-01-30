@@ -1,6 +1,6 @@
 import { BLOCK_NODES, INLINE_NODES, INLINE_VOID_NODES, NODES, VOID_NODES } from 'lib/slate/register'
 import { CSSProperties, ReactNode } from 'react'
-import { BaseEditor } from 'slate'
+import { BaseEditor, SetNodeOperation } from 'slate'
 import { HistoryEditor } from 'slate-history'
 import { ReactEditor, RenderElementProps as _RenderElementProps, RenderLeafProps as _RenderLeafProps } from 'slate-react'
 
@@ -18,7 +18,7 @@ export type TVoidNodeType = keyof typeof VOID_NODES
 export type TInlineVoidNodeType = keyof typeof INLINE_VOID_NODES
 export type TNodeType = keyof typeof NODES
 
-export type TPluginNodeProps = { className: string; nextType: TBlockNodeType }
+export type TPluginNodeProps = { className: string; keepCurrentType: boolean; nextType: TBlockNodeType; wrapperListType: TBlockNodeType }
 export type TCommonNodeProps<T extends string = never> = { attributes: TObject<T>; id: string; placeholder: string; previousType: TBlockNodeType; style: CSSProperties } & Partial<TPluginNodeProps>
 export type TCommonNode<T, U extends string> = T & TCommonNodeProps<U>
 
@@ -38,6 +38,8 @@ export type TValue = TBlockNode[]
 
 export type TRenderElement = (props: _RenderElementProps) => JSX.Element
 export type TRenderLeaf = (props: _RenderElementProps) => JSX.Element
+
+export type TSetNodeOperation<T = TPluginNodeProps> = SetNodeOperation & { [key in 'properties' | 'newProperties']: Partial<T> }
 
 /* Type wrappers for Slate components */
 export type TSlateEditorProps = {

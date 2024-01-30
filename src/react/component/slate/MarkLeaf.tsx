@@ -4,15 +4,6 @@ import { TMark, TTrueMark, TValueMark } from 'type/slate'
 
 type TMarkRef = { Tag: keyof HTMLElementTagNameMap; className: string; mark: TTrueMark }
 
-// style: {
-//   backgroundColor: 'hsl(210 40% 96.1%)',
-//   borderRadius: 'calc(0.5rem - 2px)',
-//   fontFamily: 'ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace',
-//   fontSize: '0.875rem',
-//   lineHeight: '1.25rem',
-//   padding: '0.2rem 0.3rem',
-//   whiteSpace: 'pre-wrap',
-// },
 const TRUE_MARK: TMarkRef[] = [
   { Tag: 'strong', className: '', mark: 'bold' },
   { Tag: 'i', className: '', mark: 'italic' },
@@ -60,7 +51,14 @@ function wrapMark({
         </Tag>
       )
   })
-  return <span style={valueMark}>{Element}</span>
+  return (
+    <span
+      {...attributes}
+      style={valueMark}
+    >
+      {Element}
+    </span>
+  )
 }
 
 function getStyle(marks: TMark[]) {

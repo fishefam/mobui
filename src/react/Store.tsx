@@ -1,8 +1,8 @@
 import { createSlateEditor } from 'lib/slate'
 import { getLocalStorageItem } from 'lib/util'
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { TProps } from 'type/common'
-import { TStore, TStoreProp } from 'type/store'
+import { TStore, TStoreProp, TTheme } from 'type/store'
 
 const PLACEHOLDER = () => {}
 const INITIAL_STORE: TStore = {
@@ -25,6 +25,7 @@ const INITIAL_STORE: TStore = {
   questionSlate: [createSlateEditor(), PLACEHOLDER],
   questionSlateReadOnly: [false, PLACEHOLDER],
   section: ['question', PLACEHOLDER],
+  theme: [window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light', PLACEHOLDER],
 }
 
 const Store = createContext<TStore>(INITIAL_STORE)
@@ -36,9 +37,7 @@ export default function StoreProvider(props: TProps) {
   const authornotesHTML = useState<TStoreProp<'authornotesHTML'>>(getInitialState('authornotesHTML'))
   const authornotesJS = useState<TStoreProp<'authornotesJS'>>(getInitialState('authornotesJS'))
   const authornotesSlate = useState<TStoreProp<'authornotesSlate'>>(getInitialState('authornotesSlate'))
-  const authornotesSlateReadOnly = useState<TStoreProp<'authornotesSlateReadOnly'>>(
-    getInitialState('authornotesSlateReadOnly'),
-  )
+  const authornotesSlateReadOnly = useState<TStoreProp<'authornotesSlateReadOnly'>>(getInitialState('authornotesSlateReadOnly'))
   const feedbackCSS = useState<TStoreProp<'feedbackCSS'>>(getInitialState('feedbackCSS'))
   const feedbackHTML = useState<TStoreProp<'feedbackHTML'>>(getInitialState('feedbackHTML'))
   const feedbackJS = useState<TStoreProp<'feedbackJS'>>(getInitialState('feedbackJS'))
@@ -47,10 +46,13 @@ export default function StoreProvider(props: TProps) {
   const questionCSS = useState<TStoreProp<'questionCSS'>>(getInitialState('questionCSS'))
   const questionHTML = useState<TStoreProp<'questionHTML'>>(getInitialState('questionHTML'))
   const questionJS = useState<TStoreProp<'questionJS'>>(getInitialState('questionJS'))
+  const questionName = useState<TStoreProp<'questionName'>>(getInitialState('questionName'))
   const questionSlate = useState<TStoreProp<'questionSlate'>>(getInitialState('questionSlate'))
   const questionSlateReadOnly = useState<TStoreProp<'questionSlateReadOnly'>>(getInitialState('questionSlateReadOnly'))
-  const questionName = useState<TStoreProp<'questionName'>>(getInitialState('questionName'))
   const section = useState<TStoreProp<'section'>>(getInitialState('section'))
+  const theme = useState<TStoreProp<'theme'>>(getInitialState('theme'))
+
+  useThemeChange(theme[0])
 
   return (
     <Store.Provider
@@ -75,6 +77,7 @@ export default function StoreProvider(props: TProps) {
         questionSlate,
         questionSlateReadOnly,
         section,
+        theme,
       }}
     />
   )
@@ -82,6 +85,15 @@ export default function StoreProvider(props: TProps) {
 
 export function useStore() {
   return useContext(Store)
+}
+
+function useThemeChange(theme: TTheme) {
+  useEffect(() => {
+    const html = document.querySelector('html')!
+    html.classList.remove('light', 'dark')
+    html.classList.add(theme)
+    html.style.colorScheme = theme
+  }, [theme])
 }
 
 function getInitialState<T extends keyof TStore>(key: T): TStoreProp<T> {
