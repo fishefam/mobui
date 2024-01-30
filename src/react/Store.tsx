@@ -13,6 +13,7 @@ const INITIAL_STORE: TStore = {
   authornotesJS: ['', PLACEHOLDER],
   authornotesSlate: [createSlateEditor(), PLACEHOLDER],
   authornotesSlateReadOnly: [false, PLACEHOLDER],
+  autoCompletionList: [[], PLACEHOLDER],
   feedbackCSS: ['', PLACEHOLDER],
   feedbackHTML: ['', PLACEHOLDER],
   feedbackJS: ['', PLACEHOLDER],
@@ -51,6 +52,7 @@ export default function StoreProvider(props: TProps) {
   const questionSlateReadOnly = useState<TStoreProp<'questionSlateReadOnly'>>(getInitialState('questionSlateReadOnly'))
   const section = useState<TStoreProp<'section'>>(getInitialState('section'))
   const theme = useState<TStoreProp<'theme'>>(getInitialState('theme'))
+  const autoCompletionList = useState<TStoreProp<'autoCompletionList'>>(getInitialState('autoCompletionList'))
 
   useThemeChange(theme[0])
 
@@ -65,6 +67,7 @@ export default function StoreProvider(props: TProps) {
         authornotesJS,
         authornotesSlate,
         authornotesSlateReadOnly,
+        autoCompletionList,
         feedbackCSS,
         feedbackHTML,
         feedbackJS,

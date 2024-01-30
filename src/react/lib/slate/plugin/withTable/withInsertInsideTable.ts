@@ -1,7 +1,7 @@
-import type { TState } from '@/type/slate'
-
-import { isBlockNode } from '@/type/slate'
 import { isEditor } from 'slate'
+
+import type { TState } from '@/type/slate'
+import { isBlockNode } from '@/type/slate'
 
 export function withInsertInsideTable(state: TState) {
   const { insertFragment } = state

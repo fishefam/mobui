@@ -1,5 +1,6 @@
-import type { TState } from '@/type/slate'
 import type { KeyboardEvent } from 'react'
+
+import type { TState } from '@/type/slate'
 
 import { handleDefault_text, handleTab_text } from './handleText'
 

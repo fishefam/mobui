@@ -120,12 +120,9 @@ function Profile() {
         <DropdownSeparator />
         <DropdownItem
           asChild
-          onClick={(event) => {
-            event.preventDefault()
-            setTheme((state) => (state === 'dark' ? 'light' : 'dark'))
-          }}
+          onClick={() => setTheme((state) => (state === 'dark' ? 'light' : 'dark'))}
         >
-          <span>{`${theme.charAt(0).toUpperCase().concat(theme.slice(1))} Mode`} </span>
+          <span>{`${theme === 'dark' ? 'Light' : 'Dark'} Mode`} </span>
         </DropdownItem>
         <DropdownItem asChild>
           <a
@@ -136,10 +133,10 @@ function Profile() {
           </a>
         </DropdownItem>
         <DropdownItem asChild>
-          <a href="https://www.digitaled.com/products/courseware/support.aspx">Help</a>
+          <a href="https://www.digitaled.com/products/courseware/support.aspx">Support Page</a>
         </DropdownItem>
         <DropdownItem asChild>
-          <a href="/users/privacypolicy">Terms of service</a>
+          <a href="/users/privacypolicy">Terms of Service</a>
         </DropdownItem>
         <DropdownItem asChild>
           <a href="#">Exit</a>

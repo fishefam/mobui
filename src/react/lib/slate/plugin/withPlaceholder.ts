@@ -9,8 +9,9 @@ import {
 } from 'slate'
 import { TSlateEditor } from 'type/slate'
 
+import { isOperation } from '..'
+
 // Importing the isOperationMatched utility function from the parent directory
-import { isOperationMatched } from '..'
 
 /**
  * Adds placeholder feature on empty lines.
@@ -47,7 +48,7 @@ function handlePostApply(editor: TSlateEditor, operation: BaseOperation, preAppl
  * @param preApplyPath - The selection path before applying the operation.
  */
 function handleSplitAndSelect(editor: TSlateEditor, operation: BaseOperation, preApplyPath: BaseSelection) {
-  if (isOperationMatched<SetSelectionOperation | SplitNodeOperation>(operation, 'set_selection', 'split_node'))
+  if (isOperation<SetSelectionOperation | SplitNodeOperation>(['set_selection', 'split_node'], operation))
     setClassNames(editor, false, preApplyPath)
 }
 
@@ -57,7 +58,7 @@ function handleSplitAndSelect(editor: TSlateEditor, operation: BaseOperation, pr
  * @param operation - The applied operation.
  */
 function handleInsertAndRemoveText(editor: TSlateEditor, operation: BaseOperation) {
-  if (isOperationMatched<InsertTextOperation | RemoveTextOperation>(operation, 'insert_text', 'remove_text'))
+  if (isOperation<InsertTextOperation | RemoveTextOperation>(['insert_text', 'remove_text'], operation))
     setClassNames(editor, true)
 }
 

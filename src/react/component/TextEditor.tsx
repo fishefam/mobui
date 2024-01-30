@@ -1,40 +1,59 @@
+import { Completion } from '@codemirror/autocomplete'
 import { Slate } from 'lib/slate'
 import { renderElement, renderLeaf } from 'lib/slate/renderer'
+import { serialize } from 'lib/slate/serialization'
 import { createBlockNode } from 'lib/slate/util'
-import { cn } from 'lib/util'
+import { cn, prettierSync, updateCompletionList } from 'lib/util'
 import { useEffect } from 'react'
 import { useStore } from 'react/Store'
 import { Editable, ReactEditor } from 'slate-react'
-import { TSlateEditor } from 'type/slate'
+import { TSetState } from 'type/common'
+import { TSlateEditor, TValue } from 'type/slate'
 import { TStoreProp } from 'type/store'
 
 import SlateToolbar from './slate/Toolbar'
 
 export default function TextEditor() {
   const {
+    authornotesHTML,
     authornotesSlate,
     authornotesSlateReadOnly,
+    autoCompletionList,
+    feedbackHTML,
     feedbackSlate,
     feedbackSlateReadOnly,
+    questionHTML,
     questionSlate,
     questionSlateReadOnly,
     section,
   } = useStore()
 
   const [currentSection] = section
-  const [questionEditor] = questionSlate
-  const [authornotesEditor] = authornotesSlate
-  const [feedbackEditor] = feedbackSlate
-  const [questionReadOnly] = questionSlateReadOnly
-  const [authornotesReadOnly] = authornotesSlateReadOnly
-  const [feedbackReadOnly] = feedbackSlateReadOnly
+
+  const [_authornotesSlate] = authornotesSlate
+  const [_authornotesSlateReadOnly] = authornotesSlateReadOnly
+  const [_feedbackSlate] = feedbackSlate
+  const [_feedbackSlateReadOnly] = feedbackSlateReadOnly
+  const [_questionSlate] = questionSlate
+  const [_questionSlateReadOnly] = questionSlateReadOnly
+  const [, _setAutoCompletionList] = autoCompletionList
+
   const editors: { editor: TSlateEditor; readOnly: boolean; section: TStoreProp<'section'> }[] = [
-    { editor: questionEditor, readOnly: questionReadOnly, section: 'question' },
-    { editor: authornotesEditor, readOnly: authornotesReadOnly, section: 'authornotes' },
-    { editor: feedbackEditor, readOnly: feedbackReadOnly, section: 'feedback' },
+    { editor: _questionSlate, readOnly: _questionSlateReadOnly, section: 'question' },
+    { editor: _authornotesSlate, readOnly: _authornotesSlateReadOnly, section: 'authornotes' },
+    { editor: _feedbackSlate, readOnly: _feedbackSlateReadOnly, section: 'feedback' },
   ]
 
-  useEffect(() => ReactEditor.focus(questionEditor), [questionEditor])
+  const setCodeValue =
+    currentSection === 'authornotes'
+      ? authornotesHTML[1]
+      : currentSection === 'feedback'
+        ? feedbackHTML[1]
+        : currentSection === 'question'
+          ? questionHTML[1]
+          : null
+
+  useEffect(() => ReactEditor.focus(_questionSlate), [_questionSlate])
 
   return (
     <div className="relative h-full">
@@ -43,6 +62,7 @@ export default function TextEditor() {
           key={section}
           editor={editor}
           initialValue={[createBlockNode({ text: section, type: 'paragraph' })]}
+          onValueChange={(value) => handleValueChange(value, _setAutoCompletionList, setCodeValue)}
         >
           <div
             className={cn(
@@ -64,4 +84,19 @@ export default function TextEditor() {
       ))}
     </div>
   )
+}
+
+function handleValueChange(
+  value: TValue,
+  setCompletion: TSetState<Completion[]>,
+  setCode: TSetState<string> | null,
+  timeout = 300,
+) {
+  if (window.debouncer) clearTimeout(window.debouncer)
+  if (setCode)
+    window.debouncer = setTimeout(() => {
+      const html = serialize(value)
+      updateCompletionList(html, setCompletion)
+      setCode(prettierSync(html, 'html'))
+    }, timeout)
 }

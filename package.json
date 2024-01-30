@@ -50,6 +50,8 @@
     "web-ext": "^7.11.0"
   },
   "dependencies": {
+    "@codemirror/autocomplete": "^6.12.0",
+    "@liquify/prettify": "0.5.5-beta.1",
     "@radix-ui/react-avatar": "^1.0.4",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@radix-ui/react-menubar": "^1.0.4",

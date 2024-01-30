@@ -1,3 +1,5 @@
+import { Completion } from '@codemirror/autocomplete'
+
 import { TSetState } from './common'
 import { TSlateEditor } from './slate'
 
@@ -15,6 +17,7 @@ export type TStore = {
   authornotesJS: TStoreProps<string>
   authornotesSlate: TStoreProps<TSlateEditor>
   authornotesSlateReadOnly: TStoreProps<boolean>
+  autoCompletionList: TStoreProps<Completion[]>
   feedbackCSS: TStoreProps<string>
   feedbackHTML: TStoreProps<string>
   feedbackJS: TStoreProps<string>

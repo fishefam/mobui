@@ -1,8 +1,8 @@
-import type { TState } from '@/type/slate'
 import type { TextUnit } from 'slate'
-
-import { isBlockNode, isLeafNode } from '@/type/slate'
 import { isEditor, Path, Point } from 'slate'
+
+import type { TState } from '@/type/slate'
+import { isBlockNode, isLeafNode } from '@/type/slate'
 
 export function withDeleteBackward(state: TState) {
   const { deleteForward } = state

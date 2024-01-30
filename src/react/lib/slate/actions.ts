@@ -1,5 +1,6 @@
-import type { TBlockNode, TState, TVoidNode } from '@/type/slate'
 import type { Range } from 'slate'
+
+import type { TBlockNode, TState, TVoidNode } from '@/type/slate'
 
 export type TCallbackParams = {
   index: number

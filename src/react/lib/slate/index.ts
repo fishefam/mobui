@@ -22,9 +22,13 @@ import {
 
 import withBlockTypeChange from './plugin/withBlockTypeChange'
 import withList from './plugin/withList'
+import withMark from './plugin/withMark'
+import withNodeId from './plugin/withNodeId'
+import withNodeType from './plugin/withNodeType'
+import withPlaceholder from './plugin/withPlaceholder'
 import { BLOCK_NODES, INLINE_NODES, VOID_NODES } from './register'
 
-const PLUGINS: TSlatePlugin[] = [withBlockTypeChange, withList]
+const PLUGINS: TSlatePlugin[] = [withNodeId, withMark, withNodeType, withPlaceholder, withBlockTypeChange, withList]
 
 export const Slate = _Slate as (props: TSlateEditorProps) => ReactElement
 export const ReactEditor = _ReactEditor as Omit<typeof _ReactEditor, 'focus'> & {

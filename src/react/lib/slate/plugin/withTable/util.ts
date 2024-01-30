@@ -1,5 +1,4 @@
 import type { TBlockNode } from '@/type/slate'
-
 import { isBlockNode } from '@/type/slate'
 
 import { generateNodeId } from '../../util'

@@ -1,10 +1,9 @@
-import type { TBlockNodeType, TLeafNode, TMark, TNode, TNodeType, TText, TValue } from '@/type/slate'
-import type { Token } from 'slate-hyperscript/dist/tokens'
-
-import { isLeafNode } from '@/type/slate'
 import { jsx as _jsx } from 'slate-hyperscript'
+import type { Token } from 'slate-hyperscript/dist/tokens'
+import { TBlockNodeType, TCommonNodeProps, TLeafNode, TMark, TNode, TNodeType, TText, TValue } from 'type/slate'
 
 import { getAttributes } from '../dom'
+import { isLeafNode } from '.'
 import { generateNodeId } from './util'
 
 const jsx = _jsx as <T extends 'element' | 'fragment' | 'text'>(
@@ -20,10 +19,9 @@ const jsx = _jsx as <T extends 'element' | 'fragment' | 'text'>(
 export function deserialize(
   node: ChildNode,
   marks: { [key in TMark]?: boolean | string } = {},
-): null | ReturnType<typeof jsx> | Token | TValue {
+): ReturnType<typeof jsx> | TValue | Token | null {
   const { attributes: attrs, childNodes, id, nodeName, nodeType, textContent } = node as HTMLElement
 
-  console.log(nodeType)
   if (nodeType === Node.TEXT_NODE) return jsx('text', marks, textContent?.replace(/^\n|\n$/g, '').trim())
   if (nodeType !== Node.ELEMENT_NODE) return null
 
@@ -53,7 +51,7 @@ export function deserialize(
   if (isParagraphNode(nodeName)) return createBaseNode({ attributes: attrs, children, id, type: 'paragraph' })
   if (isHeadingNode(nodeName))
     return createBaseNode({ attributes: attrs, children, id, type: nodeName.toLowerCase() as TBlockNodeType })
-  if (nodeName === 'A') return createBaseNode({ attributes: attrs, children, id, type: 'link' })
+  // if (nodeName === 'A') return createBaseNode({ attributes: attrs, children, id, type: 'link' })
   return children
 }
 
@@ -80,7 +78,14 @@ function createBaseNode({
 }) {
   return jsx(
     'element',
-    { attributes: getAttributes(attributes)?.attrs, id: id.length ? id : generateNodeId(), type },
+    {
+      attributes: getAttributes(attributes)?.attributes,
+      id: id.length ? id : generateNodeId(),
+      placeholder: 'Start typing...',
+      previousType: 'paragraph',
+      style: {},
+      type,
+    } as TCommonNodeProps,
     children,
   )
 }

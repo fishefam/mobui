@@ -16,7 +16,7 @@ const TRUE_MARK: TMarkRef[] = [
 ]
 
 export function MarkLeaf({ attributes, children, leaf }: RenderLeafProps<TMark>) {
-  const entries = Object.entries(leaf) as [TMark | 'text', string | true][]
+  const entries = Object.entries(leaf) as ['text' | TMark, string | true][]
   const trueMarkKeys = entries.filter(([_, value]) => value === true).map(([key]) => key) as TTrueMark[]
   const valueMark = Object.fromEntries(
     entries.filter(([key, value]) => key !== 'text' && value !== true),

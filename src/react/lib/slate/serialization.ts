@@ -25,7 +25,7 @@ function serializeChildren(children: TNode[]) {
   let html = ''
   for (const child of children) {
     if (!isLeafNode(child)) {
-      const { attr, style, tag } = getHtmlInfo(child)
+      const { attr, style, tag } = getHtmlInfo(child as TBlockNode | TInlineNode | TVoidNode)
       const { id } = child
       html += `<${tag}${id.length ? ` id="${id}"` : ''}${attr.length ? ` ${attr}` : ''}${
         style.length ? ` style="${style}"` : ''
@@ -63,7 +63,7 @@ function serializeLeafNode(child: TText) {
 
 function getHtmlInfo(child: TBlockNode | TInlineNode | TVoidNode) {
   const tag = typeToTag(child.type)
-  const attr = objectToString(child.attrs)
+  const attr = objectToString(child.attributes)
   const style = toInlineStyle(child.style)
     .replace(/;(\s|\n)*/g, '; ')
     .trim()

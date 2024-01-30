@@ -1,5 +1,6 @@
-import type { TInlineVoidNode, TState } from '@/type/slate'
 import type { Path } from 'slate'
+
+import type { TInlineVoidNode, TState } from '@/type/slate'
 
 import { checkSelection, generateNodeId, retrieveLeafNode, retrieveNode } from '../../util'
 

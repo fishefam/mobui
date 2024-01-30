@@ -1,8 +1,8 @@
-import type { TBlockNode, TState } from '@/type/slate'
 import type { NodeEntry } from 'slate'
-
-import { isBlockNode, isLeafNode } from '@/type/slate'
 import { isEditor } from 'slate'
+
+import type { TBlockNode, TState } from '@/type/slate'
+import { isBlockNode, isLeafNode } from '@/type/slate'
 
 import { createTable } from './util'
 

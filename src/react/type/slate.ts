@@ -29,7 +29,7 @@ export type TVoidNode<T extends string = never> = TCommonNode<{ children: [TLeaf
 export type TInlineVoidNode<T extends string = never> = TCommonNode<{ children: [TLeafNode]; type: TInlineVoidNodeType; voidData?: { [key: string]: boolean | number | string } }, T>
 
 export type TNoneLeafNode<T extends string = never> = TBlockNode<T> | TInlineNode<T> | TInlineVoidNode<T> | TVoidNode<T>
-export type TNode<T extends string = never> = TNoneLeafNode<T> | TLeafNode
+export type TNode<T extends string = never> = TLeafNode | TNoneLeafNode<T>
 
 export type TSlateEditor = BaseEditor & ReactEditor & HistoryEditor
 export type TSlatePlugin = (editor: TSlateEditor) => TSlateEditor
@@ -39,7 +39,7 @@ export type TValue = TBlockNode[]
 export type TRenderElement = (props: _RenderElementProps) => JSX.Element
 export type TRenderLeaf = (props: _RenderElementProps) => JSX.Element
 
-export type TSetNodeOperation<T = TPluginNodeProps> = SetNodeOperation & { [key in 'properties' | 'newProperties']: Partial<T> }
+export type TSetNodeOperation<T = TPluginNodeProps> = SetNodeOperation & { [key in 'newProperties' | 'properties']: Partial<T> }
 
 /* Type wrappers for Slate components */
 export type TSlateEditorProps = {
