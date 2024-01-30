@@ -95,18 +95,18 @@
       'rlig' 1,
       'calt' 1;
   }
+  #root {
+    @apply grid h-screen grid-rows-[max-content];
+  }
 }
 
-#root {
-  @apply grid h-screen grid-rows-[max-content];
-}
-
-.cm-editor {
-  @apply h-full;
-  outline: none !important;
-}
-
-.cm-gutters {
-  @apply w-[5ch];
-  border: 0 !important;
+.cm- {
+  &editor {
+    @apply h-full;
+    outline: none !important;
+  }
+  &gutters {
+    @apply w-[5ch];
+    border: 0 !important;
+  }
 }

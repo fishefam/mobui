@@ -1,5 +1,5 @@
 import { cn, getLocalStorageItem } from 'lib/util'
-import { useState } from 'react'
+import { MouseEvent, useState } from 'react'
 import { useStore } from 'react/Store'
 import Avatar, { AvatarFallback } from 'shadcn/Avatar'
 import {
@@ -128,6 +128,14 @@ function Profile() {
           <span>{`${theme.charAt(0).toUpperCase().concat(theme.slice(1))} Mode`} </span>
         </DropdownItem>
         <DropdownItem asChild>
+          <a
+            href="#"
+            onClick={loadDefaultInterface}
+          >
+            Default Interface
+          </a>
+        </DropdownItem>
+        <DropdownItem asChild>
           <a href="https://www.digitaled.com/products/courseware/support.aspx">Help</a>
         </DropdownItem>
         <DropdownItem asChild>
@@ -222,4 +230,11 @@ function Logo() {
 
 function createHref(classId: string, path: string) {
   return `/${classId}/${path}`
+}
+
+function loadDefaultInterface(event: MouseEvent) {
+  event.preventDefault()
+  localStorage.setItem('newInterface', 'off')
+  const { href } = location
+  location.href = href
 }

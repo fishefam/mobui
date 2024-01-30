@@ -28,6 +28,12 @@
     "perfectionist"
   ],
   "settings": { "react": { "version": "detect" } },
+  "overrides": [
+    {
+      "files": ["interceptor.ts"],
+      "rules": { "react-hooks/rules-of-hooks": "off" }
+    }
+  ],
   "rules": {
     "@typescript-eslint/no-unused-vars": "off",
     "linebreak-style": ["warn", "unix"],

@@ -6,7 +6,14 @@ import hash from 'shorthash2'
  * those used by React.
  */
 
+type TInterceptProps = {
+  [key in 'classIdKey' | 'dataKey' | 'extSwitchKey' | 'repoNameKey' | 'uidHashKey' | 'urlKey' | 'usernameKey']: string
+}
+type TPrepareDataProps = TInterceptProps
+
 /* Local storage keys to store information for React app */
+const EXT_SWITCH_KEY = 'newInterface' // Special key
+
 const DATA_KEY = 'data'
 const EXT_URL_KEY = 'extURL'
 const UID_HASH_KEY = 'uidHash' // This is to eleminate the repeating hashing of uid later in React
@@ -14,38 +21,74 @@ const CLASS_ID_KEY = 'classId'
 const USERNAME_KEY = 'username'
 const REPO_NAME_KEY = 'reponame'
 
-main(DATA_KEY, UID_HASH_KEY, USERNAME_KEY, CLASS_ID_KEY, REPO_NAME_KEY, EXT_URL_KEY)
+if (localStorage.getItem(EXT_SWITCH_KEY) !== 'on') attachSwitchButton(EXT_SWITCH_KEY)
 
-/**
- * Main function that acts as an entry point for the module.
- * It intercepts page load, injects a new HTML template for React,
- * prepares data, and finalizes the process.
- * @param {string} dataKey - The key for storing data in local storage
- * @param {string} uidHashKey - The key for storing UID hash in local storage
- * @param {string} usernameKey - The key for storing username in local storage
- * @param {string} repoNameKey - The key for storing the repository name in local storage
- * @param {string} urlKey - The key for storing the resolved URL in local storage
- */
-async function main(
-  dataKey: string,
-  uidHashKey: string,
-  usernameKey: string,
-  classIdKey: string,
-  repoNameKey: string,
-  urlKey: string,
-) {
+if (localStorage.getItem(EXT_SWITCH_KEY) === 'on')
+  intercept({
+    classIdKey: CLASS_ID_KEY,
+    dataKey: DATA_KEY,
+    extSwitchKey: EXT_SWITCH_KEY,
+    repoNameKey: REPO_NAME_KEY,
+    uidHashKey: UID_HASH_KEY,
+    urlKey: EXT_URL_KEY,
+    usernameKey: USERNAME_KEY,
+  })
+
+function attachSwitchButton(extSwitchKey: string) {
+  window.onload = () => {
+    const button = document.createElement('button')
+    button.textContent = 'New Interface'
+    button.style.backgroundColor = '#222'
+    button.style.zIndex = '9999999'
+    button.style.borderRadius = '4px'
+    button.style.borderStyle = 'none'
+    button.style.boxSizing = 'border-box'
+    button.style.padding = '6px 12px'
+    button.style.color = '#fff'
+    button.style.cursor = 'pointer'
+    button.style.display = 'inline-block'
+    button.style.position = 'absolute'
+    button.style.right = '0'
+    button.style.fontSize = '16px'
+    button.style.fontWeight = '700'
+    button.style.margin = '0'
+    button.style.outline = 'none'
+    button.style.overflow = 'hidden'
+    button.style.textAlign = 'center'
+    button.onclick = (event) => {
+      event.preventDefault()
+      localStorage.setItem(extSwitchKey, 'on')
+      const { href } = location
+      location.href = href
+    }
+    button.classList.add('btn', 'btn-default')
+    const footer = document.body.querySelector('.actionsMain.col-md-9.col-md-offset-3')
+    if (footer) footer.appendChild(button)
+    if (!footer) {
+      button.style.position = 'fixed'
+      button.style.bottom = '1rem'
+      button.style.right = '1rem'
+      document.body.prepend(button)
+    }
+  }
+}
+
+async function intercept({
+  classIdKey,
+  dataKey,
+  extSwitchKey,
+  repoNameKey,
+  uidHashKey,
+  urlKey,
+  usernameKey,
+}: TInterceptProps) {
   /** Intercept page load and inject a new HTML template for React */
   window.stop()
   preparePage()
-  await prepareData(dataKey, uidHashKey, usernameKey, classIdKey, urlKey, repoNameKey)
+  await prepareData({ classIdKey, dataKey, extSwitchKey, repoNameKey, uidHashKey, urlKey, usernameKey })
   finalize()
 }
 
-/**
- * Prepares the page by setting up the HTML structure for React.
- * It includes links to CSS and an SVG loader which will be remove from the DOM
- * after the intercepting process in done.
- */
 function preparePage() {
   document.querySelector('html')!.innerHTML = `
     <head>
@@ -74,10 +117,6 @@ function preparePage() {
   `
 }
 
-/**
- * Finalizes the process by clearing console, removing the loader,
- * and dynamically adding a script tag for the main JavaScript file (React injection).
- */
 function finalize() {
   console.clear()
   document.querySelector('#root-loader')?.remove()
@@ -86,32 +125,20 @@ function finalize() {
   document.head.appendChild(script)
 }
 
-/**
- * Generates a extensions' resolved URL for a given path.
- * It considers whether the code is running in a Chrome or Firefox browser.
- * @param {string} path - The path to resolve
- * @returns {string} - The resolved URL
- */
 function resolveUrl(path: string): string {
   if (chrome) return chrome.runtime.getURL(path)
   return browser.runtime.getURL(path)
 }
 
-/**
- * Prepares data by fetching the current page, extracting form data,
- * and storing relevant information in local storage.
- * @param {string} dataKey - The key for storing data in local storage
- * @param {string} uidHashKey - The key for storing UID hash in local storage
- * @param {string} usernameKey - The key for storing username in local storage
- */
-async function prepareData(
-  dataKey: string,
-  uidHashKey: string,
-  usernameKey: string,
-  classIdKey: string,
-  urlKey: string,
-  repoNameKey: string,
-) {
+async function prepareData({
+  classIdKey,
+  dataKey,
+  extSwitchKey,
+  repoNameKey,
+  uidHashKey,
+  urlKey,
+  usernameKey,
+}: TPrepareDataProps) {
   const response = await fetch(location.href)
   const html = await response.text()
   const dom = new DOMParser().parseFromString(html, 'text/html')
@@ -123,6 +150,7 @@ async function prepareData(
     if (val.toString()) data[key] = val.toString()
   })
   const storageItems: [string, string][] = [
+    [extSwitchKey, 'on'],
     [urlKey, resolveUrl('')],
     [usernameKey, username],
     [uidHashKey, hash(data.uid ?? '')],
@@ -134,11 +162,6 @@ async function prepareData(
   for (const [key, value] of storageItems) localStorage.setItem(key, value)
 }
 
-/**
- * Extracts the username from the document's body.
- * @param {Document} doc - The document object
- * @returns {string} - The extracted username
- */
 function extractUsername({ body }: Document): string {
   const navbarNodes = Array.from(body.querySelector('#top #global .container')?.childNodes ?? [])
   const textNodes = navbarNodes.filter(({ nodeName }) => nodeName === '#text')
