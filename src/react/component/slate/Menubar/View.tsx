@@ -1,3 +1,4 @@
+import { getLocalStorage } from 'lib/data'
 import { fetchAlgoValue, fetchLegacyPreviewPage, joinMobiusData } from 'lib/mobius'
 import { ReactEditor } from 'lib/slate'
 import { serialize } from 'lib/slate/serialization'
@@ -189,20 +190,16 @@ function displayLegacyPreview(html: string) {
     window.previewWindow = previewWindow
 
     previewWindow.window.onload = () => {
+      const { extURL } = getLocalStorage()
+      const scriptNames = ['MathJaxConfig.js', 'MathJax.js']
       previewWindow.window.document.body.innerHTML = html
-      previewWindow.window.mathJaxConfigUrl =
-        'https://cdn.mobius.cloud/third-party/locked/MathEditor/1381409/MathEditor/../../../../740fc47/mathjax-config/0.0.0/MathJaxConfig.js'
+      previewWindow.window.mathJaxConfigUrl = `${extURL}/asset/${scriptNames[0]}`
 
-      const script = previewWindow.window.document.createElement('script')
-      const attribute = [
-        'src',
-        'https://cdn.mobius.cloud/third-party/locked/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML,https://cdn.mobius.cloud/third-party/locked/MathEditor/1381409/MathEditor/../../../../740fc47/mathjax-config/0.0.0/MathJaxConfig.js&delayStartupUntil=configured',
-      ]
-      script.setAttribute(attribute[0], attribute[1])
-      previewWindow.window.document.body.appendChild(script)
-
-      // previewWindow.window.onload = () => {
-      // }
+      for (const name of scriptNames) {
+        const script = previewWindow.window.document.createElement('script')
+        script.setAttribute('src', `${extURL}/asset/${name}`)
+        previewWindow.window.document.body.appendChild(script)
+      }
 
       setTimeout(() => {
         previewWindow.window.console.log(previewWindow.window.document.readyState)
