@@ -20,6 +20,7 @@ const INITIAL_STORE: TStore = {
   feedbackJS: ['', PLACEHOLDER],
   feedbackSlate: [createSlateEditor(), PLACEHOLDER],
   feedbackSlateReadOnly: [false, PLACEHOLDER],
+  isUnsaved: [false, PLACEHOLDER],
   jsAutoCompletionList: [[], PLACEHOLDER],
   questionCSS: ['', PLACEHOLDER],
   questionHTML: ['', PLACEHOLDER],
@@ -34,6 +35,7 @@ const INITIAL_STORE: TStore = {
 const Store = createContext<TStore>(INITIAL_STORE)
 
 export default function StoreProvider(props: TProps) {
+  const algoAutoCompletionList = useState<TStoreProp<'algoAutoCompletionList'>>(getInitialState('algoAutoCompletionList'))
   const algorithm = useState<TStoreProp<'algorithm'>>(getInitialState('algorithm'))
   const algorithmPreview = useState<TStoreProp<'algorithmPreview'>>(getInitialState('algorithmPreview'))
   const authornotesCSS = useState<TStoreProp<'authornotesCSS'>>(getInitialState('authornotesCSS'))
@@ -41,13 +43,13 @@ export default function StoreProvider(props: TProps) {
   const authornotesJS = useState<TStoreProp<'authornotesJS'>>(getInitialState('authornotesJS'))
   const authornotesSlate = useState<TStoreProp<'authornotesSlate'>>(getInitialState('authornotesSlate'))
   const authornotesSlateReadOnly = useState<TStoreProp<'authornotesSlateReadOnly'>>(getInitialState('authornotesSlateReadOnly'))
-  const algoAutoCompletionList = useState<TStoreProp<'algoAutoCompletionList'>>(getInitialState('algoAutoCompletionList'))
-  const jsAutoCompletionList = useState<TStoreProp<'jsAutoCompletionList'>>(getInitialState('jsAutoCompletionList'))
   const feedbackCSS = useState<TStoreProp<'feedbackCSS'>>(getInitialState('feedbackCSS'))
   const feedbackHTML = useState<TStoreProp<'feedbackHTML'>>(getInitialState('feedbackHTML'))
   const feedbackJS = useState<TStoreProp<'feedbackJS'>>(getInitialState('feedbackJS'))
   const feedbackSlate = useState<TStoreProp<'feedbackSlate'>>(getInitialState('feedbackSlate'))
   const feedbackSlateReadOnly = useState<TStoreProp<'feedbackSlateReadOnly'>>(getInitialState('feedbackSlateReadOnly'))
+  const isUnsaved = useState<TStoreProp<'isUnsaved'>>(getInitialState('isUnsaved'))
+  const jsAutoCompletionList = useState<TStoreProp<'jsAutoCompletionList'>>(getInitialState('jsAutoCompletionList'))
   const questionCSS = useState<TStoreProp<'questionCSS'>>(getInitialState('questionCSS'))
   const questionHTML = useState<TStoreProp<'questionHTML'>>(getInitialState('questionHTML'))
   const questionJS = useState<TStoreProp<'questionJS'>>(getInitialState('questionJS'))
@@ -76,6 +78,7 @@ export default function StoreProvider(props: TProps) {
         feedbackJS,
         feedbackSlate,
         feedbackSlateReadOnly,
+        isUnsaved,
         jsAutoCompletionList,
         questionCSS,
         questionHTML,

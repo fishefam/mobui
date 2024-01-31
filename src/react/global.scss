@@ -110,3 +110,19 @@
     border: 0 !important;
   }
 }
+
+@media print {
+  .print-editor {
+    z-index: 999999999999999999;
+    background-color: white;
+    height: 100vh;
+    width: 100vw;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+  }
+}

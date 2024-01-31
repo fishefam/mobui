@@ -10,19 +10,20 @@ export type TStoreProps<T> = [state: T, setState: TSetState<T>]
 export type TTheme = 'dark' | 'light'
 
 export type TStore = {
-  algoAutoCompletionList: TStoreProps<Completion[]>,
-  algorithm: TStoreProps<string>,
-  algorithmPreview: TStoreProps<{ [key: string]: { rangeEnd: string; rangeStart: string; value: string } }>,
-  authornotesCSS: TStoreProps<string>,
-  authornotesHTML: TStoreProps<string>,
-  authornotesJS: TStoreProps<string>,
-  authornotesSlate: TStoreProps<TSlateEditor>,
-  authornotesSlateReadOnly: TStoreProps<boolean>,
+  algoAutoCompletionList: TStoreProps<Completion[]>
+  algorithm: TStoreProps<string>
+  algorithmPreview: TStoreProps<{ [key: string]: { rangeEnd: string; rangeStart: string; value: string } }>
+  authornotesCSS: TStoreProps<string>
+  authornotesHTML: TStoreProps<string>
+  authornotesJS: TStoreProps<string>
+  authornotesSlate: TStoreProps<TSlateEditor>
+  authornotesSlateReadOnly: TStoreProps<boolean>
   feedbackCSS: TStoreProps<string>
   feedbackHTML: TStoreProps<string>
   feedbackJS: TStoreProps<string>
   feedbackSlate: TStoreProps<TSlateEditor>
   feedbackSlateReadOnly: TStoreProps<boolean>
+  isUnsaved: TStoreProps<boolean>
   jsAutoCompletionList: TStoreProps<Completion[]>
   questionCSS: TStoreProps<string>
   questionHTML: TStoreProps<string>

@@ -4,9 +4,9 @@ import { renderElement, renderLeaf } from 'lib/slate/renderer'
 import { serialize } from 'lib/slate/serialization'
 import { createBlockNode } from 'lib/slate/util'
 import { cn, prettierSync, updateJsCompletionList } from 'lib/util'
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import { useStore } from 'react/Store'
-import { Editable, ReactEditor } from 'slate-react'
+import { Editable } from 'slate-react'
 import { TSetState } from 'type/common'
 import { TSlateEditor, TValue } from 'type/slate'
 import { TStoreProp } from 'type/store'
@@ -22,6 +22,7 @@ export default function TextEditor() {
     feedbackHTML,
     feedbackSlate,
     feedbackSlateReadOnly,
+    isUnsaved,
     jsAutoCompletionList,
     questionHTML,
     questionSlate,
@@ -38,8 +39,10 @@ export default function TextEditor() {
   const [_questionSlate] = questionSlate
   const [_questionSlateReadOnly] = questionSlateReadOnly
   const [, _setjsAutoCompletionList] = jsAutoCompletionList
+  const [, _setIsUnsaved] = isUnsaved
 
   const contrainerRef = useRef<HTMLDivElement>(null)
+  const editorRef = useRef<HTMLDivElement>(null)
 
   const editors: { editor: TSlateEditor; readOnly: boolean; section: TStoreProp<'section'> }[] = [
     { editor: _questionSlate, readOnly: _questionSlateReadOnly, section: 'question' },
@@ -56,8 +59,6 @@ export default function TextEditor() {
           ? questionHTML[1]
           : null
 
-  useEffect(() => ReactEditor.focus(_questionSlate), [_questionSlate])
-
   return (
     <div
       ref={contrainerRef}
@@ -68,7 +69,7 @@ export default function TextEditor() {
           key={section}
           editor={editor}
           initialValue={[createBlockNode({ text: section, type: 'paragraph' })]}
-          onValueChange={(value) => handleValueChange(value, _setjsAutoCompletionList, setCodeValue)}
+          onValueChange={(value) => handleValueChange(value, _setIsUnsaved, _setjsAutoCompletionList, setCodeValue)}
         >
           <div
             className={cn(
@@ -77,15 +78,23 @@ export default function TextEditor() {
             )}
           >
             <div className="sticky top-0 z-[0] w-full bg-white dark:bg-accent">
-              <SlateMenu containerRef={contrainerRef} />
+              <SlateMenu
+                containerRef={contrainerRef}
+                editorRef={editorRef}
+              />
               <SlateToolbar />
             </div>
-            <Editable
-              className="min-h-[30rem] p-6 focus:outline-none"
-              readOnly={readOnly}
-              renderElement={renderElement}
-              renderLeaf={renderLeaf}
-            />
+            <div
+              ref={editorRef}
+              className="print-editor"
+            >
+              <Editable
+                className="min-h-[30rem] p-6 focus:outline-none"
+                readOnly={readOnly}
+                renderElement={renderElement}
+                renderLeaf={renderLeaf}
+              />
+            </div>
           </div>
         </Slate>
       ))}
@@ -95,6 +104,7 @@ export default function TextEditor() {
 
 function handleValueChange(
   value: TValue,
+  setIsUnsaved: TSetState<boolean>,
   setCompletion: TSetState<Completion[]>,
   setCode: TSetState<string> | null,
   timeout = 300,
@@ -105,5 +115,6 @@ function handleValueChange(
       const html = serialize(value)
       updateJsCompletionList(html, setCompletion)
       setCode(prettierSync(html, 'html'))
+      setIsUnsaved(true)
     }, timeout)
 }
