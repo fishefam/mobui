@@ -1,4 +1,5 @@
-import CodeEditor, { getCodeStore } from 'component/CodeEditor'
+import CodeEditor from 'component/CodeEditor'
+import { fetchAlgoValue } from 'lib/mobius'
 import { cn } from 'lib/util'
 import { Fragment, useRef } from 'react'
 import { useStore } from 'react/Store'
@@ -46,15 +47,6 @@ function AlgorithmEditor() {
   const [currentSection] = store.section
   const [_, setAlgorithmPreview] = store.algorithmPreview
 
-  async function previewAlgo() {
-    const response = await fetch(`${location.origin}/rest/algorithms?${document.cookie}`, {
-      body: getCodeStore(store, 'ALGORITHM')[0],
-      headers: { 'Content-Type': 'application/json' },
-      method: 'POST',
-    })
-    setAlgorithmPreview(await response.json())
-  }
-
   if (currentSection !== 'algorithm') return null
 
   return (
@@ -64,7 +56,7 @@ function AlgorithmEditor() {
         <Button
           className="absolute bottom-4 right-4"
           variant="secondary"
-          onClick={previewAlgo}
+          onClick={() => fetchAlgoValue(store, (value) => setAlgorithmPreview(value))}
         >
           Preview
         </Button>

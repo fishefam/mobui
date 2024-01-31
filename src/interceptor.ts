@@ -14,6 +14,7 @@ type TInterceptProps = {
     | 'repoNameKey'
     | 'themeKey'
     | 'uidHashKey'
+    | 'uidKey'
     | 'urlKey'
     | 'usernameKey']: string
 }
@@ -26,13 +27,14 @@ const THEME_KEY = 'theme'
 const DATA_KEY = 'data'
 const EXT_URL_KEY = 'extURL'
 const UID_HASH_KEY = 'uidHash' // This is to eleminate the repeating hashing of uid later in React
+const UID_KEY = 'uid'
 const CLASS_ID_KEY = 'classId'
 const USERNAME_KEY = 'username'
 const REPO_NAME_KEY = 'reponame'
 
-if (localStorage.getItem(EXT_SWITCH_KEY) !== 'on') attachSwitchButton(EXT_SWITCH_KEY)
+if (localStorage.getItem(EXT_SWITCH_KEY) === 'off') attachSwitchButton(EXT_SWITCH_KEY)
 
-if (localStorage.getItem(EXT_SWITCH_KEY) === 'on')
+if (localStorage.getItem(EXT_SWITCH_KEY) !== 'off')
   intercept({
     classIdKey: CLASS_ID_KEY,
     dataKey: DATA_KEY,
@@ -40,6 +42,7 @@ if (localStorage.getItem(EXT_SWITCH_KEY) === 'on')
     repoNameKey: REPO_NAME_KEY,
     themeKey: THEME_KEY,
     uidHashKey: UID_HASH_KEY,
+    uidKey: UID_KEY,
     urlKey: EXT_URL_KEY,
     usernameKey: USERNAME_KEY,
   })
@@ -47,7 +50,7 @@ if (localStorage.getItem(EXT_SWITCH_KEY) === 'on')
 function attachSwitchButton(extSwitchKey: string) {
   window.onload = () => {
     const button = document.createElement('button')
-    button.textContent = 'New Interface'
+    button.textContent = 'Modern UI               '
     button.style.backgroundColor = '#222'
     button.style.zIndex = '9999999'
     button.style.borderRadius = '4px'
@@ -90,13 +93,24 @@ async function intercept({
   repoNameKey,
   themeKey,
   uidHashKey,
+  uidKey,
   urlKey,
   usernameKey,
 }: TInterceptProps) {
   /** Intercept page load and inject a new HTML template for React */
   window.stop()
   preparePage()
-  await prepareData({ classIdKey, dataKey, extSwitchKey, repoNameKey, themeKey, uidHashKey, urlKey, usernameKey })
+  await prepareData({
+    classIdKey,
+    dataKey,
+    extSwitchKey,
+    repoNameKey,
+    themeKey,
+    uidHashKey,
+    uidKey,
+    urlKey,
+    usernameKey,
+  })
   finalize()
 }
 
@@ -148,6 +162,7 @@ async function prepareData({
   repoNameKey,
   themeKey,
   uidHashKey,
+  uidKey,
   urlKey,
   usernameKey,
 }: TPrepareDataProps) {
@@ -164,23 +179,25 @@ async function prepareData({
   const currentTheme = localStorage.getItem(themeKey)
   const storageItems: [string, string][] = currentTheme
     ? [
-        [themeKey, currentTheme],
-        [extSwitchKey, 'on'],
-        [urlKey, resolveUrl('')],
-        [usernameKey, username],
-        [uidHashKey, hash(data.uid ?? '')],
         [classIdKey, data.classId ?? ''],
         [dataKey, JSON.stringify(data)],
+        [extSwitchKey, 'on'],
         [repoNameKey, dom.querySelector('#pageName li:first-of-type')?.textContent?.trim() ?? 'Site'],
+        [themeKey, currentTheme],
+        [uidHashKey, hash(data.uid ?? '')],
+        [uidKey, data.uid ?? ''],
+        [urlKey, resolveUrl('')],
+        [usernameKey, username],
       ]
     : [
-        [extSwitchKey, 'on'],
-        [urlKey, resolveUrl('')],
-        [usernameKey, username],
-        [uidHashKey, hash(data.uid ?? '')],
         [classIdKey, data.classId ?? ''],
         [dataKey, JSON.stringify(data)],
+        [extSwitchKey, 'on'],
         [repoNameKey, dom.querySelector('#pageName li:first-of-type')?.textContent?.trim() ?? 'Site'],
+        [uidHashKey, hash(data.uid ?? '')],
+        [uidKey, data.uid ?? ''],
+        [urlKey, resolveUrl('')],
+        [usernameKey, username],
       ]
   localStorage.clear()
   for (const [key, value] of storageItems) localStorage.setItem(key, value)

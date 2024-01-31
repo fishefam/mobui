@@ -4,13 +4,13 @@ import { hyperLink } from '@uiw/codemirror-extensions-hyper-link'
 import { langs } from '@uiw/codemirror-extensions-langs'
 import { copilot, githubLight } from '@uiw/codemirror-themes-all'
 import ReactCodeMirror from '@uiw/react-codemirror'
-import { getAlgoCompletionList, getBaseJsCompletion, prettier, updateJsCompletionList } from 'lib/util'
+import { getAlgoCompletionList, getBaseJsCompletion, getCodeStore, prettier, updateJsCompletionList } from 'lib/util'
 import { Settings2 } from 'lucide-react'
 import { useCallback, useEffect } from 'react'
 import { useStore } from 'react/Store'
 import { Dropdown, DropdownContent, DropdownItem, DropdownTrigger } from 'shadcn/Dropdown'
 import { TSetState } from 'type/common'
-import { TStore, TStoreCodeKey } from 'type/store'
+import { TStore } from 'type/store'
 
 type TCodeEditorProps = { language: 'ALGORITHM' | 'CSS' | 'HTML' | 'JS' }
 
@@ -109,10 +109,6 @@ function handleChange(
 ) {
   getCodeStore(store, language)[1](value)
   if (language === 'HTML') updateJsCompletionList(value, setCompletion)
-}
-
-export function getCodeStore(store: TStore, language: 'ALGORITHM' | 'CSS' | 'HTML' | 'JS') {
-  return store[`${store.section[0]}${language !== 'ALGORITHM' ? language : ''}` as TStoreCodeKey]
 }
 
 function baseJsAutoComplete(context: CompletionContext) {

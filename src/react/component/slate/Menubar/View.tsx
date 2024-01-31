@@ -1,7 +1,19 @@
+import { fetchAlgoValue, fetchLegacyPreviewPage } from 'lib/mobius'
 import { ReactEditor } from 'lib/slate'
-import { Check, Eye, Fullscreen, Pencil } from 'lucide-react'
-import { RefObject } from 'react'
+import { serialize } from 'lib/slate/serialization'
+import { Check, Eye, Fullscreen, Pencil, ReceiptText } from 'lucide-react'
+import { RefObject, useState } from 'react'
 import { useStore } from 'react/Store'
+import { Button } from 'shadcn/Button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from 'shadcn/Dialog'
 import {
   MenubarContent,
   MenubarItem,
@@ -13,19 +25,30 @@ import {
   MenubarTrigger,
 } from 'shadcn/Menubar'
 import { useSlateStatic } from 'slate-react'
-import { TSlateEditor } from 'type/slate'
+import { TSetState } from 'type/common'
+import { TSlateEditor, TValue } from 'type/slate'
+import { TStore } from 'type/store'
 
 type TViewMenuProps = { containerRef: RefObject<HTMLElement> }
 
 export default function ViewMenu({ containerRef }: TViewMenuProps) {
   const editor = useSlateStatic()
   const store = useStore()
-  const { section } = store
+  const [html, setHTML] = useState('')
+  const { algorithm, authornotesHTML, feedbackHTML, questionHTML, questionName, section } = store
   const [currentSection] = section
+
+  const [_algorithm] = algorithm
+  const [_authornotesHTML] = authornotesHTML
+  const [_feedbackHTML] = feedbackHTML
+  const [_questionHTML] = questionHTML
+  const [_questionName] = questionName
 
   const [isEditorReadOnly, setIsEditorReadOnly] =
     currentSection !== 'algorithm' ? store[`${currentSection}SlateReadOnly`] : [true, () => {}]
   const ModeIcon = isEditorReadOnly ? Eye : Pencil
+
+  const previewDialogTitle = currentSection.charAt(0).toUpperCase().concat(currentSection.slice(1))
 
   return (
     <MenubarMenu>
@@ -62,6 +85,54 @@ export default function ViewMenu({ containerRef }: TViewMenuProps) {
           </MenubarSubContent>
         </MenubarSub>
         <MenubarSeparator />
+        <MenubarItem onClick={(event) => event.preventDefault()}>
+          <Dialog>
+            <DialogTrigger onClick={() => previewDocument(store, editor, setHTML)}>
+              <div className="flex items-start gap-3">
+                <ReceiptText className="mt-[0.35rem] h-3 w-3" />
+                Preview Document
+              </div>
+            </DialogTrigger>
+            <DialogContent
+              forceMount
+              className="h-[50vh] w-[50vw] max-w-[70vw]"
+            >
+              <DialogHeader>
+                <DialogTitle>{previewDialogTitle} Preview</DialogTitle>
+                <DialogDescription dangerouslySetInnerHTML={{ __html: html }} />
+                <DialogFooter className="absolute bottom-8 right-8">
+                  <Button
+                    onClick={() =>
+                      fetchLegacyPreviewPage({
+                        algorithm: _algorithm,
+                        authornotesHTML: _authornotesHTML,
+                        callback: (html) => {
+                          const previewWindow = window.open(
+                            'https://mohawk-math.mobius.cloud/contentmanager/DisplayQuestion.do',
+                            'previewWindow',
+                            'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=960,height=800',
+                          )
+                          if (previewWindow) {
+                            previewWindow.onload = () => {
+                              console.log(html)
+                              previewWindow.document.body.innerHTML = html
+                            }
+                          }
+                        },
+                        feedbackHTML: _feedbackHTML,
+                        questionHTML: _questionHTML,
+                        questionName: _questionName,
+                      })
+                    }
+                  >
+                    Preview in Legacy UI
+                  </Button>
+                </DialogFooter>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+        </MenubarItem>
+        <MenubarSeparator />
         <MenubarItem onClick={() => handleFullscreen(editor, containerRef)}>
           <div className="flex items-start gap-3">
             <Fullscreen className="mt-[0.35rem] h-3 w-3" />
@@ -83,4 +154,13 @@ function handleFullscreen(editor: TSlateEditor, containerRef: RefObject<HTMLElem
   }
   if (!isAlreadySet && element?.classList.contains('!fixed')) element.classList.remove(...classNames)
   ReactEditor.focus(editor)
+}
+
+function previewDocument(store: TStore, editor: TSlateEditor, setHTML: TSetState<string>) {
+  fetchAlgoValue(store, (value) => {
+    let html = serialize(editor.children as TValue)
+    const entries = Object.entries(value).map(([key, { value }]) => ['\\$' + key, value])
+    for (const [key, value] of entries) html = html.replace(new RegExp(key, 'g'), value)
+    setHTML(html)
+  })
 }

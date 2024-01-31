@@ -1,7 +1,7 @@
 import { saveAs } from 'file-saver'
 import { asBlob } from 'html-docx-js-typescript'
+import { saveData } from 'lib/mobius'
 import { serialize } from 'lib/slate/serialization'
-import { RefObject } from 'react'
 import { useStore } from 'react/Store'
 import {
   MenubarContent,
@@ -15,23 +15,9 @@ import {
   MenubarTrigger,
 } from 'shadcn/Menubar'
 import { useSlateStatic } from 'slate-react'
-import { TSetState } from 'type/common'
 import { TSlateEditor, TValue } from 'type/slate'
-import { TStoreProp } from 'type/store'
 
-type TSaveDataProps = {
-  algorithm: TStoreProp<'algorithm'>
-  authornotesHTML: TStoreProp<'authornotesHTML'>
-  classId: string
-  feedbackHTML: TStoreProp<'feedbackHTML'>
-  questionHTML: TStoreProp<'questionHTML'>
-  questionName: TStoreProp<'questionName'>
-  setIsUnsaved: TSetState<TStoreProp<'isUnsaved'>>
-}
-
-type TFileMenuProps = { editorRef: RefObject<HTMLDivElement> }
-
-export default function FileMenu({ editorRef }: TFileMenuProps) {
+export default function FileMenu() {
   const {
     algorithm,
     authornotesCSS,
@@ -77,11 +63,12 @@ export default function FileMenu({ editorRef }: TFileMenuProps) {
             saveData({
               algorithm: _algorithm,
               authornotesHTML: _authornotesHTML,
+              callback: () => _setIsUnsaved(true),
               classId,
               feedbackHTML: _feedbackHTML,
+              isPreview: false,
               questionHTML: _questionHTML,
               questionName: _questionName,
-              setIsUnsaved: _setIsUnsaved,
             })
           }
         >
@@ -124,39 +111,6 @@ export default function FileMenu({ editorRef }: TFileMenuProps) {
 
 function getHTML(editor: TSlateEditor) {
   return serialize(editor.children as TValue)
-}
-
-function saveData({
-  algorithm,
-  authornotesHTML,
-  classId,
-  feedbackHTML,
-  questionHTML,
-  questionName,
-  setIsUnsaved,
-}: TSaveDataProps) {
-  const formData = new FormData()
-  formData.set('classId', classId)
-  formData.set('adaptive', 'false')
-  formData.set('name', questionName)
-  formData.set('questionText', questionHTML)
-  formData.set('editor', questionHTML)
-  formData.set('authorNotes', authornotesHTML)
-  formData.set('authorNotesEditor', authornotesHTML)
-  formData.set('algorithm', algorithm)
-  formData.set('comment', feedbackHTML)
-  formData.set('commentEditor', feedbackHTML)
-  formData.set('uid', '64798aae-e805-493e-8fe5-d47a56a50eed')
-  formData.set('actionId', 'savedraft')
-  formData.set('hasUnsavedQuestion', 'Unsaved changes to the current question will be lost.')
-  formData.set('AntiCsrfToken', document.cookie.replace('AntiCsrfToken=', ''))
-  const body = new URLSearchParams(formData as unknown as URLSearchParams).toString()
-  fetch('https://mohawk-math.mobius.cloud/qbeditor/SaveDynamicInline.do', {
-    body,
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    method: 'POST',
-  }).catch((err) => console.log(err))
-  setIsUnsaved(false)
 }
 
 function exit() {

@@ -10,7 +10,7 @@ import typescript from 'prettier/plugins/typescript'
 import { format } from 'prettier/standalone'
 import { twMerge } from 'tailwind-merge'
 import { TObject, TSetState } from 'type/common'
-import { TLocalStorageKey } from 'type/store'
+import { TLocalStorageKey, TStore, TStoreCodeKey } from 'type/store'
 
 /**
  * Generates a BEM (Block Element Modifier) class name based on the provided parameters.
@@ -163,6 +163,14 @@ export function updateJsCompletionList(html: string, setCompletion: TSetState<Co
     }),
   )
   setCompletion(completionList)
+}
+
+export function getCodeStore(store: TStore, language: 'ALGORITHM' | 'CSS' | 'HTML' | 'JS', forceAlgo = false) {
+  return store[
+    forceAlgo
+      ? ('algorithm' as TStoreCodeKey)
+      : (`${store.section[0]}${language !== 'ALGORITHM' ? language : ''}` as TStoreCodeKey)
+  ]
 }
 
 export function getAlgoCompletionList(): Completion[] {
