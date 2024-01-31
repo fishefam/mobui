@@ -56,7 +56,7 @@ export function NavContent(props: TProps) {
 
 export function NavViewport() {
   return (
-    <div className={cn('absolute left-0 top-full flex justify-center')}>
+    <div className={cn('absolute left-0 top-full z-50 flex justify-center')}>
       <NavPrimitive.Viewport
         className={cn(
           'origin-top-center relative mt-1.5 h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden rounded-md border shadow-lg md:w-[var(--radix-navigation-menu-viewport-width)]',

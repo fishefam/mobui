@@ -78,7 +78,11 @@ const ITEMS: TItems = [
 }))
 
 export default function Navbar() {
+  const { theme } = useStore()
   const [selection, setSelection] = useState('')
+
+  const [_theme] = theme
+
   return (
     <Nav delayDuration={0}>
       <Logo />
@@ -120,7 +124,10 @@ function Profile() {
         <DropdownSeparator />
         <DropdownItem
           asChild
-          onClick={() => setTheme((state) => (state === 'dark' ? 'light' : 'dark'))}
+          onClick={() => {
+            setTheme((state) => (state === 'dark' ? 'light' : 'dark'))
+            localStorage.setItem('theme', theme === 'dark' ? 'light' : 'dark')
+          }}
         >
           <span>{`${theme === 'dark' ? 'Light' : 'Dark'} Mode`} </span>
         </DropdownItem>

@@ -5,7 +5,9 @@ import { TProps } from 'type/common'
 import { TStore, TStoreProp, TTheme } from 'type/store'
 
 const PLACEHOLDER = () => {}
+const INITIAL_THEME = (localStorage.getItem('theme') as TTheme) ?? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
 const INITIAL_STORE: TStore = {
+  algoAutoCompletionList: [[], PLACEHOLDER],
   algorithm: ['', PLACEHOLDER],
   algorithmPreview: [{}, PLACEHOLDER],
   authornotesCSS: ['', PLACEHOLDER],
@@ -13,12 +15,12 @@ const INITIAL_STORE: TStore = {
   authornotesJS: ['', PLACEHOLDER],
   authornotesSlate: [createSlateEditor(), PLACEHOLDER],
   authornotesSlateReadOnly: [false, PLACEHOLDER],
-  autoCompletionList: [[], PLACEHOLDER],
   feedbackCSS: ['', PLACEHOLDER],
   feedbackHTML: ['', PLACEHOLDER],
   feedbackJS: ['', PLACEHOLDER],
   feedbackSlate: [createSlateEditor(), PLACEHOLDER],
   feedbackSlateReadOnly: [false, PLACEHOLDER],
+  jsAutoCompletionList: [[], PLACEHOLDER],
   questionCSS: ['', PLACEHOLDER],
   questionHTML: ['', PLACEHOLDER],
   questionJS: ['', PLACEHOLDER],
@@ -26,7 +28,7 @@ const INITIAL_STORE: TStore = {
   questionSlate: [createSlateEditor(), PLACEHOLDER],
   questionSlateReadOnly: [false, PLACEHOLDER],
   section: ['question', PLACEHOLDER],
-  theme: [window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light', PLACEHOLDER],
+  theme: [INITIAL_THEME, PLACEHOLDER],
 }
 
 const Store = createContext<TStore>(INITIAL_STORE)
@@ -39,6 +41,8 @@ export default function StoreProvider(props: TProps) {
   const authornotesJS = useState<TStoreProp<'authornotesJS'>>(getInitialState('authornotesJS'))
   const authornotesSlate = useState<TStoreProp<'authornotesSlate'>>(getInitialState('authornotesSlate'))
   const authornotesSlateReadOnly = useState<TStoreProp<'authornotesSlateReadOnly'>>(getInitialState('authornotesSlateReadOnly'))
+  const algoAutoCompletionList = useState<TStoreProp<'algoAutoCompletionList'>>(getInitialState('algoAutoCompletionList'))
+  const jsAutoCompletionList = useState<TStoreProp<'jsAutoCompletionList'>>(getInitialState('jsAutoCompletionList'))
   const feedbackCSS = useState<TStoreProp<'feedbackCSS'>>(getInitialState('feedbackCSS'))
   const feedbackHTML = useState<TStoreProp<'feedbackHTML'>>(getInitialState('feedbackHTML'))
   const feedbackJS = useState<TStoreProp<'feedbackJS'>>(getInitialState('feedbackJS'))
@@ -52,7 +56,6 @@ export default function StoreProvider(props: TProps) {
   const questionSlateReadOnly = useState<TStoreProp<'questionSlateReadOnly'>>(getInitialState('questionSlateReadOnly'))
   const section = useState<TStoreProp<'section'>>(getInitialState('section'))
   const theme = useState<TStoreProp<'theme'>>(getInitialState('theme'))
-  const autoCompletionList = useState<TStoreProp<'autoCompletionList'>>(getInitialState('autoCompletionList'))
 
   useThemeChange(theme[0])
 
@@ -60,6 +63,7 @@ export default function StoreProvider(props: TProps) {
     <Store.Provider
       {...props}
       value={{
+        algoAutoCompletionList,
         algorithm,
         algorithmPreview,
         authornotesCSS,
@@ -67,12 +71,12 @@ export default function StoreProvider(props: TProps) {
         authornotesJS,
         authornotesSlate,
         authornotesSlateReadOnly,
-        autoCompletionList,
         feedbackCSS,
         feedbackHTML,
         feedbackJS,
         feedbackSlate,
         feedbackSlateReadOnly,
+        jsAutoCompletionList,
         questionCSS,
         questionHTML,
         questionJS,

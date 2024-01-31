@@ -25,7 +25,8 @@
     "sort-keys-fix",
     "typescript-sort-keys",
     "unused-imports",
-    "perfectionist"
+    "perfectionist",
+    "sort-react-dependency-arrays"
   ],
   "settings": { "react": { "version": "detect" } },
   "overrides": [
@@ -46,6 +47,7 @@
     "simple-import-sort/imports": "warn",
     "sort-destructure-keys/sort-destructure-keys": "warn",
     "sort-keys-fix/sort-keys-fix": "warn",
+    "sort-react-dependency-arrays/sort": "warn",
     "unused-imports/no-unused-imports": "warn",
     "unused-imports/no-unused-vars": [
       "warn",

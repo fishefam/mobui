@@ -1,4 +1,4 @@
-import { Menubar } from 'shadcn/MenuBar'
+import { Menubar } from 'shadcn/Menubar'
 import { Separator } from 'shadcn/Separator'
 import { TooltipProvider } from 'shadcn/Tooltip'
 

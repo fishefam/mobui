@@ -3,14 +3,15 @@ import { Slate } from 'lib/slate'
 import { renderElement, renderLeaf } from 'lib/slate/renderer'
 import { serialize } from 'lib/slate/serialization'
 import { createBlockNode } from 'lib/slate/util'
-import { cn, prettierSync, updateCompletionList } from 'lib/util'
-import { useEffect } from 'react'
+import { cn, prettierSync, updateJsCompletionList } from 'lib/util'
+import { useEffect, useRef } from 'react'
 import { useStore } from 'react/Store'
 import { Editable, ReactEditor } from 'slate-react'
 import { TSetState } from 'type/common'
 import { TSlateEditor, TValue } from 'type/slate'
 import { TStoreProp } from 'type/store'
 
+import SlateMenu from './slate/Menubar'
 import SlateToolbar from './slate/Toolbar'
 
 export default function TextEditor() {
@@ -18,10 +19,10 @@ export default function TextEditor() {
     authornotesHTML,
     authornotesSlate,
     authornotesSlateReadOnly,
-    autoCompletionList,
     feedbackHTML,
     feedbackSlate,
     feedbackSlateReadOnly,
+    jsAutoCompletionList,
     questionHTML,
     questionSlate,
     questionSlateReadOnly,
@@ -36,7 +37,9 @@ export default function TextEditor() {
   const [_feedbackSlateReadOnly] = feedbackSlateReadOnly
   const [_questionSlate] = questionSlate
   const [_questionSlateReadOnly] = questionSlateReadOnly
-  const [, _setAutoCompletionList] = autoCompletionList
+  const [, _setjsAutoCompletionList] = jsAutoCompletionList
+
+  const contrainerRef = useRef<HTMLDivElement>(null)
 
   const editors: { editor: TSlateEditor; readOnly: boolean; section: TStoreProp<'section'> }[] = [
     { editor: _questionSlate, readOnly: _questionSlateReadOnly, section: 'question' },
@@ -56,13 +59,16 @@ export default function TextEditor() {
   useEffect(() => ReactEditor.focus(_questionSlate), [_questionSlate])
 
   return (
-    <div className="relative h-full">
+    <div
+      ref={contrainerRef}
+      className="relative h-full"
+    >
       {editors.map(({ editor, readOnly, section }) => (
         <Slate
           key={section}
           editor={editor}
           initialValue={[createBlockNode({ text: section, type: 'paragraph' })]}
-          onValueChange={(value) => handleValueChange(value, _setAutoCompletionList, setCodeValue)}
+          onValueChange={(value) => handleValueChange(value, _setjsAutoCompletionList, setCodeValue)}
         >
           <div
             className={cn(
@@ -70,7 +76,8 @@ export default function TextEditor() {
               section === currentSection && '!block',
             )}
           >
-            <div className="sticky top-0 z-10 w-full bg-white dark:bg-accent">
+            <div className="sticky top-0 z-[0] w-full bg-white dark:bg-accent">
+              <SlateMenu containerRef={contrainerRef} />
               <SlateToolbar />
             </div>
             <Editable
@@ -96,7 +103,7 @@ function handleValueChange(
   if (setCode)
     window.debouncer = setTimeout(() => {
       const html = serialize(value)
-      updateCompletionList(html, setCompletion)
+      updateJsCompletionList(html, setCompletion)
       setCode(prettierSync(html, 'html'))
     }, timeout)
 }

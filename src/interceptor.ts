@@ -7,13 +7,22 @@ import hash from 'shorthash2'
  */
 
 type TInterceptProps = {
-  [key in 'classIdKey' | 'dataKey' | 'extSwitchKey' | 'repoNameKey' | 'uidHashKey' | 'urlKey' | 'usernameKey']: string
+  [key in
+    | 'classIdKey'
+    | 'dataKey'
+    | 'extSwitchKey'
+    | 'repoNameKey'
+    | 'themeKey'
+    | 'uidHashKey'
+    | 'urlKey'
+    | 'usernameKey']: string
 }
 type TPrepareDataProps = TInterceptProps
 
 /* Local storage keys to store information for React app */
 const EXT_SWITCH_KEY = 'newInterface' // Special key
 
+const THEME_KEY = 'theme'
 const DATA_KEY = 'data'
 const EXT_URL_KEY = 'extURL'
 const UID_HASH_KEY = 'uidHash' // This is to eleminate the repeating hashing of uid later in React
@@ -29,6 +38,7 @@ if (localStorage.getItem(EXT_SWITCH_KEY) === 'on')
     dataKey: DATA_KEY,
     extSwitchKey: EXT_SWITCH_KEY,
     repoNameKey: REPO_NAME_KEY,
+    themeKey: THEME_KEY,
     uidHashKey: UID_HASH_KEY,
     urlKey: EXT_URL_KEY,
     usernameKey: USERNAME_KEY,
@@ -78,6 +88,7 @@ async function intercept({
   dataKey,
   extSwitchKey,
   repoNameKey,
+  themeKey,
   uidHashKey,
   urlKey,
   usernameKey,
@@ -85,7 +96,7 @@ async function intercept({
   /** Intercept page load and inject a new HTML template for React */
   window.stop()
   preparePage()
-  await prepareData({ classIdKey, dataKey, extSwitchKey, repoNameKey, uidHashKey, urlKey, usernameKey })
+  await prepareData({ classIdKey, dataKey, extSwitchKey, repoNameKey, themeKey, uidHashKey, urlKey, usernameKey })
   finalize()
 }
 
@@ -135,6 +146,7 @@ async function prepareData({
   dataKey,
   extSwitchKey,
   repoNameKey,
+  themeKey,
   uidHashKey,
   urlKey,
   usernameKey,
@@ -149,15 +161,27 @@ async function prepareData({
   formData.forEach((val, key) => {
     if (val.toString()) data[key] = val.toString()
   })
-  const storageItems: [string, string][] = [
-    [extSwitchKey, 'on'],
-    [urlKey, resolveUrl('')],
-    [usernameKey, username],
-    [uidHashKey, hash(data.uid ?? '')],
-    [classIdKey, data.classId ?? ''],
-    [dataKey, JSON.stringify(data)],
-    [repoNameKey, dom.querySelector('#pageName li:first-of-type')?.textContent?.trim() ?? 'Site'],
-  ]
+  const currentTheme = localStorage.getItem(themeKey)
+  const storageItems: [string, string][] = currentTheme
+    ? [
+        [themeKey, currentTheme],
+        [extSwitchKey, 'on'],
+        [urlKey, resolveUrl('')],
+        [usernameKey, username],
+        [uidHashKey, hash(data.uid ?? '')],
+        [classIdKey, data.classId ?? ''],
+        [dataKey, JSON.stringify(data)],
+        [repoNameKey, dom.querySelector('#pageName li:first-of-type')?.textContent?.trim() ?? 'Site'],
+      ]
+    : [
+        [extSwitchKey, 'on'],
+        [urlKey, resolveUrl('')],
+        [usernameKey, username],
+        [uidHashKey, hash(data.uid ?? '')],
+        [classIdKey, data.classId ?? ''],
+        [dataKey, JSON.stringify(data)],
+        [repoNameKey, dom.querySelector('#pageName li:first-of-type')?.textContent?.trim() ?? 'Site'],
+      ]
   localStorage.clear()
   for (const [key, value] of storageItems) localStorage.setItem(key, value)
 }
