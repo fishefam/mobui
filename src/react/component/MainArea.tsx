@@ -56,7 +56,8 @@ function AlgorithmEditor() {
         <Button
           className="absolute bottom-4 right-4"
           variant="secondary"
-          onClick={() => fetchAlgoValue(store, (value) => setAlgorithmPreview(value))}
+          // onClick={() => fetchAlgoValue(store, (value) => setAlgorithmPreview(value))}
+          onClick={() => fetchAlgoValue({ onSuccess: (value) => setAlgorithmPreview(value), store })}
         >
           Preview
         </Button>

@@ -9,5 +9,6 @@ import { baseConfigs } from './esbuild.config.js'
 esbuild.build({
   ...baseConfigs,
   minify: true,
+  splitting: false,
   treeShaking: true,
 })

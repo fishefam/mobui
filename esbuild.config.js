@@ -1,6 +1,7 @@
 import autoprefixer from 'autoprefixer'
 import clean from 'esbuild-plugin-clean'
 import style from 'esbuild-style-plugin'
+import { readdirSync, readFileSync } from 'fs'
 import tailwindcss from 'tailwindcss'
 
 /**
@@ -21,15 +22,17 @@ const BROWSERS = ['chromium', 'firefox']
  */
 const MANIFEST_PATH = 'manifest/v'
 
+const ASSET_PATHS = ['asset']
+
 /**
  * Represents the base build configuration for esbuild.
  * @type {import('esbuild').BuildOptions}
  */
 export const baseConfigs = {
   bundle: true,
-  entryPoints: createEntries(BROWSERS, FILES, MANIFEST_PATH),
+  entryPoints: createEntries(BROWSERS, FILES, MANIFEST_PATH, ASSET_PATHS),
   jsx: 'transform',
-  loader: { '.json': 'copy' },
+  loader: { '.asset': 'copy', '.json': 'copy' },
   logLevel: 'info',
   outdir: 'dist',
   plugins: [clean({ patterns: 'dist' }), style({ postcss: { plugins: [autoprefixer(), tailwindcss()] } })],
@@ -40,9 +43,10 @@ export const baseConfigs = {
  * @param {string[]} browsers - Array of target browsers.
  * @param {string[]} files - Array of file names to be processed.
  * @param {string} manifestPath - Path to the manifest files.
+ * @param {string[]} assetPaths - Path to the copying files.
  * @returns {Array<{in: string, out: string}>} Array of input and output paths.
  */
-function createEntries(browsers, files, manifestPath) {
+function createEntries(browsers, files, manifestPath, assetPaths) {
   const entries = browsers
     .map((browser) => files.map((file) => ({ in: file, out: `${browser}/${getFilename(file)}` })))
     .flat()
@@ -50,7 +54,16 @@ function createEntries(browsers, files, manifestPath) {
     in: `${manifestPath}${browser === 'chromium' ? 3 : 2}.json`,
     out: `${browser}/manifest`,
   }))
-  return [...entries, ...manifests]
+  const assetFiles = assetPaths.map((p) => readdirSyncResursive('src/' + p)).flat()
+  const copyingFiles = assetFiles
+    .map((file) =>
+      browsers.map((browser) => ({
+        in: file.replace('src/', ''),
+        out: `${browser}/${file.replace(/\.asset|src\/|\.\w+$/g, '')}`,
+      })),
+    )
+    .flat()
+  return [...entries, ...manifests, ...copyingFiles]
 }
 
 /**
@@ -60,4 +73,27 @@ function createEntries(browsers, files, manifestPath) {
  */
 function getFilename(file) {
   return file.replace(/(.*\/)|(\.tsx*$)/g, '')
+}
+
+/**
+ * Description
+ * @param {string} root
+ * @returns {string[]}
+ */
+function readdirSyncResursive(root) {
+  const _root = root.replace(/^\/|\/$/g, '')
+  const files = []
+  const dirs = []
+  const filesInDir = readdirSync(_root)
+  for (const file of filesInDir)
+    try {
+      const path = `${_root}/${file}`
+      readFileSync(path)
+      files.push(path)
+    } catch {
+      const path = `${_root}/${file}`
+      dirs.push(path)
+    }
+  for (const dir of dirs) files.push(...readdirSyncResursive(dir))
+  return files
 }

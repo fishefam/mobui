@@ -2,6 +2,7 @@ import { saveAs } from 'file-saver'
 import { asBlob } from 'html-docx-js-typescript'
 import { saveData } from 'lib/mobius'
 import { serialize } from 'lib/slate/serialization'
+import { formURL, join } from 'lib/util'
 import { useStore } from 'react/Store'
 import {
   MenubarContent,
@@ -47,14 +48,12 @@ export default function FileMenu() {
   const [_questionName] = questionName
   const [, _setIsUnsaved] = isUnsaved
 
-  const classId = localStorage.getItem('classId') ? (localStorage.getItem('classId') as string) : '#'
-
   return (
     <MenubarMenu>
       <MenubarTrigger className="text-xs">File</MenubarTrigger>
       <MenubarContent>
         <MenubarItem asChild>
-          <a href={`/${classId}/content/addquestion`}>
+          <a href={formURL('content/addquestion')}>
             New Question <MenubarShortcut>⌘N</MenubarShortcut>
           </a>
         </MenubarItem>
@@ -62,12 +61,11 @@ export default function FileMenu() {
           onClick={() =>
             saveData({
               algorithm: _algorithm,
-              authornotesHTML: _authornotesHTML,
-              callback: () => _setIsUnsaved(true),
-              classId,
-              feedbackHTML: _feedbackHTML,
+              authornotes: join('', _authornotesHTML, _authornotesCSS, _authornotesJS),
+              feedback: join('', _feedbackHTML, _feedbackCSS, _feedbackJS),
               isPreview: false,
-              questionHTML: _questionHTML,
+              onSuccess: () => _setIsUnsaved(true),
+              question: join('', _questionHTML, _questionCSS, _questionJS),
               questionName: _questionName,
             })
           }
@@ -95,15 +93,11 @@ export default function FileMenu() {
           </MenubarSubContent>
         </MenubarSub>
         <MenubarSeparator />
-        <MenubarItem
-          onClick={() => {
-            window.print()
-          }}
-        >
+        <MenubarItem onClick={window.print}>
           Print... <MenubarShortcut>⌘P</MenubarShortcut>
         </MenubarItem>
         <MenubarSeparator />
-        <MenubarItem onClick={exit}>Exit</MenubarItem>
+        <MenubarItem onClick={history.back}>Exit</MenubarItem>
       </MenubarContent>
     </MenubarMenu>
   )
@@ -111,8 +105,4 @@ export default function FileMenu() {
 
 function getHTML(editor: TSlateEditor) {
   return serialize(editor.children as TValue)
-}
-
-function exit() {
-  history.back()
 }

@@ -25,7 +25,7 @@ type TGetSelectionSliceReturn<T extends 'anchor' | 'focus' | 'pair'> = T extends
  */
 export function generateNodeId() {
   const hash = localStorage.getItem('uidHash')!
-  return `${hash.length ? hash : nanoid(5)}-${nanoid()}`
+  return `node-${hash.length ? hash : nanoid(5)}-${nanoid()}`
 }
 
 /**

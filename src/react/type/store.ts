@@ -1,13 +1,11 @@
 import { Completion } from '@codemirror/autocomplete'
 
-import { TSetState } from './common'
+import { TLanguage, TSetState } from './common'
+import { TNormalizedSection } from './data'
 import { TSlateEditor } from './slate'
 
-export type TSection = 'algorithm' | 'authornotes' | 'feedback' | 'question'
-export type TStorePrefix = 'algorithm' | 'authornotes' | 'feedback' | 'question'
-export type TLanguage = 'CSS' | 'HTML' | 'JS'
-export type TStoreProps<T> = [state: T, setState: TSetState<T>]
 export type TTheme = 'dark' | 'light'
+export type TStoreProps<T> = [state: T, setState: TSetState<T>]
 
 export type TStore = {
   algoAutoCompletionList: TStoreProps<Completion[]>
@@ -31,10 +29,10 @@ export type TStore = {
   questionName: TStoreProps<string>
   questionSlate: TStoreProps<TSlateEditor>
   questionSlateReadOnly: TStoreProps<boolean>
-  section: TStoreProps<TSection>
+  section: TStoreProps<TNormalizedSection>
   theme: TStoreProps<TTheme>
 }
-export type TStoreCodeKey = Extract<keyof TStore, `${TStorePrefix}${TLanguage}`>
+export type TStoreCodeKey = Extract<keyof TStore, `${TNormalizedSection}${TLanguage}`>
 export type TStoreProp<T extends keyof TStore, U extends 'pair' | 'setstate' | 'state' = 'state'> = U extends 'state' ? TStore[T][0] : U extends 'setstate' ? TStore[T][1] : TStore[T]
 
 export type TLocalStorageKey = 'classId' | 'data' | 'extURL' | 'reponame' | 'uidHash' | 'username'

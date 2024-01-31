@@ -12,6 +12,23 @@ import { twMerge } from 'tailwind-merge'
 import { TObject, TSetState } from 'type/common'
 import { TLocalStorageKey, TStore, TStoreCodeKey } from 'type/store'
 
+import { getLocalStorage } from './data'
+
+export function getBaseURL() {
+  return location.origin
+}
+
+export function formURL<T extends string>(path: T, noClassId = false) {
+  const { classId } = getLocalStorage()
+  const _classId = classId.length ? classId : '#'
+  const _path = path.replace(/^\//, '')
+  return `${location.origin}${noClassId ? '' : `/${_classId}`}/${_path}?${document.cookie}`
+}
+
+export function join(separator: string, ...strings: string[]) {
+  return strings.join(separator)
+}
+
 /**
  * Generates a BEM (Block Element Modifier) class name based on the provided parameters.
  *

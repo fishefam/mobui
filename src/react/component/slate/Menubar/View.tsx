@@ -1,6 +1,7 @@
-import { fetchAlgoValue, fetchLegacyPreviewPage } from 'lib/mobius'
+import { fetchAlgoValue, fetchLegacyPreviewPage, joinMobiusData } from 'lib/mobius'
 import { ReactEditor } from 'lib/slate'
 import { serialize } from 'lib/slate/serialization'
+import { formURL } from 'lib/util'
 import { Check, Eye, Fullscreen, Pencil, ReceiptText } from 'lucide-react'
 import { RefObject, useState } from 'react'
 import { useStore } from 'react/Store'
@@ -25,7 +26,8 @@ import {
   MenubarTrigger,
 } from 'shadcn/Menubar'
 import { useSlateStatic } from 'slate-react'
-import { TSetState } from 'type/common'
+import { TPreviewWindow, TSetState } from 'type/common'
+import { TQueryPath } from 'type/data'
 import { TSlateEditor, TValue } from 'type/slate'
 import { TStore } from 'type/store'
 
@@ -35,13 +37,32 @@ export default function ViewMenu({ containerRef }: TViewMenuProps) {
   const editor = useSlateStatic()
   const store = useStore()
   const [html, setHTML] = useState('')
-  const { algorithm, authornotesHTML, feedbackHTML, questionHTML, questionName, section } = store
+  const {
+    algorithm,
+    authornotesCSS,
+    authornotesHTML,
+    authornotesJS,
+    feedbackCSS,
+    feedbackHTML,
+    feedbackJS,
+    questionCSS,
+    questionHTML,
+    questionJS,
+    questionName,
+    section,
+  } = store
   const [currentSection] = section
 
   const [_algorithm] = algorithm
   const [_authornotesHTML] = authornotesHTML
   const [_feedbackHTML] = feedbackHTML
   const [_questionHTML] = questionHTML
+  const [_authornotesCSS] = authornotesCSS
+  const [_feedbackCSS] = feedbackCSS
+  const [_questionCSS] = questionCSS
+  const [_authornotesJS] = authornotesJS
+  const [_feedbackJS] = feedbackJS
+  const [_questionJS] = questionJS
   const [_questionName] = questionName
 
   const [isEditorReadOnly, setIsEditorReadOnly] =
@@ -105,22 +126,10 @@ export default function ViewMenu({ containerRef }: TViewMenuProps) {
                     onClick={() =>
                       fetchLegacyPreviewPage({
                         algorithm: _algorithm,
-                        authornotesHTML: _authornotesHTML,
-                        callback: (html) => {
-                          const previewWindow = window.open(
-                            'https://mohawk-math.mobius.cloud/contentmanager/DisplayQuestion.do',
-                            'previewWindow',
-                            'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=960,height=800',
-                          )
-                          if (previewWindow) {
-                            previewWindow.onload = () => {
-                              console.log(html)
-                              previewWindow.document.body.innerHTML = html
-                            }
-                          }
-                        },
-                        feedbackHTML: _feedbackHTML,
-                        questionHTML: _questionHTML,
+                        authornotes: joinMobiusData('authornotes', _authornotesHTML, _authornotesCSS, _authornotesJS),
+                        feedback: joinMobiusData('feedback', _feedbackHTML, _feedbackCSS, _feedbackJS),
+                        onSuccess: displayLegacyPreview,
+                        question: joinMobiusData('question', _questionHTML, _questionCSS, _questionJS),
                         questionName: _questionName,
                       })
                     }
@@ -157,10 +166,49 @@ function handleFullscreen(editor: TSlateEditor, containerRef: RefObject<HTMLElem
 }
 
 function previewDocument(store: TStore, editor: TSlateEditor, setHTML: TSetState<string>) {
-  fetchAlgoValue(store, (value) => {
-    let html = serialize(editor.children as TValue)
-    const entries = Object.entries(value).map(([key, { value }]) => ['\\$' + key, value])
-    for (const [key, value] of entries) html = html.replace(new RegExp(key, 'g'), value)
-    setHTML(html)
+  fetchAlgoValue({
+    onSuccess: (value) => {
+      let html = serialize(editor.children as TValue)
+      const entries = Object.entries(value).map(([key, { value }]) => ['\\$' + key, value])
+      for (const [key, value] of entries) html = html.replace(new RegExp(key, 'g'), value)
+      setHTML(html)
+    },
+    store,
   })
+}
+
+function displayLegacyPreview(html: string) {
+  if (window.previewWindow) window.previewWindow.close()
+
+  const previewWindow = window.open(
+    formURL<TQueryPath>('contentmanager/DisplayQuestion.do', true),
+    'previewWindow',
+    'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=960,height=800',
+  ) as TPreviewWindow | null
+  if (previewWindow) {
+    window.previewWindow = previewWindow
+
+    previewWindow.window.onload = () => {
+      previewWindow.window.document.body.innerHTML = html
+      previewWindow.window.mathJaxConfigUrl =
+        'https://cdn.mobius.cloud/third-party/locked/MathEditor/1381409/MathEditor/../../../../740fc47/mathjax-config/0.0.0/MathJaxConfig.js'
+
+      const script = previewWindow.window.document.createElement('script')
+      const attribute = [
+        'src',
+        'https://cdn.mobius.cloud/third-party/locked/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML,https://cdn.mobius.cloud/third-party/locked/MathEditor/1381409/MathEditor/../../../../740fc47/mathjax-config/0.0.0/MathJaxConfig.js&delayStartupUntil=configured',
+      ]
+      script.setAttribute(attribute[0], attribute[1])
+      previewWindow.window.document.body.appendChild(script)
+
+      // previewWindow.window.onload = () => {
+      // }
+
+      setTimeout(() => {
+        previewWindow.window.console.log(previewWindow.window.document.readyState)
+        previewWindow.window.console.log(previewWindow.window.MathJax)
+        previewWindow.window.MathJax.Hub.Queue(['Typeset', previewWindow.window.MathJax.Hub])
+      }, 1000)
+    }
+  }
 }

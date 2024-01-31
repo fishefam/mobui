@@ -1,118 +1,100 @@
-import type {
-  TCode_NormalizedData,
-  TCode_RawData,
-  TCodeKey,
-  TInfo_NormalizedData,
-  TInfo_RawData,
-  TInfoData,
-  TText_NormalizedData,
-  TText_RawData,
-  TTextKey,
-} from 'type/data'
+import { TAlgoResponseValue, TLocalStorageKey, TPreviewDataKey, TSaveDataKey } from 'type/data'
 
-export function getInfo_RawData(): TInfo_RawData {
-  const {
-    actionId = '',
-    classId = '',
-    customCss = '',
-    name = '',
-    uid = '',
-  } = JSON.parse(localStorage.getItem(MOBIUS_DATA_KEY)!) as TInfo_RawData
-  return { actionId, classId, customCss, name, uid }
+import { getBaseURL } from './util'
+
+type TPrepareSaveDataBodyProps = {
+  algorithm: string
+  authornotes: string
+  feedback: string
+  isPreview: boolean
+  question: string
+  questionName: string
 }
-export function getText_RawData(): TText_RawData {
-  const {
-    authorNotesEditor = '',
-    commentEditor = '',
-    editor = '',
-  } = JSON.parse(localStorage.getItem(MOBIUS_DATA_KEY)!) as TText_RawData
-  return { authorNotesEditor, commentEditor, editor }
-}
-export function getCode_RawData(): TCode_RawData {
-  const { algorithm = '' } = JSON.parse(localStorage.getItem(MOBIUS_DATA_KEY)!) as TCode_RawData
-  return { algorithm }
+type TSubmitDataProps<T extends TAlgoResponseValue | string> = {
+  body: string
+  isAlgorithm: boolean
+  onError?: (value: T) => void
+  onSuccess: (value: T) => void
+  url: string
 }
 
-export function normalizeInfoData(data: TInfo_RawData): TInfo_NormalizedData {
-  const { actionId = '', classId = '', customCss = '', name = '', uid = '' } = data
-  return { actionId, classId, customCss, name, uid }
-}
-export function normalizeCodeData(data: TCode_RawData): TCode_NormalizedData {
-  const keys = Object.keys(data) as TCodeKey[]
-  const values = Object.values(data)
-  const transforms = values.map((v) => ({ code: v }))
-  const merge = keys.map((k, i) => [k, transforms[i]])
-  return Object.fromEntries(merge)
-}
-export function normalizeTextData(data: TText_RawData): TText_NormalizedData {
-  const keys = Object.keys(data) as TTextKey[]
-  const values = Object.values(data)
-  const transforms = values.map((v) => ({
-    css: prettierSync(extractHTML(v, 'css'), 'css'),
-    html: prettierSync(extractHTML(v, 'html'), 'html'),
-    javascript: prettierSync(extractHTML(v, 'javascript'), 'javascript'),
-  }))
-  const merge = keys.map((k, i) => [k, transforms[i]])
-  return Object.fromEntries(merge)
+export function getSecurityToken() {
+  return document.cookie.replace('AntiCsrfToken=', '')
 }
 
-// export function prepareTextData(data: TText_NormalizedData, _?: object): TTextData {
-//   const keys: TText_NormalizedKey[] = ['authorNotes', 'feedback', 'question']
-//   const values = Object.values(data)
-//   const transforms = values.map<TText_FinalValues>((v) => ({
-//     codemirror: {
-//       css: createCodeMirrorBaseValues(v.css),
-//       html: createCodeMirrorBaseValues(v.html),
-//       javascript: createCodeMirrorBaseValues(v.javascript),
-//     },
-//     slate: createSlateBaseValues(deserialize(v)),
-//   }))
-//   const merge = keys.map((k, i) => [k, transforms[i]])
-//   return Object.fromEntries(merge)
-// }
-
-export function prepareInfoData() {
-  return getInfo_RawData() as TInfoData
+export function getLocalStorage() {
+  const keys: TLocalStorageKey[] = [
+    'classId',
+    'data',
+    'extURL',
+    'newInterface',
+    'reponame',
+    'uid',
+    'uidHash',
+    'username',
+  ]
+  const values = keys.map((key) => localStorage.getItem(key) as string)
+  const entries = keys.map((key, i) => [key, values[i]])
+  return Object.fromEntries(entries) as { [key in TLocalStorageKey]: string }
 }
 
-// export function prepareCodeData(
-//   data: TCode_NormalizedData,
-//   options?: {
-//     codeStateConfig?: EditorViewConfig
-//     codeViewConfig?: EditorStateConfig
-//     plateEditorConfig?: CreatePlateEditorOptions<TDocument, PlateEditor<TDocument>>
-//   },
-// ): TCodeData {
-//   const keys: (keyof TCodeData)[] = ['algorithm']
-//   const values = Object.values(data)
-//   const transforms = values.map<TFinalCodeDataProps>((v) => ({
-//     code: {
-//       state: EditorState.create(options?.codeStateConfig),
-//       value: v.code,
-//       view: new EditorView(options?.codeViewConfig),
-//     },
-//   }))
-//   const merge = keys.map((k, i) => [k, transforms[i]])
-//   return Object.fromEntries(merge)
-// }
+export function prepareSaveDataBody({
+  algorithm,
+  authornotes,
+  feedback,
+  isPreview,
+  question,
+  questionName,
+}: TPrepareSaveDataBodyProps) {
+  const { classId, uid } = getLocalStorage()
+  const formData = new FormData()
+  const data: [TSaveDataKey, string][] = [
+    ['actionId', isPreview ? 'preview' : 'savedraft'],
+    ['adaptive', 'false'],
+    ['algorithm', algorithm],
+    ['AntiCsrfToken', getSecurityToken()],
+    ['authorNotes', authornotes],
+    ['authorNotesEditor', authornotes],
+    ['classId', classId],
+    ['comment', feedback],
+    ['commentEditor', feedback],
+    ['editor', question],
+    ['hasUnsavedQuestion', 'Unsaved changes to the current question will be lost.'],
+    ['name', questionName],
+    ['questionText', question],
+    ['uid', uid],
+  ]
+  for (const [key, value] of data) formData.set(key, value)
+  return new URLSearchParams(formData as unknown as URLSearchParams).toString()
+}
 
-// export function isTextData(preparedData: TCodeData | TTextData): preparedData is TTextData {
-//   const data = preparedData as TTextData
-//   return typeof data.authorNotes !== 'undefined'
-// }
+export function preparePreviewDataBody(questionDefinition: string, version: string) {
+  const formData = new FormData()
+  const data: [TPreviewDataKey, string][] = [
+    ['actionID', 'display'],
+    ['algorithmic', 'false'],
+    ['AntiCsrfToken', getSecurityToken()],
+    ['baseUrl', getBaseURL()],
+    ['error', 'false'],
+    ['errorMsg', ''],
+    ['questionDefinition', questionDefinition],
+    ['slideNumber', ''],
+    ['version', version],
+  ] as const
+  for (const [key, value] of data) formData.set(key, value)
+  return new URLSearchParams(formData as unknown as URLSearchParams).toString()
+}
 
-// function createCodeMirrorBaseValues(
-//   value: string,
-//   configs?: { state?: EditorStateConfig; view?: EditorViewConfig },
-// ): TBaseValues<'CodeMirror'> {
-//   return { state: EditorState.create(configs?.state), value, view: new EditorView(configs?.view) }
-// }
-
-// function createSlateBaseValues(value: TValue): TBaseValues<'Slate'> {
-//   return { state: createState(), value }
-// }
-
-// function isCodeMirrorData(preparedData: TCodeData | TTextData): preparedData is TCodeData {
-//   const data = preparedData as TCodeData
-//   return typeof data.algorithm !== 'undefined'
-// }
+export function submitData<T extends TAlgoResponseValue | string>({
+  body,
+  isAlgorithm,
+  onError,
+  onSuccess,
+  url,
+}: TSubmitDataProps<T>) {
+  const headers = { 'Content-Type': isAlgorithm ? 'application/json' : 'application/x-www-form-urlencoded' }
+  fetch(url, { body, headers, method: 'POST' })
+    .then((response) => (isAlgorithm ? response.json() : response.text()))
+    .then((value) => onSuccess(value as T))
+    .catch((error) => (onError ? onError(error) : null))
+}
