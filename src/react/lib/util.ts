@@ -1,7 +1,13 @@
 import { Completion, snippetCompletion } from '@codemirror/autocomplete'
-import prettify, { LanguageNames } from '@liquify/prettify'
 import { type ClassValue, clsx } from 'clsx'
 import { customAlphabet } from 'nanoid'
+import { Options } from 'prettier'
+import babel from 'prettier/plugins/babel'
+import estree from 'prettier/plugins/estree'
+import html from 'prettier/plugins/html'
+import css from 'prettier/plugins/postcss'
+import typescript from 'prettier/plugins/typescript'
+import { format } from 'prettier/standalone'
 import { twMerge } from 'tailwind-merge'
 import { TObject, TSetState } from 'type/common'
 import { TLocalStorageKey } from 'type/store'
@@ -75,21 +81,20 @@ export function hasString<T extends string>(strings: T[], value = ''): value is 
   return strings.includes(value as T)
 }
 
-export function prettier(value: string, cb: (result: string) => void) {
-  prettify.format?.(value, { preserveLine: 1, wrap: 100 }).then(cb)
-}
+export function prettier(value: string, language: 'ALGORITHM' | 'CSS' | 'HTML' | 'JS') {
+  const option: Options = {
+    parser: language === 'HTML' ? 'html' : language === 'CSS' ? 'css' : 'typescript',
+    plugins: language === 'HTML' ? [babel, estree, html] : language === 'CSS' ? [css] : [typescript, estree, babel],
+  }
 
-export function prettierSync(value: string, language: LanguageNames) {
-  return (
-    prettify.formatSync?.(value, {
-      crlf: false,
-      language,
-      mode: 'beautify',
-      preserveLine: 1,
-      style: { quoteConvert: 'double', sortProperties: true, sortSelectors: true },
-      wrap: 100,
-    }) ?? ''
-  )
+  return format(value, {
+    ...option,
+    htmlWhitespaceSensitivity: 'ignore',
+    printWidth: 80,
+    semi: true,
+    trailingComma: 'none',
+    useTabs: false,
+  })
 }
 
 export function getBaseJsCompletion() {

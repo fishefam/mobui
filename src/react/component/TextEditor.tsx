@@ -3,7 +3,7 @@ import { Slate } from 'lib/slate'
 import { renderElement, renderLeaf } from 'lib/slate/renderer'
 import { serialize } from 'lib/slate/serialization'
 import { createBlockNode } from 'lib/slate/util'
-import { cn, prettierSync, updateJsCompletionList } from 'lib/util'
+import { cn, prettier, updateJsCompletionList } from 'lib/util'
 import { useRef } from 'react'
 import { useStore } from 'react/Store'
 import { Editable } from 'slate-react'
@@ -114,7 +114,7 @@ function handleValueChange(
     window.debouncer = setTimeout(() => {
       const html = serialize(value)
       updateJsCompletionList(html, setCompletion)
-      setCode(prettierSync(html, 'html'))
+      prettier(html, 'HTML').then((html) => setCode(html))
       setIsUnsaved(true)
     }, timeout)
 }

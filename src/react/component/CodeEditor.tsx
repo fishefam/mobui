@@ -4,9 +4,11 @@ import { hyperLink } from '@uiw/codemirror-extensions-hyper-link'
 import { langs } from '@uiw/codemirror-extensions-langs'
 import { copilot, githubLight } from '@uiw/codemirror-themes-all'
 import ReactCodeMirror from '@uiw/react-codemirror'
-import { getAlgoCompletionList, getBaseJsCompletion, updateJsCompletionList } from 'lib/util'
+import { getAlgoCompletionList, getBaseJsCompletion, prettier, updateJsCompletionList } from 'lib/util'
+import { Settings2 } from 'lucide-react'
 import { useCallback, useEffect } from 'react'
 import { useStore } from 'react/Store'
+import { Dropdown, DropdownContent, DropdownItem, DropdownTrigger } from 'shadcn/Dropdown'
 import { TSetState } from 'type/common'
 import { TStore, TStoreCodeKey } from 'type/store'
 
@@ -46,7 +48,27 @@ export default function CodeEditor({ language }: TCodeEditorProps) {
 
   return (
     <>
-      <div className="h-5 px-3 py-1 text-xs font-bold">{language}</div>
+      <div className="flex w-full items-center justify-between px-3">
+        <div className="h-5 py-1 text-xs font-bold">{language}</div>
+        <Dropdown>
+          <DropdownTrigger className="mt-1 cursor-default rounded-sm p-2 hover:bg-accent focus:outline-none">
+            <div>
+              <Settings2 className="h-3 w-3" />
+            </div>
+          </DropdownTrigger>
+          <DropdownContent>
+            <DropdownItem
+              onClick={() => {
+                prettier(getCodeStore(store, language)[0], language).then((result) =>
+                  getCodeStore(store, language)[1](result),
+                )
+              }}
+            >
+              Format
+            </DropdownItem>
+          </DropdownContent>
+        </Dropdown>
+      </div>
       <ReactCodeMirror
         placeholder={placeholder}
         style={{ height: 'calc(100% - 1.25rem)' }}
