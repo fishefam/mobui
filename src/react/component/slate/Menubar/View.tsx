@@ -1,4 +1,3 @@
-import { getLocalStorage } from 'lib/data'
 import { fetchAlgoValue, fetchLegacyPreviewPage, joinMobiusData } from 'lib/mobius'
 import { ReactEditor } from 'lib/slate'
 import { serialize } from 'lib/slate/serialization'
@@ -166,6 +165,7 @@ function handleFullscreen(editor: TSlateEditor, containerRef: RefObject<HTMLElem
   ReactEditor.focus(editor)
 }
 
+//sdkvsadv
 function previewDocument(store: TStore, editor: TSlateEditor, setHTML: TSetState<string>) {
   fetchAlgoValue({
     onSuccess: (value) => {
@@ -179,33 +179,37 @@ function previewDocument(store: TStore, editor: TSlateEditor, setHTML: TSetState
 }
 
 function displayLegacyPreview(html: string) {
-  if (window.previewWindow) window.previewWindow.close()
-
   const previewWindow = window.open(
     formURL<TQueryPath>('contentmanager/DisplayQuestion.do', true),
     'previewWindow',
     'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=960,height=800',
-  ) as TPreviewWindow | null
-  if (previewWindow) {
-    window.previewWindow = previewWindow
-
+  )
+  if (previewWindow)
     previewWindow.window.onload = () => {
-      const { extURL } = getLocalStorage()
-      const scriptNames = ['MathJaxConfig.js', 'MathJax.js']
+      const configURL =
+        'https://cdn.mobius.cloud/third-party/locked/MathEditor/1381409/MathEditor/../../../../740fc47/mathjax-config/0.0.0/MathJaxConfig.js'
+      const configScript =
+        'config_options = {"MathJaxCDN":"https://cdn.mobius.cloud/third-party/locked/mathjax/2.7.2/"}'
+      const sources = [
+        'https://cdn.mobius.cloud/third-party/locked/mathjax/2.7.2/MathJax.js?config=TeX-AMS-MML_HTMLorMML',
+        'https://cdn.mobius.cloud/third-party/locked/MathEditor/1381409/MathEditor/../../../../740fc47/mathjax-config/0.0.0/MathJaxConfig.js&delayStartupUntil=configured',
+      ]
+
       previewWindow.window.document.body.innerHTML = html
-      previewWindow.window.mathJaxConfigUrl = `${extURL}/asset/${scriptNames[0]}`
-
-      for (const name of scriptNames) {
-        const script = previewWindow.window.document.createElement('script')
-        script.setAttribute('src', `${extURL}/asset/${name}`)
-        previewWindow.window.document.body.appendChild(script)
-      }
-
-      setTimeout(() => {
-        previewWindow.window.console.log(previewWindow.window.document.readyState)
-        previewWindow.window.console.log(previewWindow.window.MathJax)
-        previewWindow.window.MathJax.Hub.Queue(['Typeset', previewWindow.window.MathJax.Hub])
-      }, 1000)
+      typesetMathJax(sources, configScript, configURL, previewWindow)
     }
+}
+
+function typesetMathJax(sources: string[], configScript: string, configURL: string, previewWindow: TPreviewWindow) {
+  previewWindow.window.mathJaxConfigUrl = configURL
+
+  const config = previewWindow.window.document.createElement('script')
+  config.textContent = configScript
+  previewWindow.window.document.body.appendChild(config)
+
+  for (const src of sources) {
+    const script = previewWindow.window.document.createElement('script')
+    script.setAttribute('src', src)
+    previewWindow.window.document.body.appendChild(script)
   }
 }
