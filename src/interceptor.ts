@@ -11,7 +11,13 @@ type TInterceptProps = {
     | 'classIdKey'
     | 'dataKey'
     | 'extSwitchKey'
+    | 'previewFormElementIdKey'
+    | 'previewFormElementIdValue'
+    | 'reactElementIdKey'
+    | 'reactElementIdValue'
     | 'repoNameKey'
+    | 'rootLoaderElementIdKey'
+    | 'rootLoaderElementIdValue'
     | 'themeKey'
     | 'uidHashKey'
     | 'uidKey'
@@ -23,14 +29,21 @@ type TPrepareDataProps = TInterceptProps
 /* Local storage keys to store information for React app */
 const EXT_SWITCH_KEY = 'newInterface' // Special key
 
-const THEME_KEY = 'theme'
+const CLASS_ID_KEY = 'classId'
 const DATA_KEY = 'data'
 const EXT_URL_KEY = 'extURL'
+const PREVIEW_FORM_ELEMENT_ID_KEY = 'previewFormContainerId'
+const REACT_ELEMENT_ID_KEY = 'reactRootId'
+const REPO_NAME_KEY = 'reponame'
+const ROOT_LOADER_ELEMENT_ID_KEY = 'rootLoaderId'
+const THEME_KEY = 'theme'
 const UID_HASH_KEY = 'uidHash' // This is to eleminate the repeating hashing of uid later in React
 const UID_KEY = 'uid'
-const CLASS_ID_KEY = 'classId'
 const USERNAME_KEY = 'username'
-const REPO_NAME_KEY = 'reponame'
+
+const PREVIEW_FORM_ELEMENT_ID_VALUE = 'preview-form-container'
+const REACT_ELEMENT_ID_VALUE = 'root'
+const ROOT_LOADER_ELEMENT_ID_VALUE = 'root-loader'
 
 if (localStorage.getItem(EXT_SWITCH_KEY) === 'off') attachSwitchButton(EXT_SWITCH_KEY)
 
@@ -39,7 +52,13 @@ if (localStorage.getItem(EXT_SWITCH_KEY) !== 'off')
     classIdKey: CLASS_ID_KEY,
     dataKey: DATA_KEY,
     extSwitchKey: EXT_SWITCH_KEY,
+    previewFormElementIdKey: PREVIEW_FORM_ELEMENT_ID_KEY,
+    previewFormElementIdValue: PREVIEW_FORM_ELEMENT_ID_VALUE,
+    reactElementIdKey: REACT_ELEMENT_ID_KEY,
+    reactElementIdValue: REACT_ELEMENT_ID_VALUE,
     repoNameKey: REPO_NAME_KEY,
+    rootLoaderElementIdKey: ROOT_LOADER_ELEMENT_ID_KEY,
+    rootLoaderElementIdValue: ROOT_LOADER_ELEMENT_ID_VALUE,
     themeKey: THEME_KEY,
     uidHashKey: UID_HASH_KEY,
     uidKey: UID_KEY,
@@ -50,24 +69,24 @@ if (localStorage.getItem(EXT_SWITCH_KEY) !== 'off')
 function attachSwitchButton(extSwitchKey: string) {
   window.onload = () => {
     const button = document.createElement('button')
-    button.textContent = 'Modern UI               '
     button.style.backgroundColor = '#222'
-    button.style.zIndex = '9999999'
     button.style.borderRadius = '4px'
     button.style.borderStyle = 'none'
     button.style.boxSizing = 'border-box'
-    button.style.padding = '6px 12px'
     button.style.color = '#fff'
     button.style.cursor = 'pointer'
     button.style.display = 'inline-block'
-    button.style.position = 'absolute'
-    button.style.right = '0'
     button.style.fontSize = '16px'
     button.style.fontWeight = '700'
     button.style.margin = '0'
     button.style.outline = 'none'
     button.style.overflow = 'hidden'
+    button.style.padding = '6px 12px'
+    button.style.position = 'absolute'
+    button.style.right = '0'
     button.style.textAlign = 'center'
+    button.style.zIndex = '9999999'
+    button.textContent = 'Modern UI               '
     button.onclick = (event) => {
       event.preventDefault()
       localStorage.setItem(extSwitchKey, 'on')
@@ -90,7 +109,13 @@ async function intercept({
   classIdKey,
   dataKey,
   extSwitchKey,
+  previewFormElementIdKey,
+  previewFormElementIdValue,
+  reactElementIdKey,
+  reactElementIdValue,
   repoNameKey,
+  rootLoaderElementIdKey,
+  rootLoaderElementIdValue,
   themeKey,
   uidHashKey,
   uidKey,
@@ -99,12 +124,18 @@ async function intercept({
 }: TInterceptProps) {
   /** Intercept page load and inject a new HTML template for React */
   window.stop()
-  preparePage()
+  preparePage(reactElementIdValue, previewFormElementIdValue, rootLoaderElementIdValue)
   await prepareData({
     classIdKey,
     dataKey,
     extSwitchKey,
+    previewFormElementIdKey,
+    previewFormElementIdValue,
+    reactElementIdKey,
+    reactElementIdValue,
     repoNameKey,
+    rootLoaderElementIdKey,
+    rootLoaderElementIdValue,
     themeKey,
     uidHashKey,
     uidKey,
@@ -114,7 +145,7 @@ async function intercept({
   finalize()
 }
 
-function preparePage() {
+function preparePage(reactElementId: string, previewFormElementId: string, rootLoaderElementId: string) {
   document.querySelector('html')!.innerHTML = `
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -122,8 +153,9 @@ function preparePage() {
         <link rel="icon" type="image/x-icon" href="${resolveUrl('assets/favicon.ico')}">
     </head>
     <body>
-        <div id="root"></div> 
-        <div id="root-loader" style="position:fixed;height:100vh;width:100vw;display:grid;place-items:center;">
+        <div id="${reactElementId}"></div> 
+        <div id="${previewFormElementId}"></div>
+        <div id="${rootLoaderElementId}" style="position:fixed;height:100vh;width:100vw;display:grid;place-items:center;">
             <style>
                 @keyframes spin {
                   from { transform: rotate(0deg); }
@@ -159,7 +191,13 @@ async function prepareData({
   classIdKey,
   dataKey,
   extSwitchKey,
+  previewFormElementIdKey,
+  previewFormElementIdValue,
+  reactElementIdKey,
+  reactElementIdValue,
   repoNameKey,
+  rootLoaderElementIdKey,
+  rootLoaderElementIdValue,
   themeKey,
   uidHashKey,
   uidKey,
@@ -182,7 +220,10 @@ async function prepareData({
         [classIdKey, data.classId ?? ''],
         [dataKey, JSON.stringify(data)],
         [extSwitchKey, 'on'],
+        [previewFormElementIdKey, previewFormElementIdValue],
+        [reactElementIdKey, reactElementIdValue],
         [repoNameKey, dom.querySelector('#pageName li:first-of-type')?.textContent?.trim() ?? 'Site'],
+        [rootLoaderElementIdKey, rootLoaderElementIdValue],
         [themeKey, currentTheme],
         [uidHashKey, hash(data.uid ?? '')],
         [uidKey, data.uid ?? ''],
@@ -193,7 +234,10 @@ async function prepareData({
         [classIdKey, data.classId ?? ''],
         [dataKey, JSON.stringify(data)],
         [extSwitchKey, 'on'],
+        [previewFormElementIdKey, previewFormElementIdValue],
+        [reactElementIdKey, reactElementIdValue],
         [repoNameKey, dom.querySelector('#pageName li:first-of-type')?.textContent?.trim() ?? 'Site'],
+        [rootLoaderElementIdKey, rootLoaderElementIdValue],
         [uidHashKey, hash(data.uid ?? '')],
         [uidKey, data.uid ?? ''],
         [urlKey, resolveUrl('')],
