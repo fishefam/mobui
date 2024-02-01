@@ -23,13 +23,14 @@ export type TStore = {
   feedbackSlateReadOnly: TStoreProps<boolean>
   isUnsaved: TStoreProps<boolean>
   jsAutoCompletionList: TStoreProps<Completion[]>
-  questionCSS: TStoreProps<string>
-  questionHTML: TStoreProps<string>
-  questionJS: TStoreProps<string>
-  questionName: TStoreProps<string>
-  questionSlate: TStoreProps<TSlateEditor>
-  questionSlateReadOnly: TStoreProps<boolean>
-  section: TStoreProps<TNormalizedSection>
+  panelLayout: TStoreProps<'left'|'right'|'top'>,
+  questionCSS: TStoreProps<string>,
+  questionHTML: TStoreProps<string>,
+  questionJS: TStoreProps<string>,
+  questionName: TStoreProps<string>,
+  questionSlate: TStoreProps<TSlateEditor>,
+  questionSlateReadOnly: TStoreProps<boolean>,
+  section: TStoreProps<TNormalizedSection>,
   theme: TStoreProps<TTheme>
 }
 export type TStoreCodeKey = Extract<keyof TStore, `${TNormalizedSection}${TLanguage}`>

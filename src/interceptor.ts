@@ -90,8 +90,7 @@ function attachSwitchButton(extSwitchKey: string) {
     button.onclick = (event) => {
       event.preventDefault()
       localStorage.setItem(extSwitchKey, 'on')
-      const { href } = location
-      location.href = href
+      location.reload()
     }
     button.classList.add('btn', 'btn-default')
     const footer = document.body.querySelector('.actionsMain.col-md-9.col-md-offset-3')

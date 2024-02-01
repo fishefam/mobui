@@ -32,7 +32,7 @@ export const baseConfigs = {
   bundle: true,
   entryPoints: createEntries(BROWSERS, FILES, MANIFEST_PATH, ASSET_PATHS),
   jsx: 'transform',
-  loader: { '.asset': 'copy', '.json': 'copy' },
+  loader: { '.asset': 'copy', '.ico': 'copy', '.json': 'copy' },
   logLevel: 'info',
   outdir: 'dist',
   plugins: [clean({ patterns: 'dist' }), style({ postcss: { plugins: [autoprefixer(), tailwindcss()] } })],

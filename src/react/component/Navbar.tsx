@@ -2,6 +2,7 @@ import { cn, getLocalStorageItem } from 'lib/util'
 import { MouseEvent, useState } from 'react'
 import { useStore } from 'react/Store'
 import Avatar, { AvatarFallback } from 'shadcn/Avatar'
+import { Button } from 'shadcn/Button'
 import {
   Dropdown,
   DropdownContent,
@@ -10,8 +11,13 @@ import {
   DropdownSeparator,
   DropdownTrigger,
 } from 'shadcn/Dropdown'
+import { Label } from 'shadcn/Label'
 import Nav, { NavContent, NavItem, NavLink, NavList, NavTrigger, NavViewport } from 'shadcn/Nav'
+import { Switch } from 'shadcn/Switch'
+import { Tabs, TabsTrigger } from 'shadcn/Tabs'
+import { TabsList } from 'shadcn/Tabs'
 import { TSetState } from 'type/common'
+import { TStoreProp } from 'type/store'
 
 type TItems = {
   href: string
@@ -102,9 +108,50 @@ export default function Navbar() {
             />
           )
         })}
+        <ViewChange />
         <Profile />
       </NavList>
     </Nav>
+  )
+}
+
+function ViewChange() {
+  const { panelLayout } = useStore()
+  const [_panelLayout, _setPanelLayout] = panelLayout
+
+  const layouts: TStoreProp<'panelLayout'>[] = ['left', 'top', 'right']
+
+  return (
+    <Dropdown>
+      <DropdownTrigger
+        asChild
+        className="mr-2"
+      >
+        <Button variant="outline">
+          <LayoutPanelIcon
+            className={`h-5 w-5 ${_panelLayout === 'left' ? '-rotate-90' : _panelLayout === 'right' ? 'rotate-90' : ''}`}
+          />
+        </Button>
+      </DropdownTrigger>
+      <DropdownContent className="w-56">
+        <DropdownLabel>Change View</DropdownLabel>
+        <DropdownSeparator />
+        <Tabs className="w-full">
+          <TabsList className="w-full justify-evenly bg-transparent">
+            {layouts.map((layout) => (
+              <TabsTrigger
+                key={layout}
+                className="h-full w-full py-2 hover:bg-accent"
+                value={layout}
+                onClick={() => _setPanelLayout(layout)}
+              >
+                <LayoutPanelIcon className={layout === 'left' ? '-rotate-90' : layout === 'right' ? 'rotate-90' : ''} />
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+      </DropdownContent>
+    </Dropdown>
   )
 }
 
@@ -124,19 +171,28 @@ function Profile() {
         <DropdownSeparator />
         <DropdownItem
           asChild
-          onClick={() => {
+          onClick={(event) => {
+            event.preventDefault()
             setTheme((state) => (state === 'dark' ? 'light' : 'dark'))
             localStorage.setItem('theme', theme === 'dark' ? 'light' : 'dark')
           }}
         >
-          <span>{`${theme === 'dark' ? 'Light' : 'Dark'} Mode`} </span>
+          <div className="flex items-center space-x-2">
+            <Switch
+              checked={theme === 'dark'}
+              className="dark:bg-[hsl(214.3 31.8% 91.4%)] shadow"
+              id="theme-switch"
+            />
+            <Label htmlFor="theme-switch">{`${theme === 'dark' ? 'Dark' : 'Light'} Mode`}</Label>
+          </div>
         </DropdownItem>
+        <DropdownSeparator />
         <DropdownItem asChild>
           <a
             href="#"
             onClick={loadDefaultInterface}
           >
-            Default Interface
+            Default UI
           </a>
         </DropdownItem>
         <DropdownItem asChild>
@@ -232,6 +288,18 @@ function Logo() {
   )
 }
 
+function LayoutPanelIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={cn('w-4 dark:text-white', className)}
+      fill="currentColor"
+      viewBox="0 0 20 20"
+    >
+      <path d="M0 9.002C0 8.45.455 8 .992 8h18.016c.548 0 .992.456.992 1.002v9.996c0 .553-.455 1.002-.992 1.002H.992C.444 20 0 19.544 0 18.998V9.002Zm0-8C0 .45.451 0 .99 0h4.02A.99.99 0 0 1 6 1.003v4.994C6 6.551 5.549 7 5.01 7H.99A.99.99 0 0 1 0 5.997V1.003Zm7 0C7 .45 7.451 0 7.99 0h4.02A.99.99 0 0 1 13 1.003v4.994C13 6.551 12.549 7 12.01 7H7.99A.99.99 0 0 1 7 5.997V1.003Zm7 0C14 .45 14.451 0 14.99 0h4.02A.99.99 0 0 1 20 1.003v4.994C20 6.551 19.549 7 19.01 7h-4.02A.99.99 0 0 1 14 5.997V1.003Z"></path>
+    </svg>
+  )
+}
+
 function createHref(classId: string, path: string) {
   return `/${classId}/${path}`
 }
@@ -239,6 +307,5 @@ function createHref(classId: string, path: string) {
 function loadDefaultInterface(event: MouseEvent) {
   event.preventDefault()
   localStorage.setItem('newInterface', 'off')
-  const { href } = location
-  location.href = href
+  location.reload()
 }

@@ -42,7 +42,7 @@ export default function Breadcrumb() {
           <span className="ms-1 inline-flex items-center justify-between gap-3 whitespace-nowrap text-sm font-medium md:ms-2">
             <span className="relative">
               <input
-                className="block border-b-2 border-b-gray-200 bg-transparent py-2 ps-8 text-sm focus:border-b-blue-500 focus:text-accent-foreground focus:outline-none"
+                className="block !cursor-text border-b-2 border-b-gray-200 bg-transparent py-2 ps-8 text-sm focus:border-b-blue-500 focus:text-accent-foreground focus:outline-none"
                 placeholder="Question Name"
                 value={questionName[0]}
                 onChange={({ target }) => questionName[1](target.value)}

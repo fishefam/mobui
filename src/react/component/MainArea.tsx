@@ -1,9 +1,9 @@
+import Breadcrumb from 'component/Breadcrumb'
 import CodeEditor from 'component/CodeEditor'
 import { fetchAlgoValue } from 'lib/mobius'
 import { cn } from 'lib/util'
 import { Fragment, useRef } from 'react'
 import { useStore } from 'react/Store'
-import Breadcrumb from 'shadcn/Breadcrumb'
 import { Button } from 'shadcn/Button'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from 'shadcn/Resizable'
 
@@ -11,6 +11,9 @@ import AlgoPreview from './AlgoPreview'
 import TextEditor from './TextEditor'
 
 export default function MainArea() {
+  const { panelLayout } = useStore()
+  const [_panelLayout] = panelLayout
+
   return (
     <div className="h-full">
       <Breadcrumb />
@@ -20,11 +23,21 @@ export default function MainArea() {
       >
         <ResizablePanelGroup
           className="h-full rounded border"
-          direction="horizontal"
+          direction={_panelLayout === 'top' ? 'vertical' : 'horizontal'}
         >
-          <CodeEditorContainer />
-          <Handle />
-          <TextEditorContainer />
+          {_panelLayout === 'right' ? (
+            <>
+              <TextEditorContainer />
+              <Handle />
+              <CodeEditorContainer />
+            </>
+          ) : (
+            <>
+              <CodeEditorContainer />
+              <Handle />
+              <TextEditorContainer />
+            </>
+          )}
         </ResizablePanelGroup>
       </div>
     </div>
@@ -32,9 +45,12 @@ export default function MainArea() {
 }
 
 function CodeEditorContainer() {
+  const { panelLayout } = useStore()
+  const [_panelLayout] = panelLayout
+
   return (
     <ResizablePanel defaultSize={35}>
-      <ResizablePanelGroup direction="vertical">
+      <ResizablePanelGroup direction={_panelLayout === 'top' ? 'horizontal' : 'vertical'}>
         <AlgorithmEditor />
         <NonAlgorithmEditor />
       </ResizablePanelGroup>

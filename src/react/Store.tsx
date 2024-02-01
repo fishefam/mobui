@@ -22,6 +22,7 @@ const INITIAL_STORE: TStore = {
   feedbackSlateReadOnly: [false, PLACEHOLDER],
   isUnsaved: [false, PLACEHOLDER],
   jsAutoCompletionList: [[], PLACEHOLDER],
+  panelLayout: ['left', PLACEHOLDER],
   questionCSS: ['', PLACEHOLDER],
   questionHTML: ['', PLACEHOLDER],
   questionJS: ['', PLACEHOLDER],
@@ -50,6 +51,7 @@ export default function StoreProvider(props: TProps) {
   const feedbackSlateReadOnly = useState<TStoreProp<'feedbackSlateReadOnly'>>(getInitialState('feedbackSlateReadOnly'))
   const isUnsaved = useState<TStoreProp<'isUnsaved'>>(getInitialState('isUnsaved'))
   const jsAutoCompletionList = useState<TStoreProp<'jsAutoCompletionList'>>(getInitialState('jsAutoCompletionList'))
+  const panelLayout = useState<TStoreProp<'panelLayout'>>(getInitialState('panelLayout'))
   const questionCSS = useState<TStoreProp<'questionCSS'>>(getInitialState('questionCSS'))
   const questionHTML = useState<TStoreProp<'questionHTML'>>(getInitialState('questionHTML'))
   const questionJS = useState<TStoreProp<'questionJS'>>(getInitialState('questionJS'))
@@ -80,6 +82,7 @@ export default function StoreProvider(props: TProps) {
         feedbackSlateReadOnly,
         isUnsaved,
         jsAutoCompletionList,
+        panelLayout,
         questionCSS,
         questionHTML,
         questionJS,

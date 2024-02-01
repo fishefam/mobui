@@ -111,6 +111,11 @@
   }
 }
 
+// prettier-ignore
+:not([data-panel-resize-handle-enabled], [data-panel-resize-handle-enabled] * ) {
+  cursor: default;
+}
+
 @media print {
   .print-editor {
     z-index: 999999999999999999;
