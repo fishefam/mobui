@@ -45,7 +45,9 @@ export default function Breadcrumb() {
                 className="block !cursor-text border-b-2 border-b-gray-200 bg-transparent py-2 ps-8 text-sm focus:border-b-blue-500 focus:text-accent-foreground focus:outline-none"
                 placeholder="Question Name"
                 value={questionName[0]}
-                onChange={({ target }) => questionName[1](target.value)}
+                onChange={({ target }) => {
+                  questionName[1](target.value)
+                }}
               />
               <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-2">
                 <Edit2Icon

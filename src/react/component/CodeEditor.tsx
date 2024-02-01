@@ -5,7 +5,7 @@ import { langs } from '@uiw/codemirror-extensions-langs'
 import { copilot, githubLight } from '@uiw/codemirror-themes-all'
 import ReactCodeMirror from '@uiw/react-codemirror'
 import { getAlgoCompletionList, getBaseJsCompletion, getCodeStore, prettier, updateJsCompletionList } from 'lib/util'
-import { Settings2 } from 'lucide-react'
+import { Cog, Settings2 } from 'lucide-react'
 import { useCallback, useEffect } from 'react'
 import { useStore } from 'react/Store'
 import { Dropdown, DropdownContent, DropdownItem, DropdownTrigger } from 'shadcn/Dropdown'
@@ -47,7 +47,7 @@ export default function CodeEditor({ language }: TCodeEditorProps) {
           : "$my_var = 'Mobius';"
 
   return (
-    <>
+    <div className="relative h-full">
       <div className="flex w-full items-center justify-between px-3">
         <div className="h-5 py-1 text-xs font-bold">{language}</div>
         <Dropdown>
@@ -83,7 +83,13 @@ export default function CodeEditor({ language }: TCodeEditorProps) {
         }
         onChange={(value) => handleChange(store, value, language, _setJsAutoCompletionList)}
       />
-    </>
+      {language === 'HTML' ? (
+        <Cog
+          className="absolute bottom-2 right-2 hidden h-4 w-4 animate-spin"
+          id={'cog-spinner-html'}
+        />
+      ) : null}
+    </div>
   )
 }
 

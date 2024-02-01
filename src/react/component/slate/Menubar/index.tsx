@@ -7,16 +7,16 @@ import FileMenu from './File'
 import InsertMenu from './Insert'
 import ViewMenu from './View'
 
-type TSlateMenuProps = { [key in 'containerRef' | 'editorRef']: RefObject<HTMLElement> }
+type TSlateMenuProps = { [key in 'containerRef']: RefObject<HTMLElement> }
 
-export default function SlateMenu({ containerRef, editorRef }: TSlateMenuProps) {
+export default function SlateMenu({ containerRef }: TSlateMenuProps) {
   const { isUnsaved } = useStore()
   const [_isUnsaved] = isUnsaved
 
   return (
-    <Menubar className="w-full justify-between rounded-none border-0 !border-b">
+    <Menubar className="w-full justify-between gap-1 rounded-none border-0 !border-b">
       <div className="flex">
-        <FileMenu editorRef={editorRef} />
+        <FileMenu />
         <EditMenu />
         <ViewMenu containerRef={containerRef} />
         <InsertMenu />

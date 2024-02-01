@@ -1,3 +1,5 @@
+import { getLocalStorage } from 'lib/data'
+import { createElement } from 'lib/dom'
 import { fetchAlgoValue, joinMobiusData, previewLegacyDocument } from 'lib/mobius'
 import { ReactEditor } from 'lib/slate'
 import { serialize } from 'lib/slate/serialization'
@@ -26,6 +28,7 @@ import {
 } from 'shadcn/Menubar'
 import { useSlateStatic } from 'slate-react'
 import { TSetState } from 'type/common'
+import { TNormalizedSection } from 'type/data'
 import { TSlateEditor, TValue } from 'type/slate'
 import { TStore } from 'type/store'
 
@@ -65,8 +68,10 @@ export default function ViewMenu({ containerRef }: TViewMenuProps) {
 
   const [isEditorReadOnly, setIsEditorReadOnly] =
     currentSection !== 'algorithm' ? store[`${currentSection}SlateReadOnly`] : [true, () => {}]
-  const ModeIcon = isEditorReadOnly ? Eye : Pencil
+  const [css] = currentSection !== 'algorithm' ? store[`${currentSection}CSS`] : ['', () => {}]
+  const [js] = currentSection !== 'algorithm' ? store[`${currentSection}JS`] : ['', () => {}]
 
+  const ModeIcon = isEditorReadOnly ? Eye : Pencil
   const previewDialogTitle = currentSection.charAt(0).toUpperCase().concat(currentSection.slice(1))
 
   return (
@@ -106,7 +111,9 @@ export default function ViewMenu({ containerRef }: TViewMenuProps) {
         <MenubarSeparator />
         <MenubarItem onClick={(event) => event.preventDefault()}>
           <Dialog>
-            <DialogTrigger onClick={() => previewDocument(store, editor, setHTML)}>
+            <DialogTrigger
+              onClick={() => previewDocument({ css, editor, js, section: currentSection, setHTML, store })}
+            >
               <div className="flex items-start gap-3">
                 <ReceiptText className="mt-[0.35rem] h-3 w-3" />
                 Preview Document
@@ -162,13 +169,30 @@ function handleFullscreen(editor: TSlateEditor, containerRef: RefObject<HTMLElem
   ReactEditor.focus(editor)
 }
 
-function previewDocument(store: TStore, editor: TSlateEditor, setHTML: TSetState<string>) {
+function previewDocument({
+  css,
+  editor,
+  js,
+  section,
+  setHTML,
+  store,
+}: {
+  css: string
+  editor: TSlateEditor
+  js: string
+  section: TNormalizedSection
+  setHTML: TSetState<string>
+  store: TStore
+}) {
   fetchAlgoValue({
     onSuccess: (value) => {
       let html = serialize(editor.children as TValue)
       const entries = Object.entries(value).map(([key, { value }]) => ['\\$' + key, value])
       for (const [key, value] of entries) html = html.replace(new RegExp(key, 'g'), value)
-      setHTML(html)
+      setHTML(joinMobiusData(section, html, css, js))
+      const parent = document.querySelector(`#${getLocalStorage().scriptContainerId}`)!
+      parent.innerHTML = ''
+      createElement({ parent, tag: 'script', text: js })
     },
     store,
   })

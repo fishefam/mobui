@@ -103,7 +103,7 @@ function TextEditorContainer() {
   const ref = useRef<HTMLDivElement>(null)
 
   return (
-    <ResizablePanel>
+    <ResizablePanel className="!overflow-auto">
       <div
         ref={ref}
         className="relative h-full min-w-[37rem]"

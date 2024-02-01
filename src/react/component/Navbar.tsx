@@ -1,3 +1,4 @@
+import { setLocalStorage } from 'lib/data'
 import { cn, getLocalStorageItem } from 'lib/util'
 import { MouseEvent, useState } from 'react'
 import { useStore } from 'react/Store'
@@ -125,7 +126,7 @@ function ViewChange() {
     <Dropdown>
       <DropdownTrigger
         asChild
-        className="mr-2"
+        className="!mr-4"
       >
         <Button variant="outline">
           <LayoutPanelIcon
@@ -134,16 +135,19 @@ function ViewChange() {
         </Button>
       </DropdownTrigger>
       <DropdownContent className="w-56">
-        <DropdownLabel>Change View</DropdownLabel>
+        <DropdownLabel>View</DropdownLabel>
         <DropdownSeparator />
         <Tabs className="w-full">
-          <TabsList className="w-full justify-evenly bg-transparent">
+          <TabsList className="w-full justify-evenly gap-1 bg-transparent">
             {layouts.map((layout) => (
               <TabsTrigger
                 key={layout}
-                className="h-full w-full py-2 hover:bg-accent"
+                className={cn('h-full w-full py-2 hover:bg-accent', _panelLayout === layout && 'bg-accent')}
                 value={layout}
-                onClick={() => _setPanelLayout(layout)}
+                onClick={() => {
+                  setLocalStorage(['panelLayout', layout])
+                  _setPanelLayout(layout)
+                }}
               >
                 <LayoutPanelIcon className={layout === 'left' ? '-rotate-90' : layout === 'right' ? 'rotate-90' : ''} />
               </TabsTrigger>

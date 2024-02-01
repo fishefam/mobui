@@ -27,10 +27,12 @@ export function getLocalStorage() {
     'classId',
     'data',
     'extURL',
+    'panelLayout',
     'previewFormContainerId',
     'reactRootId',
     'reponame',
     'rootLoaderId',
+    'scriptContainerId',
     'theme',
     'uid',
     'uidHash',
@@ -39,6 +41,10 @@ export function getLocalStorage() {
   const values = keys.map((key) => localStorage.getItem(key) as string)
   const entries = keys.map((key, i) => [key, values[i]])
   return Object.fromEntries(entries) as { [key in TLocalStorageKey]: string }
+}
+
+export function setLocalStorage(...pairs: [TLocalStorageKey, string][]) {
+  for (const [key, value] of pairs) localStorage.setItem(key, value)
 }
 
 export function prepareSaveDataBody({

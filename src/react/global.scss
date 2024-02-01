@@ -111,9 +111,13 @@
   }
 }
 
-// prettier-ignore
-:not([data-panel-resize-handle-enabled], [data-panel-resize-handle-enabled] * ) {
+:not([data-panel-resize-handle-enabled], [data-panel-resize-handle-enabled] *, .cm-content) {
   cursor: default;
+}
+
+[contenteditable],
+[contenteditable] * {
+  cursor: text !important;
 }
 
 @media print {

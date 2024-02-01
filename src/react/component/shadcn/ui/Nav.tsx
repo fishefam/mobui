@@ -16,7 +16,7 @@ export default function Nav(props: TProps) {
   return (
     <NavPrimitive.Root
       {...props}
-      className={cn('relative z-10 flex flex-1 items-center justify-between')}
+      className={cn('relative flex flex-1 items-center justify-between')}
     />
   )
 }
@@ -56,7 +56,7 @@ export function NavContent(props: TProps) {
 
 export function NavViewport() {
   return (
-    <div className={cn('absolute left-0 top-full z-50 flex justify-center')}>
+    <div className={cn('absolute left-0 top-full flex justify-center')}>
       <NavPrimitive.Viewport
         className={cn(
           'origin-top-center relative mt-1.5 h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden rounded-md border shadow-lg md:w-[var(--radix-navigation-menu-viewport-width)]',
@@ -71,7 +71,7 @@ export function NavIndicator(props: TProps) {
     <NavPrimitive.Indicator
       {...props}
       className={cn(
-        'top-full z-[1] flex h-1.5 items-end justify-center overflow-hidden data-[state=visible]:animate-in data-[state=hidden]:animate-out data-[state=hidden]:fade-out data-[state=visible]:fade-in',
+        'top-full flex h-1.5 items-end justify-center overflow-hidden data-[state=visible]:animate-in data-[state=hidden]:animate-out data-[state=hidden]:fade-out data-[state=visible]:fade-in',
       )}
     >
       <div className="relative top-[60%] h-2 w-2 rotate-45 rounded-tl-sm bg-border shadow-md" />

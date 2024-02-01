@@ -11,6 +11,7 @@ type TInterceptProps = {
     | 'classIdKey'
     | 'dataKey'
     | 'extSwitchKey'
+    | 'panelLayoutKey'
     | 'previewFormElementIdKey'
     | 'previewFormElementIdValue'
     | 'reactElementIdKey'
@@ -18,6 +19,8 @@ type TInterceptProps = {
     | 'repoNameKey'
     | 'rootLoaderElementIdKey'
     | 'rootLoaderElementIdValue'
+    | 'scriptElementIdKey'
+    | 'scriptElementIdValue'
     | 'themeKey'
     | 'uidHashKey'
     | 'uidKey'
@@ -34,15 +37,18 @@ const DATA_KEY = 'data'
 const EXT_URL_KEY = 'extURL'
 const PREVIEW_FORM_ELEMENT_ID_KEY = 'previewFormContainerId'
 const REACT_ELEMENT_ID_KEY = 'reactRootId'
+const SCRIPT_ELEMENT_ID_KEY = 'scriptContainerId'
 const REPO_NAME_KEY = 'reponame'
 const ROOT_LOADER_ELEMENT_ID_KEY = 'rootLoaderId'
 const THEME_KEY = 'theme'
 const UID_HASH_KEY = 'uidHash' // This is to eleminate the repeating hashing of uid later in React
 const UID_KEY = 'uid'
 const USERNAME_KEY = 'username'
+const PANEL_LAYOUT_KEY = 'panelLayout'
 
 const PREVIEW_FORM_ELEMENT_ID_VALUE = 'preview-form-container'
 const REACT_ELEMENT_ID_VALUE = 'root'
+const SCRIPT_ELEMENT_ID_VALUE = 'script-container'
 const ROOT_LOADER_ELEMENT_ID_VALUE = 'root-loader'
 
 if (localStorage.getItem(EXT_SWITCH_KEY) === 'off') attachSwitchButton(EXT_SWITCH_KEY)
@@ -52,6 +58,7 @@ if (localStorage.getItem(EXT_SWITCH_KEY) !== 'off')
     classIdKey: CLASS_ID_KEY,
     dataKey: DATA_KEY,
     extSwitchKey: EXT_SWITCH_KEY,
+    panelLayoutKey: PANEL_LAYOUT_KEY,
     previewFormElementIdKey: PREVIEW_FORM_ELEMENT_ID_KEY,
     previewFormElementIdValue: PREVIEW_FORM_ELEMENT_ID_VALUE,
     reactElementIdKey: REACT_ELEMENT_ID_KEY,
@@ -59,6 +66,8 @@ if (localStorage.getItem(EXT_SWITCH_KEY) !== 'off')
     repoNameKey: REPO_NAME_KEY,
     rootLoaderElementIdKey: ROOT_LOADER_ELEMENT_ID_KEY,
     rootLoaderElementIdValue: ROOT_LOADER_ELEMENT_ID_VALUE,
+    scriptElementIdKey: SCRIPT_ELEMENT_ID_KEY,
+    scriptElementIdValue: SCRIPT_ELEMENT_ID_VALUE,
     themeKey: THEME_KEY,
     uidHashKey: UID_HASH_KEY,
     uidKey: UID_KEY,
@@ -108,6 +117,7 @@ async function intercept({
   classIdKey,
   dataKey,
   extSwitchKey,
+  panelLayoutKey,
   previewFormElementIdKey,
   previewFormElementIdValue,
   reactElementIdKey,
@@ -115,6 +125,8 @@ async function intercept({
   repoNameKey,
   rootLoaderElementIdKey,
   rootLoaderElementIdValue,
+  scriptElementIdKey,
+  scriptElementIdValue,
   themeKey,
   uidHashKey,
   uidKey,
@@ -123,11 +135,12 @@ async function intercept({
 }: TInterceptProps) {
   /** Intercept page load and inject a new HTML template for React */
   window.stop()
-  preparePage(reactElementIdValue, previewFormElementIdValue, rootLoaderElementIdValue)
+  preparePage(reactElementIdValue, previewFormElementIdValue, scriptElementIdValue, rootLoaderElementIdValue)
   await prepareData({
     classIdKey,
     dataKey,
     extSwitchKey,
+    panelLayoutKey,
     previewFormElementIdKey,
     previewFormElementIdValue,
     reactElementIdKey,
@@ -135,6 +148,8 @@ async function intercept({
     repoNameKey,
     rootLoaderElementIdKey,
     rootLoaderElementIdValue,
+    scriptElementIdKey,
+    scriptElementIdValue,
     themeKey,
     uidHashKey,
     uidKey,
@@ -144,16 +159,22 @@ async function intercept({
   finalize()
 }
 
-function preparePage(reactElementId: string, previewFormElementId: string, rootLoaderElementId: string) {
+function preparePage(
+  reactElementId: string,
+  previewFormElementId: string,
+  scriptElementId: string,
+  rootLoaderElementId: string,
+) {
   document.querySelector('html')!.innerHTML = `
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="${resolveUrl('main.css')}" /> 
-        <link rel="icon" type="image/x-icon" href="${resolveUrl('assets/favicon.ico')}">
+        <link rel="icon" type="image/x-icon" href="${resolveUrl('asset/favicon.ico')}">
     </head>
     <body>
         <div id="${reactElementId}"></div> 
         <div id="${previewFormElementId}"></div>
+        <div id="${scriptElementId}"></div>
         <div id="${rootLoaderElementId}" style="position:fixed;height:100vh;width:100vw;display:grid;place-items:center;">
             <style>
                 @keyframes spin {
@@ -190,6 +211,7 @@ async function prepareData({
   classIdKey,
   dataKey,
   extSwitchKey,
+  panelLayoutKey,
   previewFormElementIdKey,
   previewFormElementIdValue,
   reactElementIdKey,
@@ -197,6 +219,8 @@ async function prepareData({
   repoNameKey,
   rootLoaderElementIdKey,
   rootLoaderElementIdValue,
+  scriptElementIdKey,
+  scriptElementIdValue,
   themeKey,
   uidHashKey,
   uidKey,
@@ -214,34 +238,22 @@ async function prepareData({
     if (val.toString()) data[key] = val.toString()
   })
   const currentTheme = localStorage.getItem(themeKey)
-  const storageItems: [string, string][] = currentTheme
-    ? [
-        [classIdKey, data.classId ?? ''],
-        [dataKey, JSON.stringify(data)],
-        [extSwitchKey, 'on'],
-        [previewFormElementIdKey, previewFormElementIdValue],
-        [reactElementIdKey, reactElementIdValue],
-        [repoNameKey, dom.querySelector('#pageName li:first-of-type')?.textContent?.trim() ?? 'Site'],
-        [rootLoaderElementIdKey, rootLoaderElementIdValue],
-        [themeKey, currentTheme],
-        [uidHashKey, hash(data.uid ?? '')],
-        [uidKey, data.uid ?? ''],
-        [urlKey, resolveUrl('')],
-        [usernameKey, username],
-      ]
-    : [
-        [classIdKey, data.classId ?? ''],
-        [dataKey, JSON.stringify(data)],
-        [extSwitchKey, 'on'],
-        [previewFormElementIdKey, previewFormElementIdValue],
-        [reactElementIdKey, reactElementIdValue],
-        [repoNameKey, dom.querySelector('#pageName li:first-of-type')?.textContent?.trim() ?? 'Site'],
-        [rootLoaderElementIdKey, rootLoaderElementIdValue],
-        [uidHashKey, hash(data.uid ?? '')],
-        [uidKey, data.uid ?? ''],
-        [urlKey, resolveUrl('')],
-        [usernameKey, username],
-      ]
+  const storageItems: [string, string][] = [
+    ...((currentTheme ? [[themeKey, currentTheme]] : []) as [string, string][]),
+    [classIdKey, data.classId ?? ''],
+    [dataKey, JSON.stringify(data)],
+    [extSwitchKey, 'on'],
+    [panelLayoutKey, 'left'],
+    [previewFormElementIdKey, previewFormElementIdValue],
+    [reactElementIdKey, reactElementIdValue],
+    [repoNameKey, dom.querySelector('#pageName li:first-of-type')?.textContent?.trim() ?? 'Site'],
+    [rootLoaderElementIdKey, rootLoaderElementIdValue],
+    [scriptElementIdKey, scriptElementIdValue],
+    [uidHashKey, hash(data.uid ?? '')],
+    [uidKey, data.uid ?? ''],
+    [urlKey, resolveUrl('')],
+    [usernameKey, username],
+  ]
   localStorage.clear()
   for (const [key, value] of storageItems) localStorage.setItem(key, value)
 }

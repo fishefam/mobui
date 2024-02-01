@@ -1,3 +1,4 @@
+import { getLocalStorage } from 'lib/data'
 import { createSlateEditor } from 'lib/slate'
 import { getLocalStorageItem } from 'lib/util'
 import { createContext, useContext, useEffect, useState } from 'react'
@@ -22,7 +23,7 @@ const INITIAL_STORE: TStore = {
   feedbackSlateReadOnly: [false, PLACEHOLDER],
   isUnsaved: [false, PLACEHOLDER],
   jsAutoCompletionList: [[], PLACEHOLDER],
-  panelLayout: ['left', PLACEHOLDER],
+  panelLayout: [getLocalStorage().panelLayout as 'left', PLACEHOLDER],
   questionCSS: ['', PLACEHOLDER],
   questionHTML: ['', PLACEHOLDER],
   questionJS: ['', PLACEHOLDER],

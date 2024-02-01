@@ -77,11 +77,8 @@ export default function TextEditor() {
               section === currentSection && '!block',
             )}
           >
-            <div className="sticky top-0 z-[0] w-full bg-white dark:bg-accent">
-              <SlateMenu
-                containerRef={contrainerRef}
-                editorRef={editorRef}
-              />
+            <div className="sticky top-0 z-[1] w-full bg-white dark:bg-accent">
+              <SlateMenu containerRef={contrainerRef} />
               <SlateToolbar />
             </div>
             <div
@@ -109,6 +106,7 @@ function handleValueChange(
   setCode: TSetState<string> | null,
   timeout = 300,
 ) {
+  document.querySelector('#cog-spinner-html')?.classList.remove('hidden')
   if (window.debouncer) clearTimeout(window.debouncer)
   if (setCode)
     window.debouncer = setTimeout(() => {
@@ -116,5 +114,6 @@ function handleValueChange(
       updateJsCompletionList(html, setCompletion)
       prettier(html, 'HTML').then((html) => setCode(html))
       setIsUnsaved(true)
+      document.querySelector('#cog-spinner-html')?.classList.add('hidden')
     }, timeout)
 }

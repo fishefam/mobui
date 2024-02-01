@@ -3,7 +3,7 @@ import { TLanguage } from './common'
 export type TQueryPath = 'contentmanager/DisplayQuestion.do' | 'qbeditor/SaveDynamicInline.do' | 'rest/algorithms'
 export type TPreviewToken = { [key in 'questionDefinition' | 'version']: string }
 
-export type TLocalStorageKey = 'classId' | 'data' | 'extSwitchKey' | 'extURL' | 'previewFormContainerId' | 'reactRootId' | 'reponame' | 'rootLoaderId' | 'theme' | 'uid' | 'uidHash' | 'username'
+export type TLocalStorageKey = 'classId' | 'data' | 'extSwitchKey' | 'extURL' | 'panelLayout' | 'previewFormContainerId' | 'reactRootId' | 'reponame' | 'rootLoaderId' | 'scriptContainerId' | 'theme' | 'uid' | 'uidHash' | 'username'
 
 export type TSection = 'algorithm' | 'authorNotesEditor' | 'commentEditor' | 'editor'
 export type TSectionData = { [key in TSection]: string }
