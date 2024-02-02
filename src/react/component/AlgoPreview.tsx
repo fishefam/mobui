@@ -1,3 +1,4 @@
+import { MathJax } from 'better-react-mathjax'
 import { RefObject } from 'react'
 import { useStore } from 'react/Store'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from 'shadcn/Table'
@@ -10,7 +11,7 @@ export default function AlgoPreview({ parent }: { parent: RefObject<HTMLDivEleme
 
   return (
     <div
-      className={'overflow-auto'}
+      className={'relative overflow-auto'}
       style={{ height: `${parent.current?.clientHeight}px` }}
     >
       <Table className="min-w-[30rem] table-fixed">
@@ -28,7 +29,9 @@ export default function AlgoPreview({ parent }: { parent: RefObject<HTMLDivEleme
           {algoVars.map((algoVar, i) => (
             <TableRow key={algoVar}>
               <TableCell className="font-medium">{algoVar}</TableCell>
-              <TableCell>{algoProps[i].value}</TableCell>
+              <MathJax>
+                <TableCell dangerouslySetInnerHTML={{ __html: algoProps[i].value }} />
+              </MathJax>
               <TableCell>
                 {algoProps[i].rangeStart && algoProps[i].rangeEnd
                   ? `[${algoProps[i].rangeStart} - ${algoProps[i].rangeEnd}]`

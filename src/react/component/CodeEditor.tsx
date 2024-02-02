@@ -4,6 +4,7 @@ import { hyperLink } from '@uiw/codemirror-extensions-hyper-link'
 import { langs } from '@uiw/codemirror-extensions-langs'
 import { copilot, githubLight } from '@uiw/codemirror-themes-all'
 import ReactCodeMirror from '@uiw/react-codemirror'
+import { fetchAlgoValue } from 'lib/mobius'
 import { getAlgoCompletionList, getBaseJsCompletion, getCodeStore, prettier, updateJsCompletionList } from 'lib/util'
 import { Cog, Settings2 } from 'lucide-react'
 import { useCallback, useEffect } from 'react'
@@ -18,16 +19,18 @@ export default function CodeEditor({ language }: TCodeEditorProps) {
   const store = useStore()
 
   const [currentSection] = store.section
-  const [html] = store[`${currentSection !== 'algorithm' ? currentSection : 'question'}HTML`]
+  const [html, setHTML] = store[`${currentSection !== 'algorithm' ? currentSection : 'question'}HTML`]
 
-  const [_theme] = store.theme
   const [_jsAutoCompletionList, _setJsAutoCompletionList] = store.jsAutoCompletionList
+  const [_theme] = store.theme
+  const [, _setAlgorithmPreview] = store.algorithmPreview
 
   const getCustomComplete = useCustomComplete(
     language === 'ALGORITHM' ? getAlgoCompletionList() : _jsAutoCompletionList,
   )
 
   useResetJsCompletionList(currentSection, html, _setJsAutoCompletionList)
+  useFormatOnLoad(html, language, setHTML)
 
   const lang =
     language === 'HTML'
@@ -66,6 +69,22 @@ export default function CodeEditor({ language }: TCodeEditorProps) {
             >
               Format
             </DropdownItem>
+            {language === 'ALGORITHM' ? (
+              <DropdownItem
+                onClick={() => {
+                  fetchAlgoValue({
+                    onSuccess: (value) => {
+                      _setAlgorithmPreview(value)
+                      document.querySelector('#cog-spinner-algo-preview')?.classList.remove('!block')
+                    },
+                    store,
+                  })
+                  document.querySelector('#cog-spinner-algo-preview')?.classList.add('!block')
+                }}
+              >
+                Preview Variables
+              </DropdownItem>
+            ) : null}
           </DropdownContent>
         </Dropdown>
       </div>
@@ -105,6 +124,12 @@ function useCustomComplete(completionList: Completion[]) {
 
 function useResetJsCompletionList(section: string, html: string, setCompletionList: TSetState<Completion[]>) {
   useEffect(() => updateJsCompletionList(html, setCompletionList), [html, section, setCompletionList])
+}
+
+function useFormatOnLoad(html: string, language: TCodeEditorProps['language'], setHTML: TSetState<string>) {
+  useEffect(() => {
+    prettier(html, language).then((_html) => setHTML(_html))
+  }, [html, language, setHTML])
 }
 
 function handleChange(

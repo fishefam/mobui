@@ -86,9 +86,6 @@ dependencies:
   lucide-react:
     specifier: ^0.315.0
     version: 0.315.0(react@18.2.0)
-  mathjax:
-    specifier: 2.7.2
-    version: 2.7.2
   nanoid:
     specifier: ^5.0.4
     version: 5.0.4
@@ -133,9 +130,6 @@ devDependencies:
   '@types/firefox-webext-browser':
     specifier: ^120.0.0
     version: 120.0.0
-  '@types/mathjax':
-    specifier: ^0.0.40
-    version: 0.0.40
   '@types/node':
     specifier: ^20.11.6
     version: 20.11.6
@@ -2169,10 +2163,6 @@ packages:
   /@types/lodash@4.14.202:
     resolution: {integrity: sha512-OvlIYQK9tNneDlS0VN54LLd5uiPCBOp7gS5Z0f1mjoJYBrtStzgmJBxONW3U6OZqdtNzZPmn9BS/7WI7BFFcFQ==}
     dev: false
-
-  /@types/mathjax@0.0.40:
-    resolution: {integrity: sha512-rHusx08LCg92WJxrsM3SPjvLTSvK5C+gealtSuhKbEOcUZfWlwigaFoPLf6Dfxhg4oryN5qP9Sj7zOQ4HYXINw==}
-    dev: true
 
   /@types/minimatch@3.0.5:
     resolution: {integrity: sha512-Klz949h02Gz2uZCMGwDUSDS1YBlTdDDgbWHi+81l29tQALUtvz4rAYi5uoVhE5Lagoq6DeqAUlbrHvW/mXDgdQ==}
@@ -5720,10 +5710,6 @@ packages:
       mhchemparser: 4.2.1
       mj-context-menu: 0.6.1
       speech-rule-engine: 4.0.7
-    dev: false
-
-  /mathjax@2.7.2:
-    resolution: {integrity: sha512-Z9te7r3lsjZibugO1uKsdyqICKXVNr7M1Ll2GtjJu9cUKvOvwDqEp0YIjBD4H58NNuPg5DP5/AQ2Tu8K52Mqng==}
     dev: false
 
   /mem@5.1.1:

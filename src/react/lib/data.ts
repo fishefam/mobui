@@ -1,6 +1,7 @@
-import { TAlgoResponseValue, TLocalStorageKey, TPreviewDataKey, TSaveDataKey } from 'type/data'
+import { TLanguage } from 'type/common'
+import { TAlgoResponseValue, TLocalStorageKey, TNormalizedSection, TPreviewDataKey, TSaveDataKey } from 'type/data'
 
-import { getBaseURL } from './util'
+import { extractHTML, getBaseURL } from './util'
 
 type TPrepareSaveDataBodyProps = {
   algorithm: string
@@ -41,6 +42,22 @@ export function getLocalStorage() {
   const values = keys.map((key) => localStorage.getItem(key) as string)
   const entries = keys.map((key, i) => [key, values[i]])
   return Object.fromEntries(entries) as { [key in TLocalStorageKey]: string }
+}
+
+export function getData<T extends TNormalizedSection>(section: T, type: T extends 'algorithm' ? undefined : TLanguage) {
+  const { data } = getLocalStorage()
+  const { algorithm, authorNotesEditor, commentEditor, editor } = JSON.parse(data) as { [key in TSaveDataKey]?: string }
+  if (section === 'algorithm') return algorithm ?? ''
+  if (section === 'authornotes' && type === 'HTML') return extractHTML(authorNotesEditor ?? '', 'HTML')
+  if (section === 'authornotes' && type === 'CSS') return extractHTML(authorNotesEditor ?? '', 'CSS')
+  if (section === 'authornotes' && type === 'JS') return extractHTML(authorNotesEditor ?? '', 'JS')
+  if (section === 'feedback' && type === 'HTML') return extractHTML(commentEditor ?? '', 'HTML')
+  if (section === 'feedback' && type === 'CSS') return extractHTML(commentEditor ?? '', 'CSS')
+  if (section === 'feedback' && type === 'JS') return extractHTML(commentEditor ?? '', 'JS')
+  if (section === 'question' && type === 'HTML') return extractHTML(editor ?? '', 'HTML')
+  if (section === 'question' && type === 'CSS') return extractHTML(editor ?? '', 'CSS')
+  if (section === 'question' && type === 'JS') return extractHTML(editor ?? '', 'JS')
+  return ''
 }
 
 export function setLocalStorage(...pairs: [TLocalStorageKey, string][]) {

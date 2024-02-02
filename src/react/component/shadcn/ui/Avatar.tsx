@@ -6,7 +6,12 @@ type TAvatarProps = { className: string } & TProps
 
 export default function Avatar({ children, className }: TAvatarProps) {
   return (
-    <AvatarPrimitive.Root className={cn('relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full', className)}>
+    <AvatarPrimitive.Root
+      className={cn(
+        'relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full transition-colors hover:bg-slate-200 dark:hover:border dark:hover:border-accent dark:hover:bg-transparent',
+        className,
+      )}
+    >
       {children}
     </AvatarPrimitive.Root>
   )
@@ -19,7 +24,9 @@ export function AvatarImage() {
 export function AvatarFallback({ children }: TProps) {
   return (
     <AvatarPrimitive.Fallback
-      className={cn('flex h-full w-full items-center justify-center rounded-full bg-muted text-xs')}
+      className={cn(
+        'flex h-full w-full items-center justify-center rounded-full bg-muted text-xs transition-colors hover:bg-slate-200 dark:hover:border dark:hover:border-accent dark:hover:bg-transparent',
+      )}
     >
       {children}
     </AvatarPrimitive.Fallback>

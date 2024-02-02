@@ -49,7 +49,7 @@ export function NavContent(props: TProps) {
   return (
     <NavPrimitive.Content
       {...props}
-      className={cn('left-0 top-0 w-full bg-popover md:absolute md:w-auto')}
+      className={cn('nd left-0 top-0 w-full bg-popover md:absolute md:w-auto')}
     />
   )
 }
@@ -59,7 +59,7 @@ export function NavViewport() {
     <div className={cn('absolute left-0 top-full flex justify-center')}>
       <NavPrimitive.Viewport
         className={cn(
-          'origin-top-center relative mt-1.5 h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden rounded-md border shadow-lg md:w-[var(--radix-navigation-menu-viewport-width)]',
+          'origin-top-center nd relative mt-1.5 h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden rounded-md border shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-top-2 data-[state=open]:slide-in-from-top-2 md:w-[var(--radix-navigation-menu-viewport-width)]',
         )}
       />
     </div>

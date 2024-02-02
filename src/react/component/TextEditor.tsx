@@ -92,6 +92,11 @@ export default function TextEditor() {
                 renderLeaf={renderLeaf}
               />
             </div>
+
+            {/* <Cog
+              className="absolute bottom-2 right-2 hidden h-4 w-4 animate-spin"
+              id="cog-spinner-slate"
+            /> */}
           </div>
         </Slate>
       ))}

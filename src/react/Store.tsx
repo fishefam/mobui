@@ -1,4 +1,4 @@
-import { getLocalStorage } from 'lib/data'
+import { getData, getLocalStorage } from 'lib/data'
 import { createSlateEditor } from 'lib/slate'
 import { getLocalStorageItem } from 'lib/util'
 import { createContext, useContext, useEffect, useState } from 'react'
@@ -9,24 +9,24 @@ const PLACEHOLDER = () => {}
 const INITIAL_THEME = (localStorage.getItem('theme') as TTheme) ?? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
 const INITIAL_STORE: TStore = {
   algoAutoCompletionList: [[], PLACEHOLDER],
-  algorithm: ['', PLACEHOLDER],
+  algorithm: [getData('algorithm', undefined), PLACEHOLDER],
   algorithmPreview: [{}, PLACEHOLDER],
-  authornotesCSS: ['', PLACEHOLDER],
-  authornotesHTML: ['', PLACEHOLDER],
-  authornotesJS: ['', PLACEHOLDER],
+  authornotesCSS: [getData('authornotes', 'CSS'), PLACEHOLDER],
+  authornotesHTML: [getData('authornotes', 'HTML'), PLACEHOLDER],
+  authornotesJS: [getData('authornotes', 'JS'), PLACEHOLDER],
   authornotesSlate: [createSlateEditor(), PLACEHOLDER],
   authornotesSlateReadOnly: [false, PLACEHOLDER],
-  feedbackCSS: ['', PLACEHOLDER],
-  feedbackHTML: ['', PLACEHOLDER],
-  feedbackJS: ['', PLACEHOLDER],
+  feedbackCSS: [getData('feedback', 'CSS'), PLACEHOLDER],
+  feedbackHTML: [getData('feedback', 'HTML'), PLACEHOLDER],
+  feedbackJS: [getData('feedback', 'JS'), PLACEHOLDER],
   feedbackSlate: [createSlateEditor(), PLACEHOLDER],
   feedbackSlateReadOnly: [false, PLACEHOLDER],
   isUnsaved: [false, PLACEHOLDER],
   jsAutoCompletionList: [[], PLACEHOLDER],
   panelLayout: [getLocalStorage().panelLayout as 'left', PLACEHOLDER],
-  questionCSS: ['', PLACEHOLDER],
-  questionHTML: ['', PLACEHOLDER],
-  questionJS: ['', PLACEHOLDER],
+  questionCSS: [getData('question', 'CSS'), PLACEHOLDER],
+  questionHTML: [getData('question', 'HTML'), PLACEHOLDER],
+  questionJS: [getData('question', 'JS'), PLACEHOLDER],
   questionName: [JSON.parse(getLocalStorageItem('data')).name ?? 'Question Designer', PLACEHOLDER],
   questionSlate: [createSlateEditor(), PLACEHOLDER],
   questionSlateReadOnly: [false, PLACEHOLDER],

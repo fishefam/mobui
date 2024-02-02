@@ -9,6 +9,7 @@
     "noEmit": true,
     "strict": true,
     "target": "ES2016",
+    "skipLibCheck": true,
     "typeRoots": ["node_modules/@types", "web-ext-types"],
     "paths": {
       "shadcn/*": ["react/component/shadcn/ui/*"],

@@ -11,7 +11,7 @@ import GroupZero from './GroupZero'
 export default function SlateToolbar() {
   return (
     <TooltipProvider>
-      <Menubar className="relative grid h-auto grid-cols-[auto_5rem] rounded-none border-x-0 border-b border-t-0 px-2">
+      <Menubar className="relative grid h-auto grid-cols-[auto_6rem] rounded-none border-x-0 border-b border-t-0 px-2">
         <div className="flex flex-wrap">
           <GroupZero />
           <Separator

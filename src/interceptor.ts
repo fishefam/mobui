@@ -238,12 +238,12 @@ async function prepareData({
     if (val.toString()) data[key] = val.toString()
   })
   const currentTheme = localStorage.getItem(themeKey)
+  const panelLayout = localStorage.getItem(panelLayoutKey)
   const storageItems: [string, string][] = [
     ...((currentTheme ? [[themeKey, currentTheme]] : []) as [string, string][]),
     [classIdKey, data.classId ?? ''],
     [dataKey, JSON.stringify(data)],
     [extSwitchKey, 'on'],
-    [panelLayoutKey, 'left'],
     [previewFormElementIdKey, previewFormElementIdValue],
     [reactElementIdKey, reactElementIdValue],
     [repoNameKey, dom.querySelector('#pageName li:first-of-type')?.textContent?.trim() ?? 'Site'],
@@ -253,6 +253,7 @@ async function prepareData({
     [uidKey, data.uid ?? ''],
     [urlKey, resolveUrl('')],
     [usernameKey, username],
+    [panelLayoutKey, panelLayout ?? 'left'],
   ]
   localStorage.clear()
   for (const [key, value] of storageItems) localStorage.setItem(key, value)

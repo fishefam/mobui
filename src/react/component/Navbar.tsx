@@ -130,7 +130,7 @@ function ViewChange() {
       >
         <Button variant="outline">
           <LayoutPanelIcon
-            className={`h-5 w-5 ${_panelLayout === 'left' ? '-rotate-90' : _panelLayout === 'right' ? 'rotate-90' : ''}`}
+            className={`h-4 w-4 ${_panelLayout === 'left' ? '-rotate-90' : _panelLayout === 'right' ? 'rotate-90' : ''}`}
           />
         </Button>
       </DropdownTrigger>

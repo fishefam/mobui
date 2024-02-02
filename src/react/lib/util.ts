@@ -9,7 +9,7 @@ import css from 'prettier/plugins/postcss'
 import typescript from 'prettier/plugins/typescript'
 import { format } from 'prettier/standalone'
 import { twMerge } from 'tailwind-merge'
-import { TObject, TSetState } from 'type/common'
+import { TLanguage, TObject, TSetState } from 'type/common'
 import { TLocalStorageKey, TStore, TStoreCodeKey } from 'type/store'
 
 import { getLocalStorage } from './data'
@@ -39,6 +39,17 @@ export function join(separator: string, ...strings: string[]) {
  */
 export function bem(block: string, element?: string, modifier?: string): string {
   return `${block}${element ? `__${element}` : ''}${modifier ? `--${modifier}` : ''}`
+}
+
+export function extractHTML(htmlString: string, language: TLanguage) {
+  if (language === 'CSS') return (htmlString.match(/(?<=<style.*>)(.|\n)*?(?=<\/style>)/g) ?? []).join(' ')
+
+  const dom = new DOMParser().parseFromString(htmlString, 'text/html').body
+  const elements = Array.from(dom.children).filter(({ nodeName }) =>
+    language === 'HTML' ? nodeName !== 'SCRIPT' : nodeName === 'SCRIPT',
+  ) as HTMLElement[]
+  const htmls = elements.map(({ innerHTML, outerHTML }) => (language === 'HTML' ? outerHTML : innerHTML))
+  return language === 'HTML' ? htmls.join('').replace(/<style.*>(.|\n)*?<\/style>/g, '') : htmls.join('')
 }
 
 /**

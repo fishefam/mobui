@@ -1,10 +1,10 @@
+import { MathJaxContext } from 'better-react-mathjax'
 import Breadcrumb from 'component/Breadcrumb'
 import CodeEditor from 'component/CodeEditor'
-import { fetchAlgoValue } from 'lib/mobius'
 import { cn } from 'lib/util'
+import { Cog } from 'lucide-react'
 import { Fragment, useRef } from 'react'
 import { useStore } from 'react/Store'
-import { Button } from 'shadcn/Button'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from 'shadcn/Resizable'
 
 import AlgoPreview from './AlgoPreview'
@@ -49,7 +49,7 @@ function CodeEditorContainer() {
   const [_panelLayout] = panelLayout
 
   return (
-    <ResizablePanel defaultSize={35}>
+    <ResizablePanel defaultSize={30}>
       <ResizablePanelGroup direction={_panelLayout === 'top' ? 'horizontal' : 'vertical'}>
         <AlgorithmEditor />
         <NonAlgorithmEditor />
@@ -61,7 +61,6 @@ function CodeEditorContainer() {
 function AlgorithmEditor() {
   const store = useStore()
   const [currentSection] = store.section
-  const [_, setAlgorithmPreview] = store.algorithmPreview
 
   if (currentSection !== 'algorithm') return null
 
@@ -69,14 +68,6 @@ function AlgorithmEditor() {
     <ResizablePanel>
       <div className="relative h-full">
         <CodeEditor language="ALGORITHM" />
-        <Button
-          className="absolute bottom-4 right-4"
-          variant="secondary"
-          // onClick={() => fetchAlgoValue(store, (value) => setAlgorithmPreview(value))}
-          onClick={() => fetchAlgoValue({ onSuccess: (value) => setAlgorithmPreview(value), store })}
-        >
-          Preview
-        </Button>
       </div>
     </ResizablePanel>
   )
@@ -103,19 +94,25 @@ function TextEditorContainer() {
   const ref = useRef<HTMLDivElement>(null)
 
   return (
-    <ResizablePanel className="!overflow-auto">
-      <div
-        ref={ref}
-        className="relative h-full min-w-[37rem]"
-      >
-        <div className={cn('absolute left-0 top-0 hidden h-full w-full', currentSection === 'algorithm' && '!block')}>
-          <AlgoPreview parent={ref} />
+    <MathJaxContext>
+      <ResizablePanel className="!overflow-auto">
+        <div
+          ref={ref}
+          className="relative h-full min-w-[37rem]"
+        >
+          <div className={cn('absolute left-0 top-0 hidden h-full w-full', currentSection === 'algorithm' && '!block')}>
+            <AlgoPreview parent={ref} />
+            <Cog
+              className="absolute bottom-3 right-3 hidden h-5 w-5 animate-spin"
+              id={'cog-spinner-algo-preview'}
+            />
+          </div>
+          <div className={cn('absolute left-0 top-0 hidden h-full w-full', currentSection !== 'algorithm' && '!block')}>
+            <TextEditor />
+          </div>
         </div>
-        <div className={cn('absolute left-0 top-0 hidden h-full w-full', currentSection !== 'algorithm' && '!block')}>
-          <TextEditor />
-        </div>
-      </div>
-    </ResizablePanel>
+      </ResizablePanel>
+    </MathJaxContext>
   )
 }
 
