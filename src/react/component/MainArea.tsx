@@ -1,9 +1,11 @@
 import { MathJaxContext } from 'better-react-mathjax'
 import Breadcrumb from 'component/Breadcrumb'
 import CodeEditor from 'component/CodeEditor'
+import { useWindowsSize } from 'hook/util'
 import { cn } from 'lib/util'
 import { Cog } from 'lucide-react'
 import { Fragment, useRef } from 'react'
+import { BREAK_POINT } from 'react/constant'
 import { useStore } from 'react/Store'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from 'shadcn/Resizable'
 
@@ -11,7 +13,11 @@ import AlgoPreview from './AlgoPreview'
 import TextEditor from './TextEditor'
 
 export default function MainArea() {
-  const { panelLayout } = useStore()
+  const { panelLayout, section } = useStore()
+  const { width } = useWindowsSize()
+
+  const [currentSection] = section
+
   const [_panelLayout] = panelLayout
 
   return (
@@ -23,21 +29,34 @@ export default function MainArea() {
       >
         <ResizablePanelGroup
           className="h-full rounded border"
-          direction={_panelLayout === 'top' ? 'vertical' : 'horizontal'}
+          direction={width <= BREAK_POINT.md ? 'vertical' : _panelLayout === 'top' ? 'vertical' : 'horizontal'}
         >
-          {_panelLayout === 'right' ? (
-            <>
-              <TextEditorContainer />
-              <Handle />
-              <CodeEditorContainer />
-            </>
-          ) : (
+          {width <= BREAK_POINT.md && currentSection === 'algorithm' ? (
             <>
               <CodeEditorContainer />
               <Handle />
               <TextEditorContainer />
             </>
-          )}
+          ) : width <= BREAK_POINT.md ? (
+            <>
+              <TextEditorContainer />
+              <Handle />
+              <CodeEditorContainer />
+            </>
+          ) : null}
+          {width > BREAK_POINT.md && _panelLayout === 'right' ? (
+            <>
+              <TextEditorContainer />
+              <Handle />
+              <CodeEditorContainer />
+            </>
+          ) : width > BREAK_POINT.md ? (
+            <>
+              <CodeEditorContainer />
+              <Handle />
+              <TextEditorContainer />
+            </>
+          ) : null}
         </ResizablePanelGroup>
       </div>
     </div>
@@ -46,11 +65,15 @@ export default function MainArea() {
 
 function CodeEditorContainer() {
   const { panelLayout } = useStore()
+  const { width } = useWindowsSize()
+
   const [_panelLayout] = panelLayout
 
   return (
     <ResizablePanel defaultSize={30}>
-      <ResizablePanelGroup direction={_panelLayout === 'top' ? 'horizontal' : 'vertical'}>
+      <ResizablePanelGroup
+        direction={width <= BREAK_POINT.md ? 'horizontal' : _panelLayout === 'top' ? 'horizontal' : 'vertical'}
+      >
         <AlgorithmEditor />
         <NonAlgorithmEditor />
       </ResizablePanelGroup>
@@ -74,11 +97,15 @@ function AlgorithmEditor() {
 }
 
 function NonAlgorithmEditor() {
-  const { section } = useStore()
+  const { editingLanguage, section } = useStore()
+  const { width } = useWindowsSize()
+
   const [currentSection] = section
 
+  const [_editingLanguage] = editingLanguage
+
   if (currentSection === 'algorithm') return null
-  return (['HTML', 'CSS', 'JS'] as const).map((language, i, arr) => (
+  return (width <= BREAK_POINT.md ? [_editingLanguage] : (['HTML', 'CSS', 'JS'] as const)).map((language, i, arr) => (
     <Fragment key={language}>
       <ResizablePanel>
         <CodeEditor language={language} />
@@ -98,7 +125,7 @@ function TextEditorContainer() {
       <ResizablePanel className="!overflow-auto">
         <div
           ref={ref}
-          className="relative h-full min-w-[37rem]"
+          className="relative h-full md:min-w-[37rem]"
         >
           <div className={cn('absolute left-0 top-0 hidden h-full w-full', currentSection === 'algorithm' && '!block')}>
             <AlgoPreview parent={ref} />

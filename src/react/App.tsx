@@ -1,6 +1,6 @@
 import MainArea from 'component/MainArea'
-import Navbar from 'component/Navbar'
 import Sidebar from 'component/Sidebar'
+import Toaster from 'component/Sonner'
 
 import Layout from './Layout'
 import StoreProvider from './Store'
@@ -11,8 +11,8 @@ export default function App() {
       <Layout
         left={<Sidebar />}
         main={<MainArea />}
-        top={<Navbar />}
       />
+      <Toaster />
     </StoreProvider>
   )
 }

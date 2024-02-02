@@ -1,4 +1,6 @@
+import { useWindowsSize } from 'hook/util'
 import { ChevronDown, Image, Link2, Smile, Table } from 'lucide-react'
+import { BREAK_POINT } from 'react/constant'
 import { Dropdown, DropdownContent } from 'shadcn/Dropdown'
 import { ToggleGroup, ToggleGroupItem } from 'shadcn/ToggleGroup'
 import { Tooltip, TooltipContent, TooltipTrigger } from 'shadcn/Tooltip'
@@ -11,9 +13,11 @@ const ITEMS = [
 ]
 
 export default function GroupThree() {
+  const { width } = useWindowsSize()
+
   return (
     <ToggleGroup type="multiple">
-      {ITEMS.map((item) =>
+      {ITEMS.slice(0, width <= BREAK_POINT.md ? -2 : undefined).map((item) =>
         item.isDropdown ? (
           <Dropdown key={item.tooltip}>
             <Item {...item} />

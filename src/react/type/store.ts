@@ -16,6 +16,7 @@ export type TStore = {
   authornotesJS: TStoreProps<string>
   authornotesSlate: TStoreProps<TSlateEditor>
   authornotesSlateReadOnly: TStoreProps<boolean>
+  editingLanguage: TStoreProps<TLanguage>
   feedbackCSS: TStoreProps<string>
   feedbackHTML: TStoreProps<string>
   feedbackJS: TStoreProps<string>

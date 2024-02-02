@@ -4,20 +4,33 @@ import { hyperLink } from '@uiw/codemirror-extensions-hyper-link'
 import { langs } from '@uiw/codemirror-extensions-langs'
 import { copilot, githubLight } from '@uiw/codemirror-themes-all'
 import ReactCodeMirror from '@uiw/react-codemirror'
+import { useWindowsSize } from 'hook/util'
 import { fetchAlgoValue } from 'lib/mobius'
-import { getAlgoCompletionList, getBaseJsCompletion, getCodeStore, prettier, updateJsCompletionList } from 'lib/util'
-import { Cog, Settings2 } from 'lucide-react'
+import {
+  cn,
+  getAlgoCompletionList,
+  getBaseJsCompletion,
+  getCodeStore,
+  prettier,
+  updateJsCompletionList,
+} from 'lib/util'
+import { ChevronDown, Cog, Settings2 } from 'lucide-react'
 import { useCallback, useEffect } from 'react'
+import { BREAK_POINT } from 'react/constant'
 import { useStore } from 'react/Store'
 import { Dropdown, DropdownContent, DropdownItem, DropdownTrigger } from 'shadcn/Dropdown'
+import { toast } from 'sonner'
 import { TSetState } from 'type/common'
+import { TNormalizedSection } from 'type/data'
 import { TStore } from 'type/store'
 
 type TCodeEditorProps = { language: 'ALGORITHM' | 'CSS' | 'HTML' | 'JS' }
 type TUseFormatOnLoadProps = {
+  algorithm: string
   css: string
   html: string
   js: string
+  setAlgorithm: TSetState<string>
   setCSS: TSetState<string>
   setHTML: TSetState<string>
   setJS: TSetState<string>
@@ -25,12 +38,15 @@ type TUseFormatOnLoadProps = {
 
 export default function CodeEditor({ language }: TCodeEditorProps) {
   const store = useStore()
+  const { width } = useWindowsSize()
 
-  const [currentSection] = store.section
+  const [currentSection, setCurrentSection] = store.section
+  const [algorithm, setAlgorithm] = store.algorithm
   const [html, setHTML] = store[`${currentSection !== 'algorithm' ? currentSection : 'question'}HTML`]
   const [css, setCSS] = store[`${currentSection !== 'algorithm' ? currentSection : 'question'}CSS`]
   const [js, setJS] = store[`${currentSection !== 'algorithm' ? currentSection : 'question'}JS`]
 
+  const [_editingLanguage, _setEditingLanguage] = store.editingLanguage
   const [_jsAutoCompletionList, _setJsAutoCompletionList] = store.jsAutoCompletionList
   const [_theme] = store.theme
   const [, _setAlgorithmPreview] = store.algorithmPreview
@@ -41,7 +57,7 @@ export default function CodeEditor({ language }: TCodeEditorProps) {
   )
 
   useResetJsCompletionList(currentSection, html, _setJsAutoCompletionList)
-  useFormatOnLoad({ css, html, js, setCSS, setHTML, setJS })
+  useFormatOnLoad({ algorithm, css, html, js, setAlgorithm, setCSS, setHTML, setJS })
 
   const lang =
     language === 'HTML'
@@ -63,7 +79,33 @@ export default function CodeEditor({ language }: TCodeEditorProps) {
   return (
     <div className="relative h-full">
       <div className="flex w-full items-center justify-between px-3">
-        <div className="h-5 py-1 text-xs font-bold">{language}</div>
+        {width <= BREAK_POINT.md ? (
+          <Dropdown>
+            <DropdownTrigger className="group flex items-center focus:outline-none">
+              <div className="h-5 py-1 text-xs font-bold">ALGORITHM</div>
+              <ChevronDown className="relative top-[1px] ml-1 h-3 w-3 transition duration-200 group-data-[state=open]:rotate-180" />
+            </DropdownTrigger>
+            <DropdownContent>
+              {(['question', 'authornotes', 'algorithm', 'feedback'] as TNormalizedSection[]).map((_section) => (
+                <DropdownItem
+                  key={_section}
+                  className={cn('my-1', _section === currentSection ? 'bg-accent' : '')}
+                  onClick={() => setCurrentSection(_section)}
+                >
+                  {_section === 'authornotes'
+                    ? 'Author Notes'
+                    : _section === 'feedback'
+                      ? 'Feedback'
+                      : _section === 'algorithm'
+                        ? 'Algorithm'
+                        : 'Question'}
+                </DropdownItem>
+              ))}
+            </DropdownContent>
+          </Dropdown>
+        ) : (
+          <div className="h-5 py-1 text-xs font-bold">{language}</div>
+        )}
         <Dropdown>
           <DropdownTrigger className="mt-1 cursor-default rounded-sm p-2 hover:bg-accent focus:outline-none">
             <div>
@@ -73,9 +115,9 @@ export default function CodeEditor({ language }: TCodeEditorProps) {
           <DropdownContent>
             <DropdownItem
               onClick={() => {
-                prettier(getCodeStore(store, language)[0], language).then((result) =>
-                  getCodeStore(store, language)[1](result),
-                )
+                prettier(getCodeStore(store, language)[0], language)
+                  .then((result) => getCodeStore(store, language)[1](result))
+                  .catch(() => (language !== 'ALGORITHM' ? toast(`Error: Invalid ${language}`) : null))
               }}
             >
               Format
@@ -137,11 +179,20 @@ function useResetJsCompletionList(section: string, html: string, setCompletionLi
   useEffect(() => updateJsCompletionList(html, setCompletionList), [html, section, setCompletionList])
 }
 
-function useFormatOnLoad({ css, html, js, setCSS, setHTML, setJS }: TUseFormatOnLoadProps) {
+function useFormatOnLoad({ algorithm, css, html, js, setAlgorithm, setCSS, setHTML, setJS }: TUseFormatOnLoadProps) {
   useEffect(() => {
-    prettier(html, 'HTML').then((_html) => setHTML(_html))
-    prettier(css, 'CSS').then((_css) => setCSS(_css))
-    prettier(js, 'JS').then((_js) => setJS(_js))
+    prettier(algorithm, 'ALGORITHM')
+      .then((_algorithm) => setAlgorithm(_algorithm))
+      .catch(() => {})
+    prettier(html, 'HTML')
+      .then((_html) => setHTML(_html))
+      .catch(() => {})
+    prettier(css, 'CSS')
+      .then((_css) => setCSS(_css))
+      .catch(() => {})
+    prettier(js, 'JS')
+      .then((_js) => setJS(_js))
+      .catch(() => {})
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 }

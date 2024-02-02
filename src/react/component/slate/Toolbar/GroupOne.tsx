@@ -1,8 +1,10 @@
 import ColorPicker from 'component/ColorPicker'
+import { useWindowsSize } from 'hook/util'
 import { ReactEditor } from 'lib/slate'
 import { cn } from 'lib/util'
 import { Baseline, Bold, Code, Italic, LucideIcon, PaintBucket, Strikethrough, Underline } from 'lucide-react'
 import { MouseEvent } from 'react'
+import { BREAK_POINT } from 'react/constant'
 import { ToggleGroup, ToggleGroupItem } from 'shadcn/ToggleGroup'
 import { Tooltip, TooltipContent, TooltipTrigger } from 'shadcn/Tooltip'
 import { useSlate } from 'slate-react'
@@ -19,12 +21,14 @@ const ITEMS: { Icon: LucideIcon; tooltip: string; trueMark?: TTrueMark; valueMar
 ]
 
 export default function GroupOne() {
+  const { width } = useWindowsSize()
+
   return (
     <ToggleGroup
       size="sm"
       type="multiple"
     >
-      {ITEMS.map(({ Icon, tooltip, trueMark, valueMark }) => (
+      {ITEMS.slice(0, width <= BREAK_POINT.md ? -2 : undefined).map(({ Icon, tooltip, trueMark, valueMark }) => (
         <Tooltip key={tooltip}>
           {trueMark ? (
             <TooltipTrigger asChild>

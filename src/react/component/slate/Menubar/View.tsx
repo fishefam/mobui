@@ -2,11 +2,10 @@ import { getLocalStorage } from 'lib/data'
 import { createElement } from 'lib/dom'
 import { fetchAlgoValue, joinMobiusData, previewLegacyDocument } from 'lib/mobius'
 import { ReactEditor } from 'lib/slate'
-import { serialize } from 'lib/slate/serialization'
+import { cn } from 'lib/util'
 import { Check, Eye, Fullscreen, Pencil, ReceiptText, X } from 'lucide-react'
-import { RefObject, useState } from 'react'
+import { RefObject, useEffect, useState } from 'react'
 import { useStore } from 'react/Store'
-import { Button } from 'shadcn/Button'
 import {
   Dialog,
   DialogClose,
@@ -26,10 +25,11 @@ import {
   MenubarSubTrigger,
   MenubarTrigger,
 } from 'shadcn/Menubar'
+import { Separator } from 'shadcn/Separator'
+import { Tabs, TabsList, TabsTrigger } from 'shadcn/Tabs'
 import { useSlateStatic } from 'slate-react'
 import { TSetState } from 'type/common'
-import { TNormalizedSection } from 'type/data'
-import { TSlateEditor, TValue } from 'type/slate'
+import { TSlateEditor } from 'type/slate'
 import { TStore } from 'type/store'
 
 type TViewMenuProps = { containerRef: RefObject<HTMLElement> }
@@ -37,7 +37,8 @@ type TViewMenuProps = { containerRef: RefObject<HTMLElement> }
 export default function ViewMenu({ containerRef }: TViewMenuProps) {
   const editor = useSlateStatic()
   const store = useStore()
-  const [html, setHTML] = useState('')
+  const [questionDocument, setQuestionDocument] = useState('')
+  const [feedbackDocument, setFeedbackDocument] = useState('')
   const [showPreviewDialog, setShowPreviewDialog] = useState(false)
 
   const {
@@ -70,8 +71,6 @@ export default function ViewMenu({ containerRef }: TViewMenuProps) {
 
   const [isEditorReadOnly, setIsEditorReadOnly] =
     currentSection !== 'algorithm' ? store[`${currentSection}SlateReadOnly`] : [true, () => {}]
-  const [css] = currentSection !== 'algorithm' ? store[`${currentSection}CSS`] : ['', () => {}]
-  const [js] = currentSection !== 'algorithm' ? store[`${currentSection}JS`] : ['', () => {}]
 
   const ModeIcon = isEditorReadOnly ? Eye : Pencil
 
@@ -112,8 +111,14 @@ export default function ViewMenu({ containerRef }: TViewMenuProps) {
           </MenubarSub>
           <MenubarSeparator />
           <MenubarItem
+            disabled={currentSection === 'authornotes'}
             onClick={() => {
-              previewDocument({ css, editor, js, section: currentSection, setHTML, store })
+              previewDocument({
+                section: currentSection as 'question',
+                setFeedbackDocument,
+                setQuestionDocument,
+                store,
+              })
               setShowPreviewDialog(true)
             }}
           >
@@ -132,7 +137,10 @@ export default function ViewMenu({ containerRef }: TViewMenuProps) {
         </MenubarContent>
       </MenubarMenu>
       <PreviewDialog
-        html={html}
+        feedbackDocument={feedbackDocument}
+        questionDocument={questionDocument}
+        setFeedbackDocument={setFeedbackDocument}
+        setQuestionDocument={setQuestionDocument}
         setShow={setShowPreviewDialog}
         show={showPreviewDialog}
       />
@@ -140,9 +148,24 @@ export default function ViewMenu({ containerRef }: TViewMenuProps) {
   )
 }
 
-function PreviewDialog({ html, setShow, show }: { html: string; setShow: TSetState<boolean>; show: boolean }) {
-  const editor = useSlateStatic()
+function PreviewDialog({
+  feedbackDocument,
+  questionDocument,
+  setFeedbackDocument,
+  setQuestionDocument,
+  setShow,
+  show,
+}: {
+  feedbackDocument: string
+  questionDocument: string
+  setFeedbackDocument: TSetState<string>
+  setQuestionDocument: TSetState<string>
+  setShow: TSetState<boolean>
+  show: boolean
+}) {
   const store = useStore()
+  const [showQuestion, setShowQuestion] = useState(false)
+  const [showFeedback, setShowFeedback] = useState(false)
 
   const {
     algorithm,
@@ -172,7 +195,16 @@ function PreviewDialog({ html, setShow, show }: { html: string; setShow: TSetSta
   const [_questionJS] = questionJS
   const [_questionName] = questionName
 
-  const previewDialogTitle = currentSection.charAt(0).toUpperCase().concat(currentSection.slice(1))
+  useEffect(() => {
+    if (currentSection === 'question') {
+      setShowQuestion(true)
+      setShowFeedback(false)
+    }
+    if (currentSection === 'feedback') {
+      setShowQuestion(false)
+      setShowFeedback(true)
+    }
+  }, [currentSection])
 
   return (
     <Dialog open={show}>
@@ -181,22 +213,65 @@ function PreviewDialog({ html, setShow, show }: { html: string; setShow: TSetSta
         className="h-[50vh] w-[50vw] max-w-[70vw]"
       >
         <DialogHeader>
-          <DialogTitle>{previewDialogTitle} Preview</DialogTitle>
-          <DialogDescription dangerouslySetInnerHTML={{ __html: html }} />
+          <DialogTitle>Preview</DialogTitle>
+          <div className="max-h-[50vh] overflow-auto">
+            <div className={cn('py-4', showQuestion ? 'block' : 'hidden')}>
+              <h4 className="mb-2">Question</h4>
+              <Separator dir="horizontal" />
+              <DialogDescription dangerouslySetInnerHTML={{ __html: questionDocument }} />
+            </div>
+            <div className={cn('py-4', showFeedback ? 'block' : 'hidden')}>
+              <h4 className="mb-2">Feedback</h4>
+              <Separator dir="horizontal" />
+              <DialogDescription dangerouslySetInnerHTML={{ __html: feedbackDocument }} />
+            </div>
+          </div>
           <DialogFooter className="absolute bottom-8 right-8">
-            <Button
-              onClick={() =>
-                previewLegacyDocument({
-                  algorithm: _algorithm,
-                  authornotes: joinMobiusData('authornotes', _authornotesHTML, _authornotesCSS, _authornotesJS),
-                  feedback: joinMobiusData('feedback', _feedbackHTML, _feedbackCSS, _feedbackJS),
-                  question: joinMobiusData('question', _questionHTML, _questionCSS, _questionJS),
-                  questionName: _questionName,
-                })
-              }
-            >
-              Preview in Legacy UI
-            </Button>
+            <Tabs className="w-full">
+              <TabsList className="w-full justify-evenly gap-1 bg-transparent">
+                {(['Question', 'Feedback', 'Both', 'Legacy UI'] as const).map((layout) => (
+                  <TabsTrigger
+                    key={layout}
+                    autoFocus={currentSection === layout.toLocaleLowerCase()}
+                    value={layout}
+                    className={cn(
+                      'h-full w-full py-2 data-[state=active]:shadow-none hover:bg-accent',
+                      layout === 'Legacy UI' && 'data-[state=active]:text-muted',
+                      layout !== 'Legacy UI' && 'data-[state=active]:bg-accent data-[state=active]:text-foreground',
+                    )}
+                    onClick={() => {
+                      if (layout === 'Question') {
+                        previewDocument({ section: 'question', setFeedbackDocument, setQuestionDocument, store })
+                        setShowQuestion(true)
+                        setShowFeedback(false)
+                      }
+                      if (layout === 'Feedback') {
+                        previewDocument({ section: 'feedback', setFeedbackDocument, setQuestionDocument, store })
+                        setShowQuestion(false)
+                        setShowFeedback(true)
+                      }
+                      if (layout === 'Both') {
+                        previewDocument({ section: 'both', setFeedbackDocument, setQuestionDocument, store })
+                        setShowFeedback(true)
+                        setShowQuestion(true)
+                      }
+                      if (layout === 'Legacy UI')
+                        previewLegacyDocument({
+                          algorithm: _algorithm,
+                          authornotes: joinMobiusData('authornotes', _authornotesHTML, _authornotesCSS, _authornotesJS),
+                          feedback: joinMobiusData('feedback', _feedbackHTML, _feedbackCSS, _feedbackJS),
+                          question: joinMobiusData('question', _questionHTML, _questionCSS, _questionJS),
+                          questionName: _questionName,
+                        })
+                    }}
+                  >
+                    {layout === 'Legacy UI'
+                      ? `Legacy UI: ${currentSection === 'question' ? 'Question' : 'Feedback'}`
+                      : layout}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
           </DialogFooter>
         </DialogHeader>
         <DialogClose
@@ -224,29 +299,48 @@ function handleFullscreen(editor: TSlateEditor, containerRef: RefObject<HTMLElem
 }
 
 function previewDocument({
-  css,
-  editor,
-  js,
   section,
-  setHTML,
+  setFeedbackDocument,
+  setQuestionDocument,
   store,
 }: {
-  css: string
-  editor: TSlateEditor
-  js: string
-  section: TNormalizedSection
-  setHTML: TSetState<string>
+  section: 'both' | 'feedback' | 'question'
+  setFeedbackDocument: TSetState<string>
+  setQuestionDocument: TSetState<string>
   store: TStore
 }) {
   fetchAlgoValue({
     onSuccess: (value) => {
-      let html = serialize(editor.children as TValue)
-      const entries = Object.entries(value).map(([key, { value }]) => ['\\$' + key, value])
-      for (const [key, value] of entries) html = html.replace(new RegExp(key, 'g'), value)
-      setHTML(joinMobiusData(section, html, css, js))
+      const { feedbackCSS, feedbackHTML, feedbackJS, questionCSS, questionHTML, questionJS } = store
+
+      const [_feedbackCSS] = feedbackCSS
+      const [_feedbackHTML] = feedbackHTML
+      const [_feedbackJS] = feedbackJS
+      const [_questionCSS] = questionCSS
+      const [_questionHTML] = questionHTML
+      const [_questionJS] = questionJS
+
+      const question = joinMobiusData('question', _questionHTML, _questionCSS, _questionJS)
+      const feedback = joinMobiusData('feedback', _feedbackHTML, _feedbackCSS, _feedbackJS)
+
+      const scripts = [
+        { html: question, js: _questionJS, setHTML: setQuestionDocument },
+        { html: feedback, js: _feedbackJS, setHTML: setFeedbackDocument },
+      ]
+        .map(({ html, js, setHTML }) => {
+          const entries = Object.entries(value).map(([key, { value }]) => ['\\$' + key, value])
+          for (const [key, value] of entries) html = html.replace(new RegExp(key, 'g'), value)
+          setHTML(html)
+          return createElement({ tag: 'script', text: `{${js}}` })
+        })
+        .map((script, i) => ({ element: script, section: i === 0 ? ('question' as const) : ('feedback' as const) }))
+
       const parent = document.querySelector(`#${getLocalStorage().scriptContainerId}`)!
       parent.innerHTML = ''
-      createElement({ parent, tag: 'script', text: js })
+
+      scripts.forEach(({ element, section: _section }) => {
+        if (section === _section || section === 'both') parent.appendChild(element)
+      })
     },
     store,
   })

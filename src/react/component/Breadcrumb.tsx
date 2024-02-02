@@ -12,7 +12,7 @@ export default function Breadcrumb() {
           href={`/${getLocalStorageItem('classId') !== '' ? getLocalStorageItem('classId') : '#'}`}
         >
           <svg
-            className="me-2.5 h-3 w-3"
+            className="me-0 h-3 w-3 md:me-2.5"
             fill="currentColor"
             viewBox="0 0 20 20"
           >
@@ -32,7 +32,7 @@ export default function Breadcrumb() {
               className="h-3 w-3"
               fill="currentColor"
             />
-            Repository
+            <span className="hidden md:inline">Repository</span>
           </a>
         </div>
       </li>

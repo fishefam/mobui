@@ -41,6 +41,7 @@ export default function GroupZero() {
 
   return (
     <ToggleGroup
+      className="hidden md:flex"
       size="sm"
       type="single"
     >

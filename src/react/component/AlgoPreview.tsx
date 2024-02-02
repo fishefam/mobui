@@ -14,11 +14,11 @@ export default function AlgoPreview({ parent }: { parent: RefObject<HTMLDivEleme
       className={'relative overflow-auto'}
       style={{ height: `${parent.current?.clientHeight}px` }}
     >
-      <Table className="min-w-[30rem] table-fixed">
-        <TableCaption className="sticky top-0 mt-0 caption-top bg-white py-4 dark:bg-black">
+      <Table className="table-fixed md:min-w-[30rem]">
+        <TableCaption className="sticky top-0 z-[2] mt-0 caption-top bg-white py-4 dark:bg-black">
           Variable Preview
         </TableCaption>
-        <TableHeader className="sticky top-[3.25rem] bg-accent">
+        <TableHeader className="sticky top-[3.25rem] z-[2] bg-accent">
           <TableRow>
             <TableHead>Variable</TableHead>
             <TableHead>Value</TableHead>
