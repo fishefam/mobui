@@ -3,18 +3,18 @@ import { createElement } from 'lib/dom'
 import { fetchAlgoValue, joinMobiusData, previewLegacyDocument } from 'lib/mobius'
 import { ReactEditor } from 'lib/slate'
 import { serialize } from 'lib/slate/serialization'
-import { Check, Eye, Fullscreen, Pencil, ReceiptText } from 'lucide-react'
+import { Check, Eye, Fullscreen, Pencil, ReceiptText, X } from 'lucide-react'
 import { RefObject, useState } from 'react'
 import { useStore } from 'react/Store'
 import { Button } from 'shadcn/Button'
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from 'shadcn/Dialog'
 import {
   MenubarContent,
@@ -38,6 +38,8 @@ export default function ViewMenu({ containerRef }: TViewMenuProps) {
   const editor = useSlateStatic()
   const store = useStore()
   const [html, setHTML] = useState('')
+  const [showPreviewDialog, setShowPreviewDialog] = useState(false)
+
   const {
     algorithm,
     authornotesCSS,
@@ -72,88 +74,140 @@ export default function ViewMenu({ containerRef }: TViewMenuProps) {
   const [js] = currentSection !== 'algorithm' ? store[`${currentSection}JS`] : ['', () => {}]
 
   const ModeIcon = isEditorReadOnly ? Eye : Pencil
+
+  return (
+    <>
+      <MenubarMenu>
+        <MenubarTrigger>View</MenubarTrigger>
+        <MenubarContent>
+          <MenubarSub>
+            <MenubarSubTrigger>
+              <div className="flex items-start gap-3">
+                <ModeIcon className="mt-[0.35rem] h-3 w-3" />
+                Mode
+              </div>
+            </MenubarSubTrigger>
+            <MenubarSubContent>
+              <MenubarItem onClick={() => setIsEditorReadOnly(false)}>
+                <div className="flex min-w-48 items-start justify-start gap-3">
+                  <Pencil className="mt-[0.35rem] h-3 w-3" />
+                  <div>
+                    <h4 className="text-sm font-semibold">Editing</h4>
+                    <p className="text-xs">Edit document directly</p>
+                  </div>
+                  {!isEditorReadOnly ? <Check className="h-5 w-5 self-center" /> : null}
+                </div>
+              </MenubarItem>
+              <MenubarItem onClick={() => setIsEditorReadOnly(true)}>
+                <div className="flex min-w-48 items-start justify-start gap-3">
+                  <Eye className="mt-[0.35rem] h-3 w-3" />
+                  <div>
+                    <h4 className="text-sm font-semibold">Viewing</h4>
+                    <p className="text-xs">Read or print final document</p>
+                  </div>
+                  {isEditorReadOnly ? <Check className="h-5 w-5 self-center" /> : null}
+                </div>
+              </MenubarItem>
+            </MenubarSubContent>
+          </MenubarSub>
+          <MenubarSeparator />
+          <MenubarItem
+            onClick={() => {
+              previewDocument({ css, editor, js, section: currentSection, setHTML, store })
+              setShowPreviewDialog(true)
+            }}
+          >
+            <div className="flex items-start gap-3">
+              <ReceiptText className="mt-[0.35rem] h-3 w-3" />
+              Preview Document
+            </div>
+          </MenubarItem>
+          <MenubarSeparator />
+          <MenubarItem onClick={() => handleFullscreen(editor, containerRef)}>
+            <div className="flex items-start gap-3">
+              <Fullscreen className="mt-[0.35rem] h-3 w-3" />
+              Toggle Fullscreen
+            </div>
+          </MenubarItem>
+        </MenubarContent>
+      </MenubarMenu>
+      <PreviewDialog
+        html={html}
+        setShow={setShowPreviewDialog}
+        show={showPreviewDialog}
+      />
+    </>
+  )
+}
+
+function PreviewDialog({ html, setShow, show }: { html: string; setShow: TSetState<boolean>; show: boolean }) {
+  const editor = useSlateStatic()
+  const store = useStore()
+
+  const {
+    algorithm,
+    authornotesCSS,
+    authornotesHTML,
+    authornotesJS,
+    feedbackCSS,
+    feedbackHTML,
+    feedbackJS,
+    questionCSS,
+    questionHTML,
+    questionJS,
+    questionName,
+    section,
+  } = store
+  const [currentSection] = section
+
+  const [_algorithm] = algorithm
+  const [_authornotesHTML] = authornotesHTML
+  const [_feedbackHTML] = feedbackHTML
+  const [_questionHTML] = questionHTML
+  const [_authornotesCSS] = authornotesCSS
+  const [_feedbackCSS] = feedbackCSS
+  const [_questionCSS] = questionCSS
+  const [_authornotesJS] = authornotesJS
+  const [_feedbackJS] = feedbackJS
+  const [_questionJS] = questionJS
+  const [_questionName] = questionName
+
   const previewDialogTitle = currentSection.charAt(0).toUpperCase().concat(currentSection.slice(1))
 
   return (
-    <MenubarMenu>
-      <MenubarTrigger>View</MenubarTrigger>
-      <MenubarContent>
-        <MenubarSub>
-          <MenubarSubTrigger>
-            <div className="flex items-start gap-3">
-              <ModeIcon className="mt-[0.35rem] h-3 w-3" />
-              Mode
-            </div>
-          </MenubarSubTrigger>
-          <MenubarSubContent>
-            <MenubarItem onClick={() => setIsEditorReadOnly(false)}>
-              <div className="flex min-w-48 items-start justify-start gap-3">
-                <Pencil className="mt-[0.35rem] h-3 w-3" />
-                <div>
-                  <h4 className="text-sm font-semibold">Editing</h4>
-                  <p className="text-xs">Edit document directly</p>
-                </div>
-                {!isEditorReadOnly ? <Check className="h-5 w-5 self-center" /> : null}
-              </div>
-            </MenubarItem>
-            <MenubarItem onClick={() => setIsEditorReadOnly(true)}>
-              <div className="flex min-w-48 items-start justify-start gap-3">
-                <Eye className="mt-[0.35rem] h-3 w-3" />
-                <div>
-                  <h4 className="text-sm font-semibold">Viewing</h4>
-                  <p className="text-xs">Read or print final document</p>
-                </div>
-                {isEditorReadOnly ? <Check className="h-5 w-5 self-center" /> : null}
-              </div>
-            </MenubarItem>
-          </MenubarSubContent>
-        </MenubarSub>
-        <MenubarSeparator />
-        <MenubarItem onClick={(event) => event.preventDefault()}>
-          <Dialog>
-            <DialogTrigger
-              onClick={() => previewDocument({ css, editor, js, section: currentSection, setHTML, store })}
+    <Dialog open={show}>
+      <DialogContent
+        forceMount
+        className="h-[50vh] w-[50vw] max-w-[70vw]"
+      >
+        <DialogHeader>
+          <DialogTitle>{previewDialogTitle} Preview</DialogTitle>
+          <DialogDescription dangerouslySetInnerHTML={{ __html: html }} />
+          <DialogFooter className="absolute bottom-8 right-8">
+            <Button
+              onClick={() =>
+                previewLegacyDocument({
+                  algorithm: _algorithm,
+                  authornotes: joinMobiusData('authornotes', _authornotesHTML, _authornotesCSS, _authornotesJS),
+                  feedback: joinMobiusData('feedback', _feedbackHTML, _feedbackCSS, _feedbackJS),
+                  question: joinMobiusData('question', _questionHTML, _questionCSS, _questionJS),
+                  questionName: _questionName,
+                })
+              }
             >
-              <div className="flex items-start gap-3">
-                <ReceiptText className="mt-[0.35rem] h-3 w-3" />
-                Preview Document
-              </div>
-            </DialogTrigger>
-            <DialogContent
-              forceMount
-              className="h-[50vh] w-[50vw] max-w-[70vw]"
-            >
-              <DialogHeader>
-                <DialogTitle>{previewDialogTitle} Preview</DialogTitle>
-                <DialogDescription dangerouslySetInnerHTML={{ __html: html }} />
-                <DialogFooter className="absolute bottom-8 right-8">
-                  <Button
-                    onClick={() =>
-                      previewLegacyDocument({
-                        algorithm: _algorithm,
-                        authornotes: joinMobiusData('authornotes', _authornotesHTML, _authornotesCSS, _authornotesJS),
-                        feedback: joinMobiusData('feedback', _feedbackHTML, _feedbackCSS, _feedbackJS),
-                        question: joinMobiusData('question', _questionHTML, _questionCSS, _questionJS),
-                        questionName: _questionName,
-                      })
-                    }
-                  >
-                    Preview in Legacy UI
-                  </Button>
-                </DialogFooter>
-              </DialogHeader>
-            </DialogContent>
-          </Dialog>
-        </MenubarItem>
-        <MenubarSeparator />
-        <MenubarItem onClick={() => handleFullscreen(editor, containerRef)}>
-          <div className="flex items-start gap-3">
-            <Fullscreen className="mt-[0.35rem] h-3 w-3" />
-            Toggle Fullscreen
-          </div>
-        </MenubarItem>
-      </MenubarContent>
-    </MenubarMenu>
+              Preview in Legacy UI
+            </Button>
+          </DialogFooter>
+        </DialogHeader>
+        <DialogClose
+          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity data-[state=open]:bg-accent data-[state=open]:text-muted-foreground hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
+          onClick={() => setShow(false)}
+        >
+          <X className="h-4 w-4" />
+          <span className="sr-only">Close</span>
+        </DialogClose>
+      </DialogContent>
+    </Dialog>
   )
 }
 

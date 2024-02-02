@@ -118,7 +118,7 @@ export function prettier(value: string, language: 'ALGORITHM' | 'CSS' | 'HTML' |
   return format(value, {
     ...option,
     htmlWhitespaceSensitivity: 'ignore',
-    printWidth: 80,
+    printWidth: 60,
     semi: true,
     trailingComma: 'none',
     useTabs: false,

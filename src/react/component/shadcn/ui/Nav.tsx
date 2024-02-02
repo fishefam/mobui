@@ -49,7 +49,7 @@ export function NavContent(props: TProps) {
   return (
     <NavPrimitive.Content
       {...props}
-      className={cn('nd left-0 top-0 w-full bg-popover md:absolute md:w-auto')}
+      className={cn('left-0 top-0 w-full bg-popover md:absolute md:w-auto')}
     />
   )
 }

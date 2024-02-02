@@ -14,23 +14,34 @@ import { TSetState } from 'type/common'
 import { TStore } from 'type/store'
 
 type TCodeEditorProps = { language: 'ALGORITHM' | 'CSS' | 'HTML' | 'JS' }
+type TUseFormatOnLoadProps = {
+  css: string
+  html: string
+  js: string
+  setCSS: TSetState<string>
+  setHTML: TSetState<string>
+  setJS: TSetState<string>
+}
 
 export default function CodeEditor({ language }: TCodeEditorProps) {
   const store = useStore()
 
   const [currentSection] = store.section
   const [html, setHTML] = store[`${currentSection !== 'algorithm' ? currentSection : 'question'}HTML`]
+  const [css, setCSS] = store[`${currentSection !== 'algorithm' ? currentSection : 'question'}CSS`]
+  const [js, setJS] = store[`${currentSection !== 'algorithm' ? currentSection : 'question'}JS`]
 
   const [_jsAutoCompletionList, _setJsAutoCompletionList] = store.jsAutoCompletionList
   const [_theme] = store.theme
   const [, _setAlgorithmPreview] = store.algorithmPreview
+  const [, _setIsUnsaved] = store.isUnsaved
 
   const getCustomComplete = useCustomComplete(
     language === 'ALGORITHM' ? getAlgoCompletionList() : _jsAutoCompletionList,
   )
 
   useResetJsCompletionList(currentSection, html, _setJsAutoCompletionList)
-  useFormatOnLoad(html, language, setHTML)
+  useFormatOnLoad({ css, html, js, setCSS, setHTML, setJS })
 
   const lang =
     language === 'HTML'
@@ -100,7 +111,7 @@ export default function CodeEditor({ language }: TCodeEditorProps) {
               ? [lang, color, hyperLink, autocompletion({ override: [getCustomComplete()] })]
               : [lang, color, hyperLink]
         }
-        onChange={(value) => handleChange(store, value, language, _setJsAutoCompletionList)}
+        onChange={(value) => handleChange(store, value, language, _setJsAutoCompletionList, _setIsUnsaved)}
       />
       {language === 'HTML' ? (
         <Cog
@@ -126,10 +137,13 @@ function useResetJsCompletionList(section: string, html: string, setCompletionLi
   useEffect(() => updateJsCompletionList(html, setCompletionList), [html, section, setCompletionList])
 }
 
-function useFormatOnLoad(html: string, language: TCodeEditorProps['language'], setHTML: TSetState<string>) {
+function useFormatOnLoad({ css, html, js, setCSS, setHTML, setJS }: TUseFormatOnLoadProps) {
   useEffect(() => {
-    prettier(html, language).then((_html) => setHTML(_html))
-  }, [html, language, setHTML])
+    prettier(html, 'HTML').then((_html) => setHTML(_html))
+    prettier(css, 'CSS').then((_css) => setCSS(_css))
+    prettier(js, 'JS').then((_js) => setJS(_js))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 }
 
 function handleChange(
@@ -137,9 +151,11 @@ function handleChange(
   value: string,
   language: 'ALGORITHM' | 'CSS' | 'HTML' | 'JS',
   setCompletion: TSetState<Completion[]>,
+  setIsUnsaved: TSetState<boolean>,
 ) {
   getCodeStore(store, language)[1](value)
   if (language === 'HTML') updateJsCompletionList(value, setCompletion)
+  setIsUnsaved(true)
 }
 
 function baseJsAutoComplete(context: CompletionContext) {
