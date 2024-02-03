@@ -1,0 +1,20 @@
+{
+  "endOfLine": "lf",
+  "htmlWhitespaceSensitivity": "ignore",
+  "jsxSingleQuote": false,
+  "plugins": ["prettier-plugin-tailwindcss"],
+  "printWidth": 120,
+  "quoteProps": "consistent",
+  "semi": false,
+  "singleAttributePerLine": true,
+  "singleQuote": true,
+  "tailwindFunctions": ["cn", "clsx", "twMerge"],
+  "trailingComma": "all",
+  "useTabs": false,
+  "overrides": [
+    {
+      "files": ["./src/react/type/**/*.ts", "./src/react/Store.tsx"],
+      "options": { "printWidth": 300 }
+    }
+  ]
+}

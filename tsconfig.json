@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "alwaysStrict": true,
+    "baseUrl": "src",
+    "checkJs": false,
+    "esModuleInterop": true,
+    "jsx": "react-jsx",
+    "module": "CommonJS",
+    "noEmit": true,
+    "strict": true,
+    "target": "ES2016",
+    "skipLibCheck": true,
+    "typeRoots": ["node_modules/@types", "web-ext-types"],
+    "paths": {
+      "shadcn/*": ["react/component/shadcn/ui/*"],
+      "component/*": ["react/component/*"],
+      "hook/*": ["react/hook/*"],
+      "lib/*": ["react/lib/*"],
+      "type/*": ["react/type/*"],
+    },
+  },
+  "exclude": ["node_modules", "dist"],
+}
