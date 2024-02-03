@@ -2,7 +2,7 @@ import { Completion } from '@codemirror/autocomplete'
 
 import { TLanguage, TSetState } from './common'
 import { TNormalizedSection } from './data'
-import { TSlateEditor } from './slate'
+import { TSlateEditor, TValue } from './slate'
 
 export type TTheme = 'dark' | 'light'
 export type TStoreProps<T> = [state: T, setState: TSetState<T>]
@@ -15,12 +15,14 @@ export type TStore = {
   authornotesHTML: TStoreProps<string>
   authornotesJS: TStoreProps<string>
   authornotesSlate: TStoreProps<TSlateEditor>
+  authornotesSlateInitialValue: TStoreProps<TValue>
   authornotesSlateReadOnly: TStoreProps<boolean>
   editingLanguage: TStoreProps<TLanguage>
   feedbackCSS: TStoreProps<string>
   feedbackHTML: TStoreProps<string>
   feedbackJS: TStoreProps<string>
   feedbackSlate: TStoreProps<TSlateEditor>
+  feedbackSlateInitialValue: TStoreProps<TValue>
   feedbackSlateReadOnly: TStoreProps<boolean>
   isUnsaved: TStoreProps<boolean>
   jsAutoCompletionList: TStoreProps<Completion[]>
@@ -30,6 +32,7 @@ export type TStore = {
   questionJS: TStoreProps<string>
   questionName: TStoreProps<string>
   questionSlate: TStoreProps<TSlateEditor>
+  questionSlateInitialValue: TStoreProps<TValue>
   questionSlateReadOnly: TStoreProps<boolean>
   section: TStoreProps<TNormalizedSection>
   theme: TStoreProps<TTheme>

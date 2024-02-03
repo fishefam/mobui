@@ -68,7 +68,7 @@ export default function FileMenu() {
                 authornotes: join('', _authornotesHTML, _authornotesCSS, _authornotesJS),
                 feedback: join('', _feedbackHTML, _feedbackCSS, _feedbackJS),
                 isPreview: false,
-                onSuccess: () => _setIsUnsaved(true),
+                onSuccess: () => _setIsUnsaved(false),
                 question: join('', _questionHTML, _questionCSS, _questionJS),
                 questionName: _questionName,
               })

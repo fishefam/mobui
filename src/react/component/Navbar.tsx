@@ -1,7 +1,7 @@
 import { useWindowsSize } from 'hook/util'
 import { setLocalStorage } from 'lib/data'
 import { cn, getLocalStorageItem } from 'lib/util'
-import { MenuIcon } from 'lucide-react'
+// import { MenuIcon } from 'lucide-react'
 import { Fragment, MouseEvent, RefObject, useState } from 'react'
 import { BREAK_POINT } from 'react/constant'
 import { useStore } from 'react/Store'
@@ -109,7 +109,10 @@ export default function Navbar({ container }: { container: RefObject<HTMLDivElem
               <MenuIcon />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left">
+          <SheetContent
+            className="overflow-auto"
+            side="left"
+          >
             {ITEMS.map(({ href, subitems, trigger }) => (
               <Fragment key={trigger}>
                 {
@@ -415,5 +418,6 @@ function createHref(classId: string, path: string) {
 function loadDefaultInterface(event: MouseEvent) {
   event.preventDefault()
   localStorage.setItem('newInterface', 'off')
-  location.reload()
+  const { href } = location
+  location.href = href
 }

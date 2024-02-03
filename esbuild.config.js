@@ -1,8 +1,12 @@
 import autoprefixer from 'autoprefixer'
 import clean from 'esbuild-plugin-clean'
 import style from 'esbuild-style-plugin'
-import { readdirSync, readFileSync } from 'fs'
+import { cpSync, mkdirSync } from 'fs'
+import { dirname, resolve } from 'path'
 import tailwindcss from 'tailwindcss'
+import { fileURLToPath } from 'url'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 /**
  * Array of file names to be processed.
@@ -22,7 +26,7 @@ const BROWSERS = ['chromium', 'firefox']
  */
 const MANIFEST_PATH = 'manifest/v'
 
-const ASSET_PATHS = ['asset']
+const ASSET_PATH = 'asset'
 
 /**
  * Represents the base build configuration for esbuild.
@@ -30,12 +34,21 @@ const ASSET_PATHS = ['asset']
  */
 export const baseConfigs = {
   bundle: true,
-  entryPoints: createEntries(BROWSERS, FILES, MANIFEST_PATH, ASSET_PATHS),
+  chunkNames: './chromium/[name]-[hash]',
+  entryPoints: createEntries(BROWSERS, FILES, MANIFEST_PATH),
+  format: 'iife',
   jsx: 'transform',
   loader: { '.asset': 'copy', '.ico': 'copy', '.json': 'copy' },
   logLevel: 'info',
   outdir: 'dist',
-  plugins: [clean({ patterns: 'dist' }), style({ postcss: { plugins: [autoprefixer(), tailwindcss()] } })],
+  plugins: [
+    clean({ patterns: 'dist' }),
+    style({ postcss: { plugins: [autoprefixer(), tailwindcss()] } }),
+    copyDir(
+      `src/${ASSET_PATH}`,
+      BROWSERS.map((browser) => `dist/${browser}/asset`),
+    ),
+  ],
 }
 
 /**
@@ -43,10 +56,9 @@ export const baseConfigs = {
  * @param {string[]} browsers - Array of target browsers.
  * @param {string[]} files - Array of file names to be processed.
  * @param {string} manifestPath - Path to the manifest files.
- * @param {string[]} assetPaths - Path to the copying files.
  * @returns {Array<{in: string, out: string}>} Array of input and output paths.
  */
-function createEntries(browsers, files, manifestPath, assetPaths) {
+function createEntries(browsers, files, manifestPath) {
   const entries = browsers
     .map((browser) => files.map((file) => ({ in: file, out: `${browser}/${getFilename(file)}` })))
     .flat()
@@ -54,16 +66,7 @@ function createEntries(browsers, files, manifestPath, assetPaths) {
     in: `${manifestPath}${browser === 'chromium' ? 3 : 2}.json`,
     out: `${browser}/manifest`,
   }))
-  const assetFiles = assetPaths.map((p) => readdirSyncResursive('src/' + p)).flat()
-  const copyingFiles = assetFiles
-    .map((file) =>
-      browsers.map((browser) => ({
-        in: file.replace('src/', ''),
-        out: `${browser}/${file.replace(/\.asset|src\/|\.\w+$/g, '')}`,
-      })),
-    )
-    .flat()
-  return [...entries, ...manifests, ...copyingFiles]
+  return [...entries, ...manifests]
 }
 
 /**
@@ -76,24 +79,21 @@ function getFilename(file) {
 }
 
 /**
- * Description
- * @param {string} root
- * @returns {string[]}
+ *
+ * @param {string} source
+ * @param {string[]} destinations
+ * @returns {import('esbuild').Plugin}
  */
-function readdirSyncResursive(root) {
-  const _root = root.replace(/^\/|\/$/g, '')
-  const files = []
-  const dirs = []
-  const filesInDir = readdirSync(_root)
-  for (const file of filesInDir)
-    try {
-      const path = `${_root}/${file}`
-      readFileSync(path)
-      files.push(path)
-    } catch {
-      const path = `${_root}/${file}`
-      dirs.push(path)
-    }
-  for (const dir of dirs) files.push(...readdirSyncResursive(dir))
-  return files
+function copyDir(source, destinations) {
+  return {
+    name: 'copyDir',
+    setup: (build) => {
+      build.onEnd(() => {
+        for (const dest of destinations) {
+          mkdirSync(resolve(__dirname, dest), { recursive: true })
+          cpSync(resolve(__dirname, source), resolve(__dirname, dest), { recursive: true })
+        }
+      })
+    },
+  }
 }

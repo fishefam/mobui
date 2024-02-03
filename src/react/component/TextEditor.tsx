@@ -4,6 +4,7 @@ import { renderElement, renderLeaf } from 'lib/slate/renderer'
 import { serialize } from 'lib/slate/serialization'
 import { createBlockNode } from 'lib/slate/util'
 import { cn, prettier, updateJsCompletionList } from 'lib/util'
+import { Cog } from 'lucide-react'
 import { useRef } from 'react'
 import { useStore } from 'react/Store'
 import { Editable } from 'slate-react'
@@ -18,28 +19,37 @@ export default function TextEditor() {
   const {
     authornotesHTML,
     authornotesSlate,
+    authornotesSlateInitialValue,
     authornotesSlateReadOnly,
     feedbackHTML,
     feedbackSlate,
+    feedbackSlateInitialValue,
     feedbackSlateReadOnly,
     isUnsaved,
     jsAutoCompletionList,
     questionHTML,
     questionSlate,
+    questionSlateInitialValue,
     questionSlateReadOnly,
     section,
   } = useStore()
 
   const [currentSection] = section
 
+  const [_authornotesHTML, _setAuthornotesHTML] = authornotesHTML
   const [_authornotesSlate] = authornotesSlate
   const [_authornotesSlateReadOnly] = authornotesSlateReadOnly
+  const [_feedbackHTML, _setFeedbackHTML] = feedbackHTML
   const [_feedbackSlate] = feedbackSlate
   const [_feedbackSlateReadOnly] = feedbackSlateReadOnly
+  const [_questionHTML, _setQuestionHTML] = questionHTML
   const [_questionSlate] = questionSlate
+  const [_questionSlateInitialValue] = questionSlateInitialValue
+  const [_authornotesSlateInitialValue] = authornotesSlateInitialValue
+  const [_feedbackSlateInitialValue] = feedbackSlateInitialValue
   const [_questionSlateReadOnly] = questionSlateReadOnly
-  const [, _setjsAutoCompletionList] = jsAutoCompletionList
   const [, _setIsUnsaved] = isUnsaved
+  const [, _setjsAutoCompletionList] = jsAutoCompletionList
 
   const contrainerRef = useRef<HTMLDivElement>(null)
   const editorRef = useRef<HTMLDivElement>(null)
@@ -52,11 +62,11 @@ export default function TextEditor() {
 
   const setCodeValue =
     currentSection === 'authornotes'
-      ? authornotesHTML[1]
+      ? _setAuthornotesHTML
       : currentSection === 'feedback'
-        ? feedbackHTML[1]
+        ? _setFeedbackHTML
         : currentSection === 'question'
-          ? questionHTML[1]
+          ? _setQuestionHTML
           : null
 
   return (
@@ -68,7 +78,15 @@ export default function TextEditor() {
         <Slate
           key={section}
           editor={editor}
-          initialValue={[createBlockNode({ text: section, type: 'paragraph' })]}
+          initialValue={
+            section === 'authornotes'
+              ? _authornotesSlateInitialValue
+              : section === 'feedback'
+                ? _feedbackSlateInitialValue
+                : section === 'question'
+                  ? _questionSlateInitialValue
+                  : [createBlockNode({})]
+          }
           onValueChange={(value) => handleValueChange(value, _setIsUnsaved, _setjsAutoCompletionList, setCodeValue)}
         >
           <div
@@ -93,10 +111,10 @@ export default function TextEditor() {
               />
             </div>
 
-            {/* <Cog
+            <Cog
               className="absolute bottom-2 right-2 hidden h-4 w-4 animate-spin"
               id="cog-spinner-slate"
-            /> */}
+            />
           </div>
         </Slate>
       ))}

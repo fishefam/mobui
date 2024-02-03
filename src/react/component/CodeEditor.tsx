@@ -4,7 +4,7 @@ import { hyperLink } from '@uiw/codemirror-extensions-hyper-link'
 import { langs } from '@uiw/codemirror-extensions-langs'
 import { copilot, githubLight } from '@uiw/codemirror-themes-all'
 import ReactCodeMirror from '@uiw/react-codemirror'
-import { useWindowsSize } from 'hook/util'
+import { useRemoveRootLoader, useWindowsSize } from 'hook/util'
 import { fetchAlgoValue } from 'lib/mobius'
 import {
   cn,
@@ -58,6 +58,7 @@ export default function CodeEditor({ language }: TCodeEditorProps) {
 
   useResetJsCompletionList(currentSection, html, _setJsAutoCompletionList)
   useFormatOnLoad({ algorithm, css, html, js, setAlgorithm, setCSS, setHTML, setJS })
+  useRemoveRootLoader()
 
   const lang =
     language === 'HTML'

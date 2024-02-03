@@ -9,7 +9,7 @@ import css from 'prettier/plugins/postcss'
 import typescript from 'prettier/plugins/typescript'
 import { format } from 'prettier/standalone'
 import { twMerge } from 'tailwind-merge'
-import { TLanguage, TObject, TSetState } from 'type/common'
+import { TAttributeName, TLanguage, TObject, TReactAttribute, TSetState } from 'type/common'
 import { TLocalStorageKey, TStore, TStoreCodeKey } from 'type/store'
 
 import { getLocalStorage } from './data'
@@ -94,6 +94,32 @@ export function getLocalStorageItem(key: TLocalStorageKey): string {
   return localStorage.getItem(key) ?? ''
 }
 
+export function snakeToCamel(input: string) {
+  return input
+    .split('-')
+    .map((value, i) => (i > 0 ? value.charAt(0).toUpperCase().concat(value.slice(1)) : value))
+    .join('')
+}
+
+export function namedNodeMapToReactAttribute(
+  map?: NamedNodeMap,
+  ...removingKeys: TAttributeName[]
+): { [key in keyof TReactAttribute]: string } {
+  if (map) {
+    for (const key of removingKeys) if (map.getNamedItem(key)) map.removeNamedItem(key)
+    return Object.fromEntries(
+      Object.values(map).map(({ nodeName, textContent }) => {
+        const name = <TAttributeName>nodeName
+        if (name === 'for') return ['htmlFor', textContent]
+        if (name === 'defaultvalue') return ['defaultValue', textContent]
+        if (textContent) return [nodeName, textContent]
+        return [nodeName, '']
+      }),
+    )
+  }
+  return {}
+}
+
 /**
  * Checks if an object has specific properties with non-falsy values.
  * @param property - The object to check for properties.
@@ -118,8 +144,9 @@ export function prettier(value: string, language: 'ALGORITHM' | 'CSS' | 'HTML' |
   return format(value, {
     ...option,
     htmlWhitespaceSensitivity: 'ignore',
-    printWidth: 60,
+    printWidth: 40,
     semi: true,
+    singleAttributePerLine: true,
     trailingComma: 'none',
     useTabs: false,
   })
