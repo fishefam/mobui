@@ -1,7 +1,9 @@
 {
-  "name": "nodemob",
+  "name": "mobui",
   "version": "0.1.0",
   "type": "module",
+  "author": "Truong Nguyen",
+  "license": "MIT",
   "scripts": {
     "analyze": "source-map-explorer dist/firefox/main",
     "dev-build": "node esbuild.dev",
