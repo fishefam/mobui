@@ -1,5 +1,6 @@
 import { TLanguage } from 'type/common'
 import { TAlgoResponseValue, TLocalStorageKey, TNormalizedSection, TPreviewDataKey, TSaveDataKey } from 'type/data'
+import { TPanelLayout, TTheme } from 'type/store'
 
 import { extractHTML, getBaseURL } from './util'
 
@@ -15,6 +16,22 @@ type TPrepareSaveDataBodyProps = {
   isPreview: boolean
   question: string
   questionName: string
+}
+
+type TGetLocalStorageReturn = {
+  classId: string
+  data: string
+  extURL: string
+  panelLayout: TPanelLayout
+  previewFormContainerId: string
+  reactRootId: string
+  reponame: string
+  rootLoaderId: string
+  scriptContainerId: string
+  theme: TTheme
+  uid: string
+  uidHash: string
+  username: string
 }
 
 /**
@@ -34,7 +51,7 @@ type TSubmitDataProps<T extends TAlgoResponseValue | string> = {
 /**
  *
  * Gets the security token from cookies.
- * @returns {string} - Security token.
+ * @returns - Security token.
  *
  */
 export function getSecurityToken() {
@@ -44,7 +61,7 @@ export function getSecurityToken() {
 /**
  *
  * Gets values from local storage.
- * @returns {Object} - Local storage values.
+ * @returns - Local storage values.
  *
  */
 export function getLocalStorage() {
@@ -63,9 +80,9 @@ export function getLocalStorage() {
     'uidHash',
     'username',
   ]
-  const values = keys.map((key) => localStorage.getItem(key) as string)
+  const values = keys.map((key) => localStorage.getItem(key)!)
   const entries = keys.map((key, i) => [key, values[i]])
-  return Object.fromEntries(entries) as { [key in TLocalStorageKey]: string }
+  return Object.fromEntries(entries) as TGetLocalStorageReturn
 }
 
 /**
@@ -74,10 +91,10 @@ export function getLocalStorage() {
  * @template T - Type of the normalized section.
  * @param  section - Normalized section.
  * @param  type - Language type.
- * @returns {string} - Retrieved data.
+ * @returns - Retrieved data.
  *
  */
-export function getData<T extends TNormalizedSection>(section: T, type: T extends 'algorithm' ? undefined : TLanguage) {
+export function getData<T extends TNormalizedSection>(section: T, type: T extends 'algorithm' ? null : TLanguage) {
   const { data } = getLocalStorage()
   const { algorithm, authorNotesEditor, commentEditor, editor } = JSON.parse(data) as { [key in TSaveDataKey]?: string }
   if (section === 'algorithm') return algorithm ?? ''
@@ -107,7 +124,7 @@ export function setLocalStorage(...pairs: [TLocalStorageKey, string][]) {
  *
  * Prepares the body for saving data.
  * @param  props - Save data body preparation props.
- * @returns {string} - Prepared data body.
+ * @returns - Prepared data body.
  *
  */
 export function prepareSaveDataBody({
@@ -145,7 +162,7 @@ export function prepareSaveDataBody({
  * Prepares the body for preview data.
  * @param  questionDefinition - Question definition.
  * @param  version - Version.
- * @returns {string} - Prepared preview data body.
+ * @returns - Prepared preview data body.
  *
  */
 export function preparePreviewDataBody(questionDefinition: string, version: string) {

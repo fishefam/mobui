@@ -1,7 +1,6 @@
 import { useWindowsSize } from 'hook/util'
 import { setLocalStorage } from 'lib/data'
 import { cn, getLocalStorageItem } from 'lib/util'
-// import { MenuIcon } from 'lucide-react'
 import { Fragment, MouseEvent, RefObject, useState } from 'react'
 import { BREAK_POINT } from 'react/constant'
 import { useStore } from 'react/Store'
@@ -162,7 +161,7 @@ export default function Navbar({ container }: { container: RefObject<HTMLDivElem
               )
             })
           : null}
-        <ViewChange />
+        {width > BREAK_POINT.md ? <ViewChange /> : null}
         <Profile root={container} />
       </NavList>
     </Nav>

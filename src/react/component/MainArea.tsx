@@ -1,6 +1,5 @@
 import { MathJaxContext } from 'better-react-mathjax'
 import Breadcrumb from 'component/Breadcrumb'
-import CodeEditor from 'component/CodeEditor'
 import { useWindowsSize } from 'hook/util'
 import { cn } from 'lib/util'
 import { Cog } from 'lucide-react'
@@ -10,6 +9,7 @@ import { useStore } from 'react/Store'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from 'shadcn/Resizable'
 
 import AlgoPreview from './AlgoPreview'
+import CodeEditor from './CodeEditor'
 import TextEditor from './TextEditor'
 
 export default function MainArea() {

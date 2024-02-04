@@ -6,23 +6,30 @@ import { copilot, githubLight } from '@uiw/codemirror-themes-all'
 import ReactCodeMirror from '@uiw/react-codemirror'
 import { useRemoveRootLoader, useWindowsSize } from 'hook/util'
 import { fetchAlgoValue } from 'lib/mobius'
+import { deserialize } from 'lib/slate/deserialization'
+import { createBlockNode } from 'lib/slate/util'
 import {
   cn,
   getAlgoCompletionList,
   getBaseJsCompletion,
   getCodeStore,
+  getDOM,
   prettier,
-  updateJsCompletionList,
+  updateCompletionList,
 } from 'lib/util'
 import { ChevronDown, Cog, Settings2 } from 'lucide-react'
-import { useCallback, useEffect } from 'react'
+import { RefObject, useCallback, useEffect, useRef } from 'react'
 import { BREAK_POINT } from 'react/constant'
 import { useStore } from 'react/Store'
 import { Dropdown, DropdownContent, DropdownItem, DropdownTrigger } from 'shadcn/Dropdown'
 import { toast } from 'sonner'
-import { TSetState } from 'type/common'
+import { TLanguage, TSetState } from 'type/common'
 import { TNormalizedSection } from 'type/data'
-import { TStore } from 'type/store'
+import { TSlateEditor } from 'type/slate'
+
+//
+// ─── TYPE DEFINITIONS ───────────────────────────────────────────────────────────
+//
 
 type TCodeEditorProps = { language: 'ALGORITHM' | 'CSS' | 'HTML' | 'JS' }
 type TUseFormatOnLoadProps = {
@@ -35,10 +42,25 @@ type TUseFormatOnLoadProps = {
   setHTML: TSetState<string>
   setJS: TSetState<string>
 }
+type THandleChangeParam = {
+  codeEditorRef: RefObject<HTMLDivElement>
+  editor: TSlateEditor | null
+  language: 'ALGORITHM' | 'CSS' | 'HTML' | 'JS'
+  setCode: TSetState<string>
+  setIsUnsaved: TSetState<boolean>
+  setJsCompletion: TSetState<Completion[]>
+  timeout?: number
+  value: string
+}
+
+//
+// ─── COMPONENTS ─────────────────────────────────────────────────────────────────
+//
 
 export default function CodeEditor({ language }: TCodeEditorProps) {
   const store = useStore()
   const { width } = useWindowsSize()
+  const codeEditorRef = useRef<HTMLDivElement>(null)
 
   const [currentSection, setCurrentSection] = store.section
   const [algorithm, setAlgorithm] = store.algorithm
@@ -56,10 +78,22 @@ export default function CodeEditor({ language }: TCodeEditorProps) {
     language === 'ALGORITHM' ? getAlgoCompletionList() : _jsAutoCompletionList,
   )
 
-  useResetJsCompletionList(currentSection, html, _setJsAutoCompletionList)
+  useResetCompletionList({
+    html,
+    section: currentSection,
+    setJsCompletionList: _setJsAutoCompletionList,
+  })
   useFormatOnLoad({ algorithm, css, html, js, setAlgorithm, setCSS, setHTML, setJS })
   useRemoveRootLoader()
 
+  const editor =
+    currentSection === 'authornotes'
+      ? store.authornotesSlate[0]
+      : currentSection === 'feedback'
+        ? store.feedbackSlate[0]
+        : currentSection === 'question'
+          ? store.questionSlate[0]
+          : null
   const lang =
     language === 'HTML'
       ? langs.html()
@@ -68,19 +102,14 @@ export default function CodeEditor({ language }: TCodeEditorProps) {
         : language === 'JS'
           ? langs.javascript()
           : langs.perl()
-  const placeholder =
-    language === 'HTML'
-      ? '<div>Mobius</div>'
-      : language === 'CSS'
-        ? '#Mobius { color: violet; }'
-        : language === 'JS'
-          ? 'console.log("Mobius");'
-          : "$my_var = 'Mobius';"
+  const setCode = language === 'HTML' ? setHTML : language === 'CSS' ? setCSS : language === 'JS' ? setJS : setAlgorithm
+
+  console.log(language, html, css, js)
 
   return (
     <div className="relative h-full">
       <div className="flex w-full items-center justify-between px-3">
-        {width <= BREAK_POINT.md ? (
+        {width <= BREAK_POINT.md && language === 'ALGORITHM' ? (
           <Dropdown>
             <DropdownTrigger className="group flex items-center focus:outline-none">
               <div className="h-5 py-1 text-xs font-bold">ALGORITHM</div>
@@ -104,6 +133,24 @@ export default function CodeEditor({ language }: TCodeEditorProps) {
               ))}
             </DropdownContent>
           </Dropdown>
+        ) : width < BREAK_POINT.md ? (
+          <Dropdown>
+            <DropdownTrigger className="group flex items-center focus:outline-none">
+              <div className="h-5 py-1 text-xs font-bold">{_editingLanguage}</div>
+              <ChevronDown className="relative top-[1px] ml-1 h-3 w-3 transition duration-200 group-data-[state=open]:rotate-180" />
+            </DropdownTrigger>
+            <DropdownContent>
+              {(['HTML', 'CSS', 'JS'] as TLanguage[]).map((language) => (
+                <DropdownItem
+                  key={language}
+                  className={cn('my-1', language === _editingLanguage ? 'bg-accent' : '')}
+                  onClick={() => _setEditingLanguage(language)}
+                >
+                  {language}
+                </DropdownItem>
+              ))}
+            </DropdownContent>
+          </Dropdown>
         ) : (
           <div className="h-5 py-1 text-xs font-bold">{language}</div>
         )}
@@ -117,7 +164,9 @@ export default function CodeEditor({ language }: TCodeEditorProps) {
             <DropdownItem
               onClick={() => {
                 prettier(getCodeStore(store, language)[0], language)
-                  .then((result) => getCodeStore(store, language)[1](result))
+                  .then((result) => {
+                    getCodeStore(store, language)[1](result)
+                  })
                   .catch(() => (language !== 'ALGORITHM' ? toast(`Error: Invalid ${language}`) : null))
               }}
             >
@@ -142,20 +191,34 @@ export default function CodeEditor({ language }: TCodeEditorProps) {
           </DropdownContent>
         </Dropdown>
       </div>
-      <ReactCodeMirror
-        placeholder={placeholder}
-        style={{ height: 'calc(100% - 1.25rem)' }}
-        theme={_theme === 'dark' ? copilot : githubLight}
-        value={getCodeStore(store, language)[0]}
-        extensions={
-          language === 'JS'
-            ? [lang, color, hyperLink, autocompletion({ override: [baseJsAutoComplete, getCustomComplete()] })]
-            : language === 'ALGORITHM'
-              ? [lang, color, hyperLink, autocompletion({ override: [getCustomComplete()] })]
-              : [lang, color, hyperLink]
-        }
-        onChange={(value) => handleChange(store, value, language, _setJsAutoCompletionList, _setIsUnsaved)}
-      />
+      <div
+        ref={codeEditorRef}
+        style={{ height: 'calc(100% - 2rem)' }}
+      >
+        <ReactCodeMirror
+          className="h-full"
+          theme={_theme === 'dark' ? copilot : githubLight}
+          value={getCodeStore(store, language)[0]}
+          extensions={
+            language === 'JS'
+              ? [lang, color, hyperLink, autocompletion({ override: [baseJsAutoComplete, getCustomComplete()] })]
+              : language === 'ALGORITHM'
+                ? [lang, color, hyperLink, autocompletion({ override: [getCustomComplete()] })]
+                : [lang, color, hyperLink]
+          }
+          onChange={(value) =>
+            handleChange({
+              codeEditorRef,
+              editor,
+              language,
+              setCode,
+              setIsUnsaved: _setIsUnsaved,
+              setJsCompletion: _setJsAutoCompletionList,
+              value,
+            })
+          }
+        />
+      </div>
       {language === 'HTML' ? (
         <Cog
           className="absolute bottom-2 right-2 hidden h-4 w-4 animate-spin"
@@ -165,6 +228,10 @@ export default function CodeEditor({ language }: TCodeEditorProps) {
     </div>
   )
 }
+
+//
+// ─── CUSTOM HOOKS ───────────────────────────────────────────────────────────────
+//
 
 function useCustomComplete(completionList: Completion[]) {
   return useCallback(() => {
@@ -176,8 +243,18 @@ function useCustomComplete(completionList: Completion[]) {
   }, [completionList])
 }
 
-function useResetJsCompletionList(section: string, html: string, setCompletionList: TSetState<Completion[]>) {
-  useEffect(() => updateJsCompletionList(html, setCompletionList), [html, section, setCompletionList])
+function useResetCompletionList({
+  html,
+  section,
+  setJsCompletionList,
+}: {
+  html: string
+  section: string
+  setJsCompletionList: TSetState<Completion[]>
+}) {
+  useEffect(() => {
+    updateCompletionList(html, 'JS', setJsCompletionList)
+  }, [html, section, setJsCompletionList])
 }
 
 function useFormatOnLoad({ algorithm, css, html, js, setAlgorithm, setCSS, setHTML, setJS }: TUseFormatOnLoadProps) {
@@ -198,16 +275,36 @@ function useFormatOnLoad({ algorithm, css, html, js, setAlgorithm, setCSS, setHT
   }, [])
 }
 
-function handleChange(
-  store: TStore,
-  value: string,
-  language: 'ALGORITHM' | 'CSS' | 'HTML' | 'JS',
-  setCompletion: TSetState<Completion[]>,
-  setIsUnsaved: TSetState<boolean>,
-) {
-  getCodeStore(store, language)[1](value)
-  if (language === 'HTML') updateJsCompletionList(value, setCompletion)
-  setIsUnsaved(true)
+//
+// ─── UTILITY FUNCTIONS ──────────────────────────────────────────────────────────
+//
+
+function handleChange({
+  codeEditorRef,
+  editor,
+  language,
+  setCode,
+  setIsUnsaved,
+  setJsCompletion,
+  timeout = 300,
+  value,
+}: THandleChangeParam) {
+  if (codeEditorRef.current === document.activeElement?.parentElement?.parentElement?.parentElement?.parentElement) {
+    document.querySelector('#cog-spinner-slate')?.classList.remove('hidden')
+    if (window.debouncer) clearTimeout(window.debouncer)
+    if (language === 'HTML')
+      window.debouncer = setTimeout(() => {
+        setIsUnsaved(true)
+        setCode(value.trim())
+        updateCompletionList(value, 'JS', setJsCompletion)
+        const fragment = deserialize(getDOM('algorithm', value.trim()))
+        if (editor) {
+          editor.children = [createBlockNode({})]
+          editor.children = fragment
+        }
+        document.querySelector('#cog-spinner-slate')?.classList.add('hidden')
+      }, timeout)
+  }
 }
 
 function baseJsAutoComplete(context: CompletionContext) {

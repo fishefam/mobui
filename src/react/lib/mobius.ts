@@ -102,7 +102,7 @@ export function previewLegacyDocument({
  * @param html - HTML content.
  * @param css - CSS content.
  * @param js - JavaScript content.
- * @returns {string} - Joined Mobius data.
+ * @returns - Joined Mobius data.
  *
  */
 export function joinMobiusData(section: TNormalizedSection, html: string, css: string, js: string) {

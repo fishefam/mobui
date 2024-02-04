@@ -3,9 +3,9 @@ import { Slate } from 'lib/slate'
 import { renderElement, renderLeaf } from 'lib/slate/renderer'
 import { serialize } from 'lib/slate/serialization'
 import { createBlockNode } from 'lib/slate/util'
-import { cn, prettier, updateJsCompletionList } from 'lib/util'
+import { cn, prettier, updateCompletionList } from 'lib/util'
 import { Cog } from 'lucide-react'
-import { useRef } from 'react'
+import { RefObject, useRef } from 'react'
 import { useStore } from 'react/Store'
 import { Editable } from 'slate-react'
 import { TSetState } from 'type/common'
@@ -33,6 +33,7 @@ export default function TextEditor() {
     questionSlateReadOnly,
     section,
   } = useStore()
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const [currentSection] = section
 
@@ -49,10 +50,7 @@ export default function TextEditor() {
   const [_feedbackSlateInitialValue] = feedbackSlateInitialValue
   const [_questionSlateReadOnly] = questionSlateReadOnly
   const [, _setIsUnsaved] = isUnsaved
-  const [, _setjsAutoCompletionList] = jsAutoCompletionList
-
-  const contrainerRef = useRef<HTMLDivElement>(null)
-  const editorRef = useRef<HTMLDivElement>(null)
+  const [, _setJsAutoCompletionList] = jsAutoCompletionList
 
   const editors: { editor: TSlateEditor; readOnly: boolean; section: TStoreProp<'section'> }[] = [
     { editor: _questionSlate, readOnly: _questionSlateReadOnly, section: 'question' },
@@ -71,7 +69,7 @@ export default function TextEditor() {
 
   return (
     <div
-      ref={contrainerRef}
+      ref={containerRef}
       className="relative h-full"
     >
       {editors.map(({ editor, readOnly, section }) => (
@@ -87,7 +85,15 @@ export default function TextEditor() {
                   ? _questionSlateInitialValue
                   : [createBlockNode({})]
           }
-          onValueChange={(value) => handleValueChange(value, _setIsUnsaved, _setjsAutoCompletionList, setCodeValue)}
+          onValueChange={(value) =>
+            handleValueChange({
+              containerRef,
+              setCode: setCodeValue,
+              setIsUnsaved: _setIsUnsaved,
+              setJsCompletion: _setJsAutoCompletionList,
+              value,
+            })
+          }
         >
           <div
             className={cn(
@@ -96,13 +102,10 @@ export default function TextEditor() {
             )}
           >
             <div className="sticky top-0 z-[1] w-full bg-white dark:bg-accent">
-              <SlateMenu containerRef={contrainerRef} />
+              <SlateMenu containerRef={containerRef} />
               <SlateToolbar />
             </div>
-            <div
-              ref={editorRef}
-              className="print-editor"
-            >
+            <div className="print-editor">
               <Editable
                 className="min-h-[30rem] p-6 focus:outline-none"
                 readOnly={readOnly}
@@ -122,21 +125,31 @@ export default function TextEditor() {
   )
 }
 
-function handleValueChange(
-  value: TValue,
-  setIsUnsaved: TSetState<boolean>,
-  setCompletion: TSetState<Completion[]>,
-  setCode: TSetState<string> | null,
+function handleValueChange({
+  containerRef,
+  setCode,
+  setIsUnsaved,
+  setJsCompletion,
   timeout = 300,
-) {
-  document.querySelector('#cog-spinner-html')?.classList.remove('hidden')
-  if (window.debouncer) clearTimeout(window.debouncer)
-  if (setCode)
-    window.debouncer = setTimeout(() => {
-      const html = serialize(value)
-      updateJsCompletionList(html, setCompletion)
-      prettier(html, 'HTML').then((html) => setCode(html))
-      setIsUnsaved(true)
-      document.querySelector('#cog-spinner-html')?.classList.add('hidden')
-    }, timeout)
+  value,
+}: {
+  containerRef: RefObject<HTMLDivElement>
+  setCode: TSetState<string> | null
+  setIsUnsaved: TSetState<boolean>
+  setJsCompletion: TSetState<Completion[]>
+  timeout?: number
+  value: TValue
+}) {
+  if (containerRef.current === document.activeElement?.parentElement?.parentElement?.parentElement) {
+    document.querySelector('#cog-spinner-html')?.classList.remove('hidden')
+    if (window.debouncer) clearTimeout(window.debouncer)
+    if (setCode)
+      window.debouncer = setTimeout(() => {
+        const html = serialize(value)
+        updateCompletionList(html, 'JS', setJsCompletion)
+        prettier(html, 'HTML').then((html) => setCode(html))
+        setIsUnsaved(true)
+        document.querySelector('#cog-spinner-html')?.classList.add('hidden')
+      }, timeout)
+  }
 }

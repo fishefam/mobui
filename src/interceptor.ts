@@ -1,5 +1,9 @@
 import hash from 'shorthash2'
 
+//
+// ─── TYPE DEFINITIONS ───────────────────────────────────────────────────────────
+//
+
 /**
  *
  * Props for intercepting and modifying page load.
@@ -28,6 +32,10 @@ type TInterceptProps = {
 }
 type TPrepareDataProps = TInterceptProps
 
+//
+// ─── CONSTANTS ──────────────────────────────────────────────────────────────────
+//
+
 /* Local storage keys to store information for React app */
 const EXT_SWITCH_KEY = 'newInterface' // Special key
 
@@ -49,6 +57,10 @@ const PREVIEW_FORM_ELEMENT_ID_VALUE = 'preview-form-container'
 const REACT_ELEMENT_ID_VALUE = 'root'
 const SCRIPT_ELEMENT_ID_VALUE = 'script-container'
 const ROOT_LOADER_ELEMENT_ID_VALUE = 'root-loader'
+
+//
+// ─── MAIN SCRIPT ────────────────────────────────────────────────────────────────
+//
 
 if (localStorage.getItem(EXT_SWITCH_KEY) === 'off') attachSwitchButton(EXT_SWITCH_KEY)
 
@@ -73,6 +85,10 @@ if (localStorage.getItem(EXT_SWITCH_KEY) !== 'off')
     urlKey: EXT_URL_KEY,
     usernameKey: USERNAME_KEY,
   })
+
+//
+// ─── UTILITY FUNCTIONS ──────────────────────────────────────────────────────────
+//
 
 /**
  * Attaches a switch button to enable the modern UI.

@@ -1,7 +1,7 @@
 import { Completion } from '@codemirror/autocomplete'
 
 import { TLanguage, TSetState } from './common'
-import { TNormalizedSection } from './data'
+import { TAlgoResponseValue, TNormalizedSection } from './data'
 import { TSlateEditor, TValue } from './slate'
 
 /**
@@ -17,12 +17,13 @@ import { TSlateEditor, TValue } from './slate'
  */
 
 export type TTheme = 'dark' | 'light'
+export type TPanelLayout = 'left' | 'right' | 'top'
 export type TStoreProps<T> = [state: T, setState: TSetState<T>]
 
 export type TStore = {
   algoAutoCompletionList: TStoreProps<Completion[]>
   algorithm: TStoreProps<string>
-  algorithmPreview: TStoreProps<{ [key: string]: { rangeEnd: string; rangeStart: string; value: string } }>
+  algorithmPreview: TStoreProps<TAlgoResponseValue>
   authornotesCSS: TStoreProps<string>
   authornotesHTML: TStoreProps<string>
   authornotesJS: TStoreProps<string>
@@ -38,7 +39,7 @@ export type TStore = {
   feedbackSlateReadOnly: TStoreProps<boolean>
   isUnsaved: TStoreProps<boolean>
   jsAutoCompletionList: TStoreProps<Completion[]>
-  panelLayout: TStoreProps<'left' | 'right' | 'top'>
+  panelLayout: TStoreProps<TPanelLayout>
   questionCSS: TStoreProps<string>
   questionHTML: TStoreProps<string>
   questionJS: TStoreProps<string>
@@ -49,5 +50,6 @@ export type TStore = {
   section: TStoreProps<TNormalizedSection>
   theme: TStoreProps<TTheme>
 }
+
 export type TStoreCodeKey = Extract<keyof TStore, `${TNormalizedSection}${TLanguage}`>
 export type TStoreProp<T extends keyof TStore, U extends 'pair' | 'setstate' | 'state' = 'state'> = U extends 'state' ? TStore[T][0] : U extends 'setstate' ? TStore[T][1] : TStore[T]
