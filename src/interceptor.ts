@@ -1,5 +1,10 @@
 import hash from 'shorthash2'
 
+/**
+ *
+ * Props for intercepting and modifying page load.
+ *
+ */
 type TInterceptProps = {
   [key in
     | 'classIdKey'
@@ -69,6 +74,10 @@ if (localStorage.getItem(EXT_SWITCH_KEY) !== 'off')
     usernameKey: USERNAME_KEY,
   })
 
+/**
+ * Attaches a switch button to enable the modern UI.
+ * @param extSwitchKey - Key for the switch in local storage.
+ */
 function attachSwitchButton(extSwitchKey: string) {
   window.onload = () => {
     const button = document.createElement('button')
@@ -108,6 +117,10 @@ function attachSwitchButton(extSwitchKey: string) {
   }
 }
 
+/**
+ * Intercepts page load and injects a new HTML template for React.
+ * @param props - Intercept properties.
+ */
 async function intercept({
   classIdKey,
   dataKey,
@@ -157,6 +170,13 @@ async function intercept({
   finalize()
 }
 
+/**
+ * Prepares the initial page structure for React injection.
+ * @param reactElementId - ID of the React root element.
+ * @param previewFormElementId - ID of the preview form container element.
+ * @param scriptElementId - ID of the script container element.
+ * @param rootLoaderElementId - ID of the root loader element.
+ */
 function preparePage(
   reactElementId: string,
   previewFormElementId: string,
@@ -198,6 +218,9 @@ function preparePage(
   `
 }
 
+/**
+ * Finalizes the React injection process.
+ */
 function finalize() {
   console.clear()
   // document.querySelector('#root-loader')?.remove()
@@ -206,11 +229,20 @@ function finalize() {
   document.head.appendChild(script)
 }
 
+/**
+ * Resolves the absolute URL for a given path.
+ * @param path - Relative path.
+ * @returns - Absolute URL.
+ */
 function resolveUrl(path: string): string {
   if (chrome) return chrome.runtime.getURL(path)
   return browser.runtime.getURL(path)
 }
 
+/**
+ * Prepares data by extracting information from the page.
+ * @param props - Prepare data properties.
+ */
 async function prepareData({
   classIdKey,
   dataKey,
@@ -263,6 +295,11 @@ async function prepareData({
   for (const [key, value] of storageItems) localStorage.setItem(key, value)
 }
 
+/**
+ * Extracts the username from the document.
+ * @param document - The HTML document.
+ * @returns - The extracted username.
+ */
 function extractUsername({ body }: Document): string {
   const navbarNodes = Array.from(body.querySelector('#top #global .container')?.childNodes ?? [])
   const textNodes = navbarNodes.filter(({ nodeName }) => nodeName === '#text')
