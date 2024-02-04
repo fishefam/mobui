@@ -13,7 +13,7 @@ export default function GroupLast() {
 
   return (
     <ToggleGroup
-      className='hidden md:block'
+      className="hidden md:block"
       size="sm"
       type="single"
     >

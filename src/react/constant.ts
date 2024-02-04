@@ -6,7 +6,7 @@ import { serialize } from 'lib/slate/serialization'
 import { getDOM, getLocalStorageItem } from 'lib/util'
 import { TLanguage } from 'type/common'
 import { TNormalizedSection } from 'type/data'
-import { TStore, TStoreProps } from 'type/store'
+import { TStore, TStoreState } from 'type/store'
 
 /**
  * Initialization of Application State and Constants
@@ -82,6 +82,6 @@ export function GET_TYPING_PLACEHOLDER() {
   return 'Start typing...'
 }
 
-function makeState<T>(state: T): TStoreProps<T> {
+function makeState<T>(state: T): TStoreState<T> {
   return [state, () => {}]
 }

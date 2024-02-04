@@ -38,7 +38,7 @@ export const baseConfigs = {
   entryPoints: createEntries(BROWSERS, FILES, MANIFEST_PATH),
   format: 'iife',
   jsx: 'transform',
-  loader: { '.asset': 'copy', '.ico': 'copy', '.json': 'copy' },
+  loader: { '.json': 'copy' },
   logLevel: 'info',
   outdir: 'dist',
   plugins: [
