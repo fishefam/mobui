@@ -3,6 +3,18 @@ import { ReactElement, useRef } from 'react'
 
 type TLayoutProps = { left: ReactElement; main: ReactElement }
 
+/**
+ * Layout Component
+ *
+ * Description:
+ * This component defines the layout structure for the application, including a navbar, a left sidebar,
+ * and a main content area. It utilizes Tailwind CSS classes for styling.
+ *
+ * Props:
+ * - left (ReactNode): The content to be displayed in the left sidebar.
+ * - main (ReactNode): The main content to be displayed in the central area.
+ *
+ */
 export default function Layout({ left, main }: TLayoutProps) {
   const navbarRef = useRef<HTMLDivElement>(null)
   return (

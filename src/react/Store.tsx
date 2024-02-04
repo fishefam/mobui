@@ -4,8 +4,20 @@ import { TStore, TStoreProp, TTheme } from 'type/store'
 
 import { INITIAL_STORE } from './constant'
 
+/**
+ * Main store context of the app
+ */
 const Store = createContext<TStore>(INITIAL_STORE)
 
+/**
+ * Store Provider Component
+ *
+ * Description:
+ * This component defines a React context provider for the application store.
+ * The store holds various state values using the `useState` hook, initializing them with default values.
+ * It also includes a custom hook `useThemeChange` to update the theme-related styles when the theme changes.
+ *
+ */
 export default function StoreProvider(props: TProps) {
   const algoAutoCompletionList = useState<TStoreProp<'algoAutoCompletionList'>>(getInitialState('algoAutoCompletionList'))
   const algorithm = useState<TStoreProp<'algorithm'>>(getInitialState('algorithm'))
@@ -75,10 +87,25 @@ export default function StoreProvider(props: TProps) {
   )
 }
 
+/**
+ * Custom Hook: useStore
+ *
+ * Description:
+ * This hook allows components to access the application store using the `useContext` hook.
+ * Components using this hook will have access to the state values defined in the StoreProvider.
+ *
+ */
 export function useStore() {
   return useContext(Store)
 }
 
+/**
+ * Custom Hook: useThemeChange
+ *
+ * Description:
+ * This hook is responsible for updating theme-related styles when the theme changes.
+ *
+ */
 function useThemeChange(theme: TTheme) {
   useEffect(() => {
     const html = document.querySelector('html')!
@@ -88,6 +115,13 @@ function useThemeChange(theme: TTheme) {
   }, [theme])
 }
 
+/**
+ * Function: getInitialState
+ *
+ * Description:
+ * Helper function to retrieve the initial state value for a given key from INITIAL_STORE.
+ *
+ */
 function getInitialState<T extends keyof TStore>(key: T): TStoreProp<T> {
   return INITIAL_STORE[key][0]
 }

@@ -4,6 +4,10 @@ import { TStore, TStoreProp } from 'type/store'
 import { getLocalStorage, getSecurityToken, prepareSaveDataBody, submitData } from './data'
 import { formURL, getCodeStore, join } from './util'
 
+/**
+ * Props for saving data for Mobius algorithm or legacy document.
+ * @template T - Type of the algorithm response value.
+ */
 type TSaveDataProps<T extends TAlgoResponseValue | string> = {
   algorithm: TStoreProp<'algorithm'>
   authornotes: string
@@ -13,12 +17,26 @@ type TSaveDataProps<T extends TAlgoResponseValue | string> = {
   question: string
   questionName: TStoreProp<'algorithm'>
 }
+
+/**
+ * Props for fetching algorithm value.
+ */
 type TFetchAlgoValue = {
   onSuccess: (value: TAlgoResponseValue) => void
   store: TStore
 }
+
+/**
+ * Props for fetching legacy preview page data.
+ */
 type TFetchLegaacyPreviewPage = Omit<TSaveDataProps<string>, 'isPreview' | 'onSuccess'>
 
+/**
+ *
+ * Saves data for Mobius algorithm or legacy document.
+ * @param props - Save data props.
+ *
+ */
 export function saveData({
   algorithm,
   authornotes,
@@ -37,6 +55,12 @@ export function saveData({
   })
 }
 
+/**
+ *
+ * Fetches algorithm value.
+ * @param props - Fetch algorithm value props.
+ *
+ */
 export function fetchAlgoValue({ onSuccess, store }: TFetchAlgoValue) {
   const body = getCodeStore(store, 'ALGORITHM', true)[0]
   submitData({
@@ -47,6 +71,12 @@ export function fetchAlgoValue({ onSuccess, store }: TFetchAlgoValue) {
   })
 }
 
+/**
+ *
+ * Fetches legacy preview page data.
+ * @param props - Fetch legacy preview page props.
+ *
+ */
 export function previewLegacyDocument({
   algorithm,
   authornotes,
@@ -65,6 +95,16 @@ export function previewLegacyDocument({
   })
 }
 
+/**
+ *
+ * Joins Mobius data.
+ * @param section - Normalized section.
+ * @param html - HTML content.
+ * @param css - CSS content.
+ * @param js - JavaScript content.
+ * @returns {string} - Joined Mobius data.
+ *
+ */
 export function joinMobiusData(section: TNormalizedSection, html: string, css: string, js: string) {
   const { uid } = getLocalStorage()
   return join(
@@ -75,6 +115,12 @@ export function joinMobiusData(section: TNormalizedSection, html: string, css: s
   )
 }
 
+/**
+ *
+ * Displays legacy preview.
+ * @param param0 - Preview token.
+ *
+ */
 function displayLegacyPreview({ questionDefinition, version }: TPreviewToken) {
   const path: TQueryPath = 'contentmanager/DisplayQuestion.do'
   const formHTML = `

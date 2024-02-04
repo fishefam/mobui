@@ -6,6 +6,40 @@ import { ReactEditor, RenderElementProps as _RenderElementProps, RenderLeafProps
 
 import { TObject } from './common'
 
+/**
+ * Custom Types for Slate.js Integration
+ *
+ * - `TTrueMark`: Represents marks that only accept the value true for text formatting.
+ * - `TValueMark`: Represents marks related to CSS properties.
+ * - `TMark`: Represents the union type of true marks and value marks.
+ * - `TText`: Represents a text node in Slate.js with additional text-related information.
+ *
+ * - `TBlockNodeType`, `TInlineNodeType`, `TVoidNodeType`, `TInlineVoidNodeType`: Enumerates the node types for different Slate.js nodes.
+ * - `TNodeType`: Enumerates all Slate.js node types.
+ *
+ * - `TPluginNodeProps`: Common props for Slate.js plugin nodes.
+ * - `TCommonNodeProps<T>`: Common props for Slate.js nodes.
+ * - `TCommonNode<T, U>`: Represents a common structure for Slate.js nodes with children and specific props.
+ *
+ * - `TLeafNode<T>`: Represents a leaf node in Slate.js with additional information related to text formatting.
+ * - `TBlockNode<T>`, `TInlineNode<T>`, `TVoidNode<T>`, `TInlineVoidNode<T>`: Represents different types of Slate.js nodes with children.
+ *
+ * - `TNoneLeafNode<T>`: Represents Slate.js nodes that are not leaf nodes.
+ * - `TNode<T>`: Represents a generic Slate.js node with optional type `T`.
+ *
+ * - `TSlateEditor`, `TSlatePlugin`: Represents the Slate.js editor and a Slate.js plugin.
+ * - `TValue`: Represents the value (content) of the Slate.js editor.
+ *
+ * - `TRenderElement`, `TRenderLeaf`: Types for rendering Slate.js elements and leaves.
+ *
+ * - `TSetNodeOperation<T>`: Represents a set node operation with additional properties of type `T`.
+ *
+ * - `TSlateEditorProps`: Props for the Slate.js editor component.
+ *
+ * - Type wrappers for Slate components.
+ *
+ */
+
 export type TTrueMark = 'bold' | 'code' | 'italic' | 'kbd' | 'strikethrough' | 'subscript' | 'superscript' | 'underline'
 export type TValueMark = keyof CSSProperties
 export type TMark = TTrueMark | TValueMark

@@ -10,15 +10,27 @@ import typescript from 'prettier/plugins/typescript'
 import { format } from 'prettier/standalone'
 import { twMerge } from 'tailwind-merge'
 import { TAttributeName, TLanguage, TObject, TReactAttribute, TSetState } from 'type/common'
-import { TLocalStorageKey } from 'type/data'
+import { TLocalStorageKey, TNormalizedSection } from 'type/data'
 import { TStore, TStoreCodeKey } from 'type/store'
 
-import { getLocalStorage } from './data'
+import { getData, getLocalStorage } from './data'
 
+/**
+ * Get the base URL of the current location.
+ *
+ * @returns - The base URL.
+ */
 export function getBaseURL() {
   return location.origin
 }
 
+/**
+ * Form a URL by combining the base URL, class ID, path, and cookies.
+ *
+ * @param path - The path to append to the URL.
+ * @param noClassId - Flag to exclude class ID from the URL.
+ * @returns - The generated URL.
+ */
 export function formURL<T extends string>(path: T, noClassId = false) {
   const { classId } = getLocalStorage()
   const _classId = classId.length ? classId : '#'
@@ -26,22 +38,36 @@ export function formURL<T extends string>(path: T, noClassId = false) {
   return `${location.origin}${noClassId ? '' : `/${_classId}`}/${_path}?${document.cookie}`
 }
 
+/**
+ * Join an array of strings into a single string using the specified separator.
+ *
+ * @param separator - The string used to separate the array elements.
+ * @param strings - The strings to be joined.
+ * @returns - The joined string.
+ */
 export function join(separator: string, ...strings: string[]) {
   return strings.join(separator)
 }
 
 /**
- * Generates a BEM (Block Element Modifier) class name based on the provided parameters.
+ * Generate BEM (Block Element Modifier) class names.
  *
- * @param {string} block - The block name (required).
- * @param {string} [element] - The optional element name.
- * @param {string} [modifier] - The optional modifier name.
- * @returns {string} - The generated BEM class name.
+ * @param block - The block name.
+ * @param element - The optional element name.
+ * @param modifier - The optional modifier name.
+ * @returns - The generated BEM class name.
  */
 export function bem(block: string, element?: string, modifier?: string): string {
   return `${block}${element ? `__${element}` : ''}${modifier ? `--${modifier}` : ''}`
 }
 
+/**
+ * Extract HTML or CSS content from a given HTML string based on the specified language.
+ *
+ * @param htmlString - The input HTML string.
+ * @param language - The language to extract (HTML or CSS).
+ * @returns - The extracted content.
+ */
 export function extractHTML(htmlString: string, language: TLanguage) {
   if (language === 'CSS') return (htmlString.match(/(?<=<style.*>)(.|\n)*?(?=<\/style>)/g) ?? []).join(' ')
 
@@ -54,10 +80,10 @@ export function extractHTML(htmlString: string, language: TLanguage) {
 }
 
 /**
- * Generates a random string of the specified size using the characters provided.
+ * Generate a random string of the specified size using the nanoid algorithm.
  *
- * @param {number} [size=9] - The optional size of the generated string.
- * @returns {string} - The generated random string.
+ * @param size - The length of the generated string (default is 9).
+ * @returns - The generated random string.
  */
 export function nanoid(size: number = 9): string {
   const characterSet = 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890'
@@ -65,19 +91,20 @@ export function nanoid(size: number = 9): string {
 }
 
 /**
- * Merges and applies Tailwind CSS utility classes using the provided class names.
+ * Combine multiple class values into a single string using Tailwind CSS utility functions.
  *
- * @param {ClassValue[]} inputs - Variable number of class names.
- * @returns {string} - Merged and formatted Tailwind CSS utility classes.
+ * @param inputs - The class values to be combined.
+ * @returns - The combined class names.
  */
 export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs))
 }
 
 /**
- * Converts a string to start case (capitalizing the first letter of each word).
- * @param input - The input string to be converted to start case.
- * @returns The input string converted to start case.
+ * Convert a string to start case (capitalize the first letter of each word).
+ *
+ * @param input - The input string.
+ * @returns - The string converted to start case.
  */
 export function toStartCase(input: string): string {
   return input
@@ -87,14 +114,21 @@ export function toStartCase(input: string): string {
 }
 
 /**
- * Retrieves a value from local storage using the provided key.
- * @param key - The key used to identify the value in local storage.
- * @returns The value associated with the provided key in local storage, or an empty string if not found.
+ * Get the value of a specific item from the local storage.
+ *
+ * @param key - The key of the item to retrieve.
+ * @returns - The value of the item or an empty string if not found.
  */
 export function getLocalStorageItem(key: TLocalStorageKey): string {
   return localStorage.getItem(key) ?? ''
 }
 
+/**
+ * Convert a snake_case string to camelCase.
+ *
+ * @param input - The input string in snake_case.
+ * @returns - The string converted to camelCase.
+ */
 export function snakeToCamel(input: string) {
   return input
     .split('-')
@@ -102,6 +136,24 @@ export function snakeToCamel(input: string) {
     .join('')
 }
 
+/**
+ * Parse HTML content from a normalized section and return the DOM.
+ *
+ * @param section - The normalized section.
+ * @returns - The parsed DOM document.
+ */
+export function getDOM(section: TNormalizedSection) {
+  return new DOMParser().parseFromString(getData(section, 'HTML').replace(/>(\s|\t|\r|\n|\v)*</g, '><'), 'text/html')
+    .body
+}
+
+/**
+ * Convert a NamedNodeMap to a React attribute object, optionally removing specified keys.
+ *
+ * @param map - The NamedNodeMap to convert.
+ * @param removingKeys - The keys to be removed.
+ * @returns - The React attribute object.
+ */
 export function namedNodeMapToReactAttribute(
   map?: NamedNodeMap,
   ...removingKeys: TAttributeName[]
@@ -122,20 +174,38 @@ export function namedNodeMapToReactAttribute(
 }
 
 /**
- * Checks if an object has specific properties with non-falsy values.
- * @param property - The object to check for properties.
- * @param keys - The list of property keys to check.
- * @returns A boolean indicating whether the object has all specified properties.
+ * Check if a given object has all the specified keys.
+ *
+ * @template T - The string literal type of keys.
+ * @template U - The type of the property value.
+ * @param keys - The keys to check in the object.
+ * @param property - The object to check for keys.
+ * @returns - True if the object has all the specified keys.
  */
 export function hasProps<T extends string, U>(keys: T[], property: TObject): property is { [key in T]: U } {
   const checks = keys.map((key) => !!property[key]).filter((v) => !v)
   return checks.length === 0
 }
 
+/**
+ * Check if a given string is one of the specified strings.
+ *
+ * @template T - The string literal type.
+ * @param strings - The array of strings to check against.
+ * @param value - The value to check.
+ * @returns - True if the value is one of the specified strings.
+ */
 export function hasString<T extends string>(strings: T[], value = ''): value is T {
   return strings.includes(value as T)
 }
 
+/**
+ * Format code using Prettier based on the specified language.
+ *
+ * @param value - The code to format.
+ * @param language - The language of the code.
+ * @returns - The formatted code.
+ */
 export function prettier(value: string, language: 'ALGORITHM' | 'CSS' | 'HTML' | 'JS') {
   const option: Options = {
     parser: language === 'HTML' ? 'html' : language === 'CSS' ? 'css' : 'typescript',
@@ -153,6 +223,11 @@ export function prettier(value: string, language: 'ALGORITHM' | 'CSS' | 'HTML' |
   })
 }
 
+/**
+ * Get the base JavaScript code completion list, including keywords and snippets.
+ *
+ * @returns - The list of JavaScript code completions.
+ */
 export function getBaseJsCompletion() {
   const kwCompletion = (name: string) => ({ label: name, type: 'keyword' })
   const keywords =
@@ -210,6 +285,12 @@ export function getBaseJsCompletion() {
   return snippets.concat(keywords)
 }
 
+/**
+ * Update JavaScript code completion list based on HTML content.
+ *
+ * @param html - The HTML content to extract IDs from.
+ * @param setCompletion - The state setter for the completion list.
+ */
 export function updateJsCompletionList(html: string, setCompletion: TSetState<Completion[]>) {
   const ids = (html.match(/id="([^"]*)"/gi) ?? []).map((match) => match.replace(/^id="|"$/g, ''))
   const completionList: Completion[] = ids.map((id) =>
@@ -221,6 +302,14 @@ export function updateJsCompletionList(html: string, setCompletion: TSetState<Co
   setCompletion(completionList)
 }
 
+/**
+ * Get the code from the store based on the specified language and section.
+ *
+ * @param store - The store object.
+ * @param language - The language of the code.
+ * @param forceAlgo - Force retrieving algorithm code.
+ * @returns - The code from the store.
+ */
 export function getCodeStore(store: TStore, language: 'ALGORITHM' | 'CSS' | 'HTML' | 'JS', forceAlgo = false) {
   return store[
     forceAlgo
@@ -229,6 +318,11 @@ export function getCodeStore(store: TStore, language: 'ALGORITHM' | 'CSS' | 'HTM
   ]
 }
 
+/**
+ * Get the code completion list for algorithmic expressions and functions.
+ *
+ * @returns - The list of algorithm code completions.
+ */
 export function getAlgoCompletionList(): Completion[] {
   const main: Completion[] = [
     {

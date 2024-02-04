@@ -1,5 +1,29 @@
 import { AllHTMLAttributes, Dispatch, ReactElement, ReactNode, SetStateAction } from 'react'
 
+/**
+ * Generic Types:
+ * - `TLanguage`: Represents language options for code snippets (CSS, HTML, JS).
+ * - `TObject<T, U>`: Represents a generic object with keys of type `T` and values of type `U`.
+ *
+ * React Types:
+ * - `TSetState<T>`: Represents the state setter function from React's useState.
+ * - `TProps<T>`: Represents React component props with a generic object and children.
+ * - `TComponent<T>`: Represents a generic React component function.
+ * - `TReactAttribute`: Represents HTML attributes for React components.
+ *
+ * HTML Attribute Types:
+ * - `TAttributeName`: Represents a union type of HTML attribute names.
+ *
+ * Node Types:
+ * - `TVoidNodeName`, `TBlockNodeName`, `TInlineNodeName`: Represents HTML node names for void, block, and inline elements.
+ * - `TNodeName`: Represents a union type of HTML node names.
+ *
+ * Global Declarations:
+ * - `ChildNode`: Extends the ChildNode interface with a custom `nodeName` property.
+ * - `Window`: Extends the Window interface with a custom `debouncer` property.
+ *
+ */
+
 /* Generic */
 export type TLanguage = 'CSS' | 'HTML' | 'JS'
 export type TObject<T extends number | string = string, U = unknown> = Record<T, U>

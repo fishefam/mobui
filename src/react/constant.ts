@@ -2,12 +2,21 @@ import { getData, getLocalStorage } from 'lib/data'
 import { createSlateEditor } from 'lib/slate'
 import { deserialize } from 'lib/slate/deserialization'
 import { serialize } from 'lib/slate/serialization'
-import { getLocalStorageItem } from 'lib/util'
-import { TNormalizedSection } from 'type/data'
+import { getDOM, getLocalStorageItem } from 'lib/util'
 import { TStore, TTheme } from 'type/store'
 
-const getDOM = (section: TNormalizedSection) =>
-  new DOMParser().parseFromString(getData(section, 'HTML').replace(/>(\s|\t|\r|\n|\v)*</g, '><'), 'text/html').body
+/**
+ * Initialization of Application State and Constants
+ *
+ * Description:
+ * This file contains the initialization of the application state (`INITIAL_STORE`) and various constants.
+ * It also includes functions for obtaining default data, breakpoints, and a typing placeholder.
+ *
+ * Constants:
+ * - `INITIAL_STORE`: Initial state for the application using the React context API.
+ * - `BREAK_POINT`: Breakpoints for responsive design based on screen width.
+ *
+ */
 
 const questionDOM = getDOM('question')
 const authornotesDOM = getDOM('authornotes')
@@ -26,9 +35,7 @@ const initial_theme =
   (localStorage.getItem('theme') as TTheme) ??
   (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
 
-export function GET_TYPING_PLACEHOLDER() {
-  return 'Start typing...'
-}
+/* Initial state for the application using the React context API */
 export const INITIAL_STORE: TStore = {
   algoAutoCompletionList: [[], placeholder],
   algorithm: [getData('algorithm', undefined), placeholder],
@@ -60,10 +67,16 @@ export const INITIAL_STORE: TStore = {
   theme: [initial_theme, placeholder],
 }
 
+/* Breakpoints for responsive design based on screen width */
 export const BREAK_POINT = {
   '2xl': 1536,
   'lg': 1024,
   'md': 768,
   'sm': 640,
   'xl': 1280,
+}
+
+/* Function to get the typing placeholder */
+export function GET_TYPING_PLACEHOLDER() {
+  return 'Start typing...'
 }

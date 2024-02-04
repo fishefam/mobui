@@ -4,6 +4,18 @@ import { TLanguage, TSetState } from './common'
 import { TNormalizedSection } from './data'
 import { TSlateEditor, TValue } from './slate'
 
+/**
+ * Custom Types for Application State and Store
+ *
+ * - `TTheme`: Represents the theme of the application ('dark' or 'light').
+ * - `TStoreProps<T>`: Represents a tuple for state management in the store, including state and a setState function.
+ * - `TStore`: Represents the shape of the application state using the React context API.
+ * - `TStoreCodeKey`: Represents a union type of keys in the store related to code sections and language.
+ * - `TStoreProp<T, U>`: Represents the type of a specific property in the store based on the key `T`,
+ *    with options for retrieving state, setState, or both ('pair', 'setstate', 'state').
+ *
+ */
+
 export type TTheme = 'dark' | 'light'
 export type TStoreProps<T> = [state: T, setState: TSetState<T>]
 

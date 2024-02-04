@@ -3,6 +3,11 @@ import { TAlgoResponseValue, TLocalStorageKey, TNormalizedSection, TPreviewDataK
 
 import { extractHTML, getBaseURL } from './util'
 
+/**
+ *
+ * Props for preparing the body of save data.
+ *
+ */
 type TPrepareSaveDataBodyProps = {
   algorithm: string
   authornotes: string
@@ -11,6 +16,13 @@ type TPrepareSaveDataBodyProps = {
   question: string
   questionName: string
 }
+
+/**
+ *
+ * Props for submitting data.
+ * @template T - Type of the algorithm response value.
+ *
+ */
 type TSubmitDataProps<T extends TAlgoResponseValue | string> = {
   body: string
   isAlgorithm: boolean
@@ -19,10 +31,22 @@ type TSubmitDataProps<T extends TAlgoResponseValue | string> = {
   url: string
 }
 
+/**
+ *
+ * Gets the security token from cookies.
+ * @returns {string} - Security token.
+ *
+ */
 export function getSecurityToken() {
   return document.cookie.replace('AntiCsrfToken=', '')
 }
 
+/**
+ *
+ * Gets values from local storage.
+ * @returns {Object} - Local storage values.
+ *
+ */
 export function getLocalStorage() {
   const keys: TLocalStorageKey[] = [
     'classId',
@@ -44,6 +68,15 @@ export function getLocalStorage() {
   return Object.fromEntries(entries) as { [key in TLocalStorageKey]: string }
 }
 
+/**
+ *
+ * Gets data from local storage for a specified section and language.
+ * @template T - Type of the normalized section.
+ * @param  section - Normalized section.
+ * @param  type - Language type.
+ * @returns {string} - Retrieved data.
+ *
+ */
 export function getData<T extends TNormalizedSection>(section: T, type: T extends 'algorithm' ? undefined : TLanguage) {
   const { data } = getLocalStorage()
   const { algorithm, authorNotesEditor, commentEditor, editor } = JSON.parse(data) as { [key in TSaveDataKey]?: string }
@@ -60,10 +93,23 @@ export function getData<T extends TNormalizedSection>(section: T, type: T extend
   return ''
 }
 
+/**
+ *
+ * Sets values in local storage.
+ * @param  pairs - Key-value pairs to set in local storage.
+ *
+ */
 export function setLocalStorage(...pairs: [TLocalStorageKey, string][]) {
   for (const [key, value] of pairs) localStorage.setItem(key, value)
 }
 
+/**
+ *
+ * Prepares the body for saving data.
+ * @param  props - Save data body preparation props.
+ * @returns {string} - Prepared data body.
+ *
+ */
 export function prepareSaveDataBody({
   algorithm,
   authornotes,
@@ -94,6 +140,14 @@ export function prepareSaveDataBody({
   return new URLSearchParams(formData as unknown as URLSearchParams).toString()
 }
 
+/**
+ *
+ * Prepares the body for preview data.
+ * @param  questionDefinition - Question definition.
+ * @param  version - Version.
+ * @returns {string} - Prepared preview data body.
+ *
+ */
 export function preparePreviewDataBody(questionDefinition: string, version: string) {
   const formData = new FormData()
   const data: [TPreviewDataKey, string][] = [
@@ -111,6 +165,13 @@ export function preparePreviewDataBody(questionDefinition: string, version: stri
   return new URLSearchParams(formData as unknown as URLSearchParams).toString()
 }
 
+/**
+ *
+ * Submits data to the specified URL.
+ * @template T - Type of the algorithm response value.
+ * @param  props - Submit data props.
+ *
+ */
 export function submitData<T extends TAlgoResponseValue | string>({
   body,
   isAlgorithm,
