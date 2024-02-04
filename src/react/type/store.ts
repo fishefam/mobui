@@ -39,5 +39,3 @@ export type TStore = {
 }
 export type TStoreCodeKey = Extract<keyof TStore, `${TNormalizedSection}${TLanguage}`>
 export type TStoreProp<T extends keyof TStore, U extends 'pair' | 'setstate' | 'state' = 'state'> = U extends 'state' ? TStore[T][0] : U extends 'setstate' ? TStore[T][1] : TStore[T]
-
-export type TLocalStorageKey = 'classId' | 'data' | 'extURL' | 'reponame' | 'uidHash' | 'username'

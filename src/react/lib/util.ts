@@ -10,7 +10,8 @@ import typescript from 'prettier/plugins/typescript'
 import { format } from 'prettier/standalone'
 import { twMerge } from 'tailwind-merge'
 import { TAttributeName, TLanguage, TObject, TReactAttribute, TSetState } from 'type/common'
-import { TLocalStorageKey, TStore, TStoreCodeKey } from 'type/store'
+import { TLocalStorageKey } from 'type/data'
+import { TStore, TStoreCodeKey } from 'type/store'
 
 import { getLocalStorage } from './data'
 

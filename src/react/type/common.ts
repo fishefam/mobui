@@ -1,4 +1,4 @@
-import { Dispatch, ReactElement, ReactNode, SetStateAction } from 'react'
+import { AllHTMLAttributes, Dispatch, ReactElement, ReactNode, SetStateAction } from 'react'
 
 /* Generic */
 export type TLanguage = 'CSS' | 'HTML' | 'JS'
@@ -8,6 +8,7 @@ export type TObject<T extends number | string = string, U = unknown> = Record<T,
 export type TSetState<T> = Dispatch<SetStateAction<T>>
 export type TProps<T = TObject> = T & { children: ReactNode }
 export type TComponent<T = unknown> = (props: T) => ReactElement
+export type TReactAttribute = AllHTMLAttributes<HTMLElement>
 
 export type TAttributeName =
   | 'accept'

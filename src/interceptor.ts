@@ -1,11 +1,5 @@
 import hash from 'shorthash2'
 
-/**
- * This is a standalone module. It acts as an interceptor on page load
- * and injects React. All functions used in this module must be separate from
- * those used by React.
- */
-
 type TInterceptProps = {
   [key in
     | 'classIdKey'
