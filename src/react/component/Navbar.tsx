@@ -1,4 +1,4 @@
-import { useWindowsSize } from 'hook/util'
+import { useWindowSize } from 'react/hook'
 import { setLocalStorage } from 'lib/data'
 import { cn, getLocalStorageItem } from 'lib/util'
 import { Fragment, MouseEvent, RefObject, useState } from 'react'
@@ -91,7 +91,7 @@ const ITEMS: TItems = [
 
 export default function Navbar({ container }: { container: RefObject<HTMLDivElement> }) {
   const { theme } = useStore()
-  const { width } = useWindowsSize()
+  const { width } = useWindowSize()
   const [selection, setSelection] = useState('')
 
   const [_theme] = theme

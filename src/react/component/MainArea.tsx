@@ -1,6 +1,6 @@
 import { MathJaxContext } from 'better-react-mathjax'
 import Breadcrumb from 'component/Breadcrumb'
-import { useWindowsSize } from 'hook/util'
+import { useWindowSize } from 'react/hook'
 import { cn } from 'lib/util'
 import { Cog } from 'lucide-react'
 import { Fragment, useRef } from 'react'
@@ -14,7 +14,7 @@ import TextEditor from './TextEditor'
 
 export default function MainArea() {
   const { panelLayout, section } = useStore()
-  const { width } = useWindowsSize()
+  const { width } = useWindowSize()
 
   const [currentSection] = section
 
@@ -65,7 +65,7 @@ export default function MainArea() {
 
 function CodeEditorContainer() {
   const { panelLayout } = useStore()
-  const { width } = useWindowsSize()
+  const { width } = useWindowSize()
 
   const [_panelLayout] = panelLayout
 
@@ -98,7 +98,7 @@ function AlgorithmEditor() {
 
 function NonAlgorithmEditor() {
   const { editingLanguage, section } = useStore()
-  const { width } = useWindowsSize()
+  const { width } = useWindowSize()
 
   const [currentSection] = section
 

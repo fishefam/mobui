@@ -1,6 +1,6 @@
-import { useWindowsSize } from 'hook/util'
 import { ChevronDown, Image, Link2, Smile, Table } from 'lucide-react'
 import { BREAK_POINT } from 'react/constant'
+import { useWindowSize } from 'react/hook'
 import { Dropdown, DropdownContent } from 'shadcn/Dropdown'
 import { ToggleGroup, ToggleGroupItem } from 'shadcn/ToggleGroup'
 import { Tooltip, TooltipContent, TooltipTrigger } from 'shadcn/Tooltip'
@@ -13,7 +13,7 @@ const ITEMS = [
 ]
 
 export default function GroupThree() {
-  const { width } = useWindowsSize()
+  const { width } = useWindowSize()
 
   return (
     <ToggleGroup type="multiple">

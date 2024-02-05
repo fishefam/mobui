@@ -1,4 +1,4 @@
-import './global.scss'
+import './style.scss'
 
 import { getLocalStorage } from 'lib/data'
 import { StrictMode } from 'react'

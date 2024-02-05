@@ -1,5 +1,5 @@
 import ColorPicker from 'component/ColorPicker'
-import { useWindowsSize } from 'hook/util'
+import { useWindowSize } from 'react/hook'
 import { ReactEditor } from 'lib/slate'
 import { cn } from 'lib/util'
 import { Baseline, Bold, Code, Italic, LucideIcon, PaintBucket, Strikethrough, Underline } from 'lucide-react'
@@ -21,7 +21,7 @@ const ITEMS: { Icon: LucideIcon; tooltip: string; trueMark?: TTrueMark; valueMar
 ]
 
 export default function GroupOne() {
-  const { width } = useWindowsSize()
+  const { width } = useWindowSize()
 
   return (
     <ToggleGroup

@@ -29,6 +29,7 @@ export type TLanguage = 'CSS' | 'HTML' | 'JS'
 export type TObject<T extends number | string = string, U = unknown> = Record<T, U>
 
 /* React */
+export type TState<T> = [state: T, setState: TSetState<T>]
 export type TSetState<T> = Dispatch<SetStateAction<T>>
 export type TProps<T = TObject> = T & { children: ReactNode }
 export type TComponent<T = unknown> = (props: T) => ReactElement

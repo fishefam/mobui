@@ -1,4 +1,4 @@
-import { useWindowsSize } from 'hook/util'
+import { useWindowSize } from 'react/hook'
 import { cn } from 'lib/util'
 import { ChevronDown } from 'lucide-react'
 import { RefObject } from 'react'
@@ -17,7 +17,7 @@ type TSlateMenuProps = { [key in 'containerRef']: RefObject<HTMLElement> }
 
 export default function SlateMenu({ containerRef }: TSlateMenuProps) {
   const { isUnsaved, section } = useStore()
-  const { width } = useWindowsSize()
+  const { width } = useWindowSize()
 
   const [currentSection, setCurrentSection] = section
   const label =

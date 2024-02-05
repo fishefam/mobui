@@ -4,7 +4,7 @@ import { hyperLink } from '@uiw/codemirror-extensions-hyper-link'
 import { langs } from '@uiw/codemirror-extensions-langs'
 import { copilot, githubLight } from '@uiw/codemirror-themes-all'
 import ReactCodeMirror from '@uiw/react-codemirror'
-import { useRemoveRootLoader, useWindowsSize } from 'hook/util'
+import { useRemoveRootLoader, useWindowSize } from 'react/hook'
 import { fetchAlgoValue } from 'lib/mobius'
 import { deserialize } from 'lib/slate/deserialization'
 import { createBlockNode } from 'lib/slate/util'
@@ -59,7 +59,7 @@ type THandleChangeParam = {
 
 export default function CodeEditor({ language }: TCodeEditorProps) {
   const store = useStore()
-  const { width } = useWindowsSize()
+  const { width } = useWindowSize()
   const codeEditorRef = useRef<HTMLDivElement>(null)
 
   const [currentSection, setCurrentSection] = store.section

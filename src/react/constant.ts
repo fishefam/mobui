@@ -3,10 +3,10 @@ import { getData, getLocalStorage } from 'lib/data'
 import { createSlateEditor } from 'lib/slate'
 import { deserialize } from 'lib/slate/deserialization'
 import { serialize } from 'lib/slate/serialization'
-import { getDOM, getLocalStorageItem } from 'lib/util'
-import { TLanguage } from 'type/common'
+import { getDOM } from 'lib/util'
+import { TLanguage, TState } from 'type/common'
 import { TNormalizedSection } from 'type/data'
-import { TStore, TStoreState } from 'type/store'
+import { TStore } from 'type/store'
 
 /**
  * Initialization of Application State and Constants
@@ -60,7 +60,7 @@ export const INITIAL_STORE: TStore = {
   questionCSS: makeState(getData('question', 'CSS')),
   questionHTML: makeState(questionHTML),
   questionJS: makeState(getData('question', 'JS')),
-  questionName: makeState(JSON.parse(getLocalStorageItem('data')).name ?? 'Question Designer'),
+  questionName: makeState(getLocalStorage().reponame ?? 'Question Designer'),
   questionSlate: makeState(createSlateEditor()),
   questionSlateInitialValue: makeState(questionSlateInitialValue),
   questionSlateReadOnly: makeState(false),
@@ -82,6 +82,6 @@ export function GET_TYPING_PLACEHOLDER() {
   return 'Start typing...'
 }
 
-function makeState<T>(state: T): TStoreState<T> {
+function makeState<T>(state: T): TState<T> {
   return [state, () => {}]
 }
