@@ -16,41 +16,25 @@ import SlateMenu from './slate/Menubar'
 import SlateToolbar from './slate/Toolbar'
 
 export default function TextEditor() {
-  const {
-    authornotesHTML,
-    authornotesSlate,
-    authornotesSlateInitialValue,
-    authornotesSlateReadOnly,
-    feedbackHTML,
-    feedbackSlate,
-    feedbackSlateInitialValue,
-    feedbackSlateReadOnly,
-    isUnsaved,
-    jsAutoCompletionList,
-    questionHTML,
-    questionSlate,
-    questionSlateInitialValue,
-    questionSlateReadOnly,
-    section,
-  } = useStore()
+  const store = useStore()
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const [currentSection] = section
+  const [currentSection] = store.section
 
-  const [_authornotesHTML, _setAuthornotesHTML] = authornotesHTML
-  const [_authornotesSlate] = authornotesSlate
-  const [_authornotesSlateReadOnly] = authornotesSlateReadOnly
-  const [_feedbackHTML, _setFeedbackHTML] = feedbackHTML
-  const [_feedbackSlate] = feedbackSlate
-  const [_feedbackSlateReadOnly] = feedbackSlateReadOnly
-  const [_questionHTML, _setQuestionHTML] = questionHTML
-  const [_questionSlate] = questionSlate
-  const [_questionSlateInitialValue] = questionSlateInitialValue
-  const [_authornotesSlateInitialValue] = authornotesSlateInitialValue
-  const [_feedbackSlateInitialValue] = feedbackSlateInitialValue
-  const [_questionSlateReadOnly] = questionSlateReadOnly
-  const [, _setIsUnsaved] = isUnsaved
-  const [, _setJsAutoCompletionList] = jsAutoCompletionList
+  const [_authornotesHTML, _setAuthornotesHTML] = store.authornotesHTML
+  const [_authornotesSlate] = store.authornotesSlate
+  const [_authornotesSlateReadOnly] = store.authornotesSlateReadOnly
+  const [_feedbackHTML, _setFeedbackHTML] = store.feedbackHTML
+  const [_feedbackSlate] = store.feedbackSlate
+  const [_feedbackSlateReadOnly] = store.feedbackSlateReadOnly
+  const [_questionHTML, _setQuestionHTML] = store.questionHTML
+  const [_questionSlate] = store.questionSlate
+  const [_questionSlateInitialValue] = store.questionSlateInitialValue
+  const [_authornotesSlateInitialValue] = store.authornotesSlateInitialValue
+  const [_feedbackSlateInitialValue] = store.feedbackSlateInitialValue
+  const [_questionSlateReadOnly] = store.questionSlateReadOnly
+  const [, _setIsUnsaved] = store.isUnsaved
+  const [, _setJsAutoCompletionList] = store.jsAutoCompletionList
 
   const editors: { editor: TSlateEditor; readOnly: boolean; section: TStoreProp<'section'> }[] = [
     { editor: _questionSlate, readOnly: _questionSlateReadOnly, section: 'question' },

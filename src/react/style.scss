@@ -120,6 +120,10 @@
   cursor: text !important;
 }
 
+[data-radix-popper-content-wrapper] {
+  z-index: 10 !important;
+}
+
 @media print {
   .print-editor {
     z-index: 999999999999999999;

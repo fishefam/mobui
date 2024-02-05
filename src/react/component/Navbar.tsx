@@ -1,8 +1,8 @@
-import { useWindowSize } from 'react/hook'
-import { setLocalStorage } from 'lib/data'
-import { cn, getLocalStorageItem } from 'lib/util'
+import { getLocalStorage, setLocalStorage } from 'lib/data'
+import { cn } from 'lib/util'
 import { Fragment, MouseEvent, RefObject, useState } from 'react'
 import { BREAK_POINT } from 'react/constant'
+import { useWindowSize } from 'react/hook'
 import { useStore } from 'react/Store'
 import Avatar, { AvatarFallback } from 'shadcn/Avatar'
 import { Button } from 'shadcn/Button'
@@ -39,8 +39,8 @@ type TMenuItemProps = {
   trigger: string
 }
 
-const CLASS_ID = getLocalStorageItem('classId')
-const USER_NAME = getLocalStorageItem('username').replace(/\(.*$/, '')
+const CLASS_ID = getLocalStorage().classId
+const USER_NAME = getLocalStorage().username.replace(/\(.*$/, '')
 const USER_INITIALS = USER_NAME.split(' ')
   .filter((_, i, { length }) => i === 0 || i === length - 1)
   .map((val) => val.charAt(0))
@@ -92,80 +92,92 @@ const ITEMS: TItems = [
 export default function Navbar({ container }: { container: RefObject<HTMLDivElement> }) {
   const { theme } = useStore()
   const { width } = useWindowSize()
-  const [selection, setSelection] = useState('')
 
   const [_theme] = theme
 
   return (
     <Nav delayDuration={0}>
       <div className="flex items-center gap-4">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button
-              className="block lg:hidden"
-              variant="ghost"
-            >
-              <MenuIcon />
-            </Button>
-          </SheetTrigger>
-          <SheetContent
-            className="overflow-auto"
-            side="left"
-          >
-            {ITEMS.map(({ href, subitems, trigger }) => (
-              <Fragment key={trigger}>
-                {
-                  <h4 className="mb-4 font-medium">
-                    {href ? (
-                      <a
-                        className="text-muted-foreground"
-                        href={href}
-                      >
-                        {trigger}
-                      </a>
-                    ) : (
-                      trigger
-                    )}
-                  </h4>
-                }
-                {subitems.map(({ href, title }) => (
-                  <a
-                    key={title}
-                    className="my-4 ml-4 block text-muted-foreground"
-                    href={href}
-                  >
-                    {title}
-                  </a>
-                ))}
-              </Fragment>
-            ))}
-          </SheetContent>
-        </Sheet>
+        <NavMobile />
         <Logo />
       </div>
       <NavList>
-        {width > BREAK_POINT.lg
-          ? ITEMS.map(({ href, subitems, trigger }) => {
-              if (href)
-                return (
-                  <LinkItem
-                    key={trigger}
-                    {...{ href, trigger }}
-                  />
-                )
-              return (
-                <MenuItem
-                  key={trigger}
-                  {...{ selection, setSelection, subitems, trigger }}
-                />
-              )
-            })
-          : null}
+        {width > BREAK_POINT.lg ? <NavListItem /> : null}
         {width > BREAK_POINT.md ? <ViewChange /> : null}
         <Profile root={container} />
       </NavList>
     </Nav>
   )
+}
+
+function NavMobile() {
+  return (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button
+          className="block lg:hidden"
+          variant="ghost"
+        >
+          <MenuIcon />
+        </Button>
+      </SheetTrigger>
+      <SheetContent
+        className="overflow-auto"
+        side="left"
+      >
+        {ITEMS.map(({ href, subitems, trigger }) => (
+          <Fragment key={trigger}>
+            {
+              <h4 className="mb-4 font-medium">
+                {href ? (
+                  <a
+                    className="text-muted-foreground"
+                    href={href}
+                  >
+                    {trigger}
+                  </a>
+                ) : (
+                  trigger
+                )}
+              </h4>
+            }
+            {subitems.map(({ href, title }) => (
+              <a
+                key={title}
+                className="my-4 ml-4 block text-muted-foreground"
+                href={href}
+              >
+                {title}
+              </a>
+            ))}
+          </Fragment>
+        ))}
+      </SheetContent>
+    </Sheet>
+  )
+}
+
+function NavListItem() {
+  const [selection, setSelection] = useState('')
+  return ITEMS.map(({ href, subitems, trigger }) => {
+    if (href)
+      return (
+        <LinkItem
+          key={trigger}
+          href={href}
+          trigger={trigger}
+        />
+      )
+    return (
+      <MenuItem
+        key={trigger}
+        selection={selection}
+        setSelection={setSelection}
+        subitems={subitems}
+        trigger={trigger}
+      />
+    )
+  })
 }
 
 function ViewChange() {

@@ -4,7 +4,6 @@ import { hyperLink } from '@uiw/codemirror-extensions-hyper-link'
 import { langs } from '@uiw/codemirror-extensions-langs'
 import { copilot, githubLight } from '@uiw/codemirror-themes-all'
 import ReactCodeMirror from '@uiw/react-codemirror'
-import { useRemoveRootLoader, useWindowSize } from 'react/hook'
 import { fetchAlgoValue } from 'lib/mobius'
 import { deserialize } from 'lib/slate/deserialization'
 import { createBlockNode } from 'lib/slate/util'
@@ -20,6 +19,7 @@ import {
 import { ChevronDown, Cog, Settings2 } from 'lucide-react'
 import { RefObject, useCallback, useEffect, useRef } from 'react'
 import { BREAK_POINT } from 'react/constant'
+import { useRemoveRootLoader, useWindowSize } from 'react/hook'
 import { useStore } from 'react/Store'
 import { Dropdown, DropdownContent, DropdownItem, DropdownTrigger } from 'shadcn/Dropdown'
 import { toast } from 'sonner'
@@ -103,8 +103,6 @@ export default function CodeEditor({ language }: TCodeEditorProps) {
           ? langs.javascript()
           : langs.perl()
   const setCode = language === 'HTML' ? setHTML : language === 'CSS' ? setCSS : language === 'JS' ? setJS : setAlgorithm
-
-  console.log(language, html, css, js)
 
   return (
     <div className="relative h-full">
@@ -290,20 +288,21 @@ function handleChange({
   value,
 }: THandleChangeParam) {
   if (codeEditorRef.current === document.activeElement?.parentElement?.parentElement?.parentElement?.parentElement) {
-    document.querySelector('#cog-spinner-slate')?.classList.remove('hidden')
     if (window.debouncer) clearTimeout(window.debouncer)
-    if (language === 'HTML')
-      window.debouncer = setTimeout(() => {
-        setIsUnsaved(true)
-        setCode(value.trim())
-        updateCompletionList(value, 'JS', setJsCompletion)
+    window.debouncer = setTimeout(() => {
+      setIsUnsaved(true)
+      setCode(value.trim())
+      if (language === 'HTML') {
+        document.querySelector('#cog-spinner-slate')?.classList.remove('hidden')
         const fragment = deserialize(getDOM('algorithm', value.trim()))
+        updateCompletionList(value, 'JS', setJsCompletion)
         if (editor) {
           editor.children = [createBlockNode({})]
           editor.children = fragment
         }
         document.querySelector('#cog-spinner-slate')?.classList.add('hidden')
-      }, timeout)
+      }
+    }, timeout)
   }
 }
 

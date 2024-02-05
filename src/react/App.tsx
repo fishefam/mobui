@@ -1,6 +1,8 @@
+import { MathJaxContext as MathJaxProvider } from 'better-react-mathjax'
 import MainArea from 'component/MainArea'
 import Sidebar from 'component/Sidebar'
 import Toaster from 'component/Sonner'
+import { getLocalStorage } from 'lib/data'
 
 import Layout from './Layout'
 import StoreProvider from './Store'
@@ -26,12 +28,17 @@ import StoreProvider from './Store'
  */
 export default function App() {
   return (
-    <StoreProvider>
-      <Layout
-        left={<Sidebar />}
-        main={<MainArea />}
-      />
-      <Toaster />
-    </StoreProvider>
+    <MathJaxProvider
+      config={{ startup: { typeset: false } }}
+      src={getLocalStorage().extURL + 'asset/mathjax.js'}
+    >
+      <StoreProvider>
+        <Layout
+          left={<Sidebar />}
+          main={<MainArea />}
+        />
+        <Toaster />
+      </StoreProvider>
+    </MathJaxProvider>
   )
 }

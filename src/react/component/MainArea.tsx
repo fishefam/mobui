@@ -1,10 +1,9 @@
-import { MathJaxContext } from 'better-react-mathjax'
 import Breadcrumb from 'component/Breadcrumb'
-import { useWindowSize } from 'react/hook'
 import { cn } from 'lib/util'
 import { Cog } from 'lucide-react'
 import { Fragment, useRef } from 'react'
 import { BREAK_POINT } from 'react/constant'
+import { useWindowSize } from 'react/hook'
 import { useStore } from 'react/Store'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from 'shadcn/Resizable'
 
@@ -117,29 +116,28 @@ function NonAlgorithmEditor() {
 
 function TextEditorContainer() {
   const { section } = useStore()
-  const [currentSection] = section
   const ref = useRef<HTMLDivElement>(null)
 
+  const [currentSection] = section
+
   return (
-    <MathJaxContext>
-      <ResizablePanel className="!overflow-auto">
-        <div
-          ref={ref}
-          className="relative h-full md:min-w-[37rem]"
-        >
-          <div className={cn('absolute left-0 top-0 hidden h-full w-full', currentSection === 'algorithm' && '!block')}>
-            <AlgoPreview parent={ref} />
-            <Cog
-              className="absolute bottom-3 right-3 hidden h-5 w-5 animate-spin"
-              id={'cog-spinner-algo-preview'}
-            />
-          </div>
-          <div className={cn('absolute left-0 top-0 hidden h-full w-full', currentSection !== 'algorithm' && '!block')}>
-            <TextEditor />
-          </div>
+    <ResizablePanel className="!overflow-auto">
+      <div
+        ref={ref}
+        className="relative h-full md:min-w-[37rem]"
+      >
+        <div className={cn('absolute left-0 top-0 hidden h-full w-full', currentSection === 'algorithm' && '!block')}>
+          <AlgoPreview parent={ref} />
+          <Cog
+            className="absolute bottom-3 right-3 hidden h-5 w-5 animate-spin"
+            id={'cog-spinner-algo-preview'}
+          />
         </div>
-      </ResizablePanel>
-    </MathJaxContext>
+        <div className={cn('absolute left-0 top-0 hidden h-full w-full', currentSection !== 'algorithm' && '!block')}>
+          <TextEditor />
+        </div>
+      </div>
+    </ResizablePanel>
   )
 }
 

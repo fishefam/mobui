@@ -6,7 +6,7 @@ import { serialize } from 'lib/slate/serialization'
 import { getDOM } from 'lib/util'
 import { TLanguage, TState } from 'type/common'
 import { TNormalizedSection } from 'type/data'
-import { TStore } from 'type/store'
+import { TMathJax, TStore } from 'type/store'
 
 /**
  * Initialization of Application State and Constants
@@ -56,6 +56,7 @@ export const INITIAL_STORE: TStore = {
   feedbackSlateReadOnly: makeState(false),
   isUnsaved: makeState(false),
   jsAutoCompletionList: makeState<Completion[]>([]),
+  mathjax: makeState<TMathJax>(undefined),
   panelLayout: makeState(getLocalStorage().panelLayout),
   questionCSS: makeState(getData('question', 'CSS')),
   questionHTML: makeState(questionHTML),

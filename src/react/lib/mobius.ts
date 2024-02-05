@@ -118,7 +118,7 @@ export function joinMobiusData(section: TNormalizedSection, html: string, css: s
 /**
  *
  * Displays legacy preview.
- * @param param0 - Preview token.
+ * @param param - Preview token.
  *
  */
 function displayLegacyPreview({ questionDefinition, version }: TPreviewToken) {
@@ -136,7 +136,7 @@ function displayLegacyPreview({ questionDefinition, version }: TPreviewToken) {
   <input name="AntiCsrfToken" value="${getSecurityToken()}">
 </form>`
   const form = new DOMParser().parseFromString(formHTML.trim(), 'text/html').forms[0]
-  const preview = window.open('/' + path, 'newWindow', 'width=960')
+  const preview = window.open('/' + path, 'newWindow', 'resizable=yes,scrollbars=yes,toolbar=no,width=960,height=800')
   if (preview)
     preview.window.onload = () => {
       preview.window.document.body.appendChild(form)

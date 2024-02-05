@@ -1,3 +1,4 @@
+import { MathJaxBaseContext } from 'better-react-mathjax'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { TProps } from 'type/common'
 import { TStore, TStoreProp, TTheme } from 'type/store'
@@ -27,6 +28,8 @@ const Store = createContext<TStore>(INITIAL_STORE)
  *
  */
 export default function StoreProvider(props: TProps) {
+  const _mathjax = useContext(MathJaxBaseContext)
+
   const algoAutoCompletionList = useState(getInitialState('algoAutoCompletionList'))
   const algorithm = useState(getInitialState('algorithm'))
   const algorithmPreview = useState(getInitialState('algorithmPreview'))
@@ -59,6 +62,7 @@ export default function StoreProvider(props: TProps) {
   const questionName = useState(getInitialState('questionName'))
   const section = useState(getInitialState('section'))
   const theme = useState(getInitialState('theme'))
+  const mathjax = useState(_mathjax)
 
   useThemeChange(theme[0])
 
@@ -84,6 +88,7 @@ export default function StoreProvider(props: TProps) {
         feedbackSlateReadOnly,
         isUnsaved,
         jsAutoCompletionList,
+        mathjax,
         panelLayout,
         questionCSS,
         questionHTML,

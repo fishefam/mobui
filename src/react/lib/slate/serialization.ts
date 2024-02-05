@@ -10,11 +10,11 @@ export function serialize(value: TValue) {
   for (const { attributes: attrs, children, id, style: _style, type } of value) {
     const tag = typeToTag(type)
     const attr = objectToString(attrs)
-    const style = toInlineStyle(_style)
+    const style = toInlineStyle(_style ?? {})
       .replace(/;(\s|\n)*/g, '; ')
       .trim()
     const childrenString = serializeChildren(children)
-    html += `<${tag}${id.length ? ` id="${id}"` : ''}${attr.length ? ` ${attr}` : ''}${
+    html += `<${tag}${id?.length ? ` id="${id}"` : ''}${attr?.length ? ` ${attr}` : ''}${
       style.length ? ` style="${style}"` : ''
     }>${childrenString.length ? childrenString : '&nbsp;'}</${tag}>`
   }
@@ -23,16 +23,17 @@ export function serialize(value: TValue) {
 
 function serializeChildren(children: TNode[]) {
   let html = ''
-  for (const child of children) {
-    if (!isLeafNode(child)) {
-      const { attr, style, tag } = getHtmlInfo(child as TBlockNode | TInlineNode | TVoidNode)
-      const { id } = child
-      html += `<${tag}${id.length ? ` id="${id}"` : ''}${attr.length ? ` ${attr}` : ''}${
-        style.length ? ` style="${style}"` : ''
-      }>${serializeChildren(child.children)}</${tag}>`
+  if (children)
+    for (const child of children) {
+      if (!isLeafNode(child)) {
+        const { attr, style, tag } = getHtmlInfo(child as TBlockNode | TInlineNode | TVoidNode)
+        const { id } = child
+        html += `<${tag}${id.length ? ` id="${id}"` : ''}${attr.length ? ` ${attr}` : ''}${
+          style.length ? ` style="${style}"` : ''
+        }>${serializeChildren(child.children)}</${tag}>`
+      }
+      if (isLeafNode(child)) html += serializeLeafNode(child)
     }
-    if (isLeafNode(child)) html += serializeLeafNode(child)
-  }
   return html
 }
 

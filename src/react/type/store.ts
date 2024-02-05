@@ -1,4 +1,5 @@
 import { Completion } from '@codemirror/autocomplete'
+import { MathJaxSubscriberProps } from 'better-react-mathjax'
 
 import { TLanguage, TState } from './common'
 import { TAlgoResponseValue, TNormalizedSection } from './data'
@@ -18,6 +19,7 @@ import { TSlateEditor, TValue } from './slate'
 
 export type TTheme = 'dark' | 'light'
 export type TPanelLayout = 'left' | 'right' | 'top'
+export type TMathJax = MathJaxSubscriberProps | undefined
 
 export type TStore = {
   algoAutoCompletionList: TState<Completion[]>
@@ -38,6 +40,7 @@ export type TStore = {
   feedbackSlateReadOnly: TState<boolean>
   isUnsaved: TState<boolean>
   jsAutoCompletionList: TState<Completion[]>
+  mathjax: TState<TMathJax>
   panelLayout: TState<TPanelLayout>
   questionCSS: TState<string>
   questionHTML: TState<string>

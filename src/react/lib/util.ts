@@ -8,12 +8,18 @@ import html from 'prettier/plugins/html'
 import css from 'prettier/plugins/postcss'
 import typescript from 'prettier/plugins/typescript'
 import { format } from 'prettier/standalone'
+import { ForwardedRef, MutableRefObject } from 'react'
 import { twMerge } from 'tailwind-merge'
 import { TAttributeName, TLanguage, TObject, TReactAttribute, TSetState } from 'type/common'
-import { TLocalStorageKey, TNormalizedSection } from 'type/data'
+import { TNormalizedSection } from 'type/data'
 import { TStore, TStoreCodeKey } from 'type/store'
 
 import { getData, getLocalStorage } from './data'
+
+export function isRefObject<T extends HTMLElement>(ref: ForwardedRef<T>): ref is MutableRefObject<T> {
+  if (ref && hasProps(['current'], ref as unknown as TObject)) return true
+  return false
+}
 
 /**
  * Get the base URL of the current location.
@@ -106,21 +112,11 @@ export function cn(...inputs: ClassValue[]): string {
  * @param input - The input string.
  * @returns - The string converted to start case.
  */
-export function toStartCase(input: string): string {
+export function toTitleCase(input: string): string {
   return input
     .split(' ')
     .map((word) => word.charAt(0).toUpperCase().concat(word.slice(1)))
     .join(' ')
-}
-
-/**
- * Get the value of a specific item from the local storage.
- *
- * @param key - The key of the item to retrieve.
- * @returns - The value of the item or an empty string if not found.
- */
-export function getLocalStorageItem(key: TLocalStorageKey): string {
-  return localStorage.getItem(key) ?? ''
 }
 
 /**

@@ -37,10 +37,7 @@ export function NavTrigger(props: TNavTriggerProps) {
       className={cn(navTriggerStyle(), 'group', props.className)}
     >
       {props.children}{' '}
-      <ChevronDown
-        aria-hidden="true"
-        className="relative top-[1px] ml-1 h-3 w-3 transition duration-200 group-data-[state=open]:rotate-180"
-      />
+      <ChevronDown className="relative top-[1px] ml-1 h-3 w-3 transition duration-200 group-data-[state=open]:rotate-180" />
     </NavPrimitive.Trigger>
   )
 }
@@ -56,7 +53,7 @@ export function NavContent(props: TProps) {
 
 export function NavViewport() {
   return (
-    <div className={cn('absolute left-0 top-full flex justify-center')}>
+    <div className={cn('absolute left-0 top-full z-30 flex justify-center')}>
       <NavPrimitive.Viewport
         className={cn(
           'origin-top-center nd relative mt-1.5 h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden rounded-md border shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-top-2 data-[state=open]:slide-in-from-top-2 md:w-[var(--radix-navigation-menu-viewport-width)]',
